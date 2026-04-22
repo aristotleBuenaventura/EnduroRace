@@ -1,0 +1,901 @@
+fileFormatVersion: 2
+guid: 6525a32664d248c40b5dc62e8a1f8ec0
+ModelImporter:
+  serializedVersion: 24200
+  internalIDToNameTable: []
+  externalObjects: {}
+  materials:
+    materialImportMode: 2
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    removeConstantScaleCurves: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 3
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 0
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importPhysicalCameras: 1
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    nodeNameCollisionStrategy: 1
+    fileIdsGeneration: 2
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    keepQuads: 0
+    weldVertices: 1
+    bakeAxisConversion: 0
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    optimizeBones: 1
+    generateMeshLods: 0
+    meshLodGenerationFlags: 0
+    maximumMeshLod: -1
+    meshOptimizationFlags: -1
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 1
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+    strictVertexDataChecks: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
+  importAnimation: 1
+  humanDescription:
+    serializedVersion: 3
+    human:
+    - boneName: Cyclist_Lady___cycle:Hips
+      humanName: Hips
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Cyclist_Lady___cycle:LeftUpLeg
+      humanName: LeftUpperLeg
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Cyclist_Lady___cycle:RightUpLeg
+      humanName: RightUpperLeg
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Cyclist_Lady___cycle:LeftLeg
+      humanName: LeftLowerLeg
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Cyclist_Lady___cycle:RightLeg
+      humanName: RightLowerLeg
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Cyclist_Lady___cycle:LeftFoot
+      humanName: LeftFoot
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Cyclist_Lady___cycle:RightFoot
+      humanName: RightFoot
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Cyclist_Lady___cycle:Spine
+      humanName: Spine
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Cyclist_Lady___cycle:Spine1
+      humanName: Chest
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Cyclist_Lady___cycle:Neck
+      humanName: Neck
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Cyclist_Lady___cycle:Head
+      humanName: Head
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Cyclist_Lady___cycle:LeftShoulder
+      humanName: LeftShoulder
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Cyclist_Lady___cycle:RightShoulder
+      humanName: RightShoulder
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Cyclist_Lady___cycle:LeftArm
+      humanName: LeftUpperArm
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Cyclist_Lady___cycle:RightArm
+      humanName: RightUpperArm
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Cyclist_Lady___cycle:LeftForeArm
+      humanName: LeftLowerArm
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Cyclist_Lady___cycle:RightForeArm
+      humanName: RightLowerArm
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Cyclist_Lady___cycle:LeftHand
+      humanName: LeftHand
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Cyclist_Lady___cycle:RightHand
+      humanName: RightHand
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Cyclist_Lady___cycle:LeftToeBase
+      humanName: LeftToes
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Cyclist_Lady___cycle:RightToeBase
+      humanName: RightToes
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Cyclist_Lady___cycle:LeftHandThumb1
+      humanName: Left Thumb Proximal
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Cyclist_Lady___cycle:LeftHandThumb2
+      humanName: Left Thumb Intermediate
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Cyclist_Lady___cycle:LeftHandThumb3
+      humanName: Left Thumb Distal
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Cyclist_Lady___cycle:LeftHandIndex1
+      humanName: Left Index Proximal
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Cyclist_Lady___cycle:LeftHandIndex2
+      humanName: Left Index Intermediate
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Cyclist_Lady___cycle:LeftHandIndex3
+      humanName: Left Index Distal
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Cyclist_Lady___cycle:LeftHandMiddle1
+      humanName: Left Middle Proximal
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Cyclist_Lady___cycle:LeftHandMiddle2
+      humanName: Left Middle Intermediate
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Cyclist_Lady___cycle:LeftHandMiddle3
+      humanName: Left Middle Distal
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Cyclist_Lady___cycle:LeftHandRing1
+      humanName: Left Ring Proximal
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Cyclist_Lady___cycle:LeftHandRing2
+      humanName: Left Ring Intermediate
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Cyclist_Lady___cycle:LeftHandRing3
+      humanName: Left Ring Distal
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Cyclist_Lady___cycle:LeftHandPinky1
+      humanName: Left Little Proximal
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Cyclist_Lady___cycle:LeftHandPinky2
+      humanName: Left Little Intermediate
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Cyclist_Lady___cycle:LeftHandPinky3
+      humanName: Left Little Distal
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Cyclist_Lady___cycle:RightHandThumb1
+      humanName: Right Thumb Proximal
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Cyclist_Lady___cycle:RightHandThumb2
+      humanName: Right Thumb Intermediate
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Cyclist_Lady___cycle:RightHandThumb3
+      humanName: Right Thumb Distal
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Cyclist_Lady___cycle:RightHandIndex1
+      humanName: Right Index Proximal
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Cyclist_Lady___cycle:RightHandIndex2
+      humanName: Right Index Intermediate
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Cyclist_Lady___cycle:RightHandIndex3
+      humanName: Right Index Distal
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Cyclist_Lady___cycle:RightHandMiddle1
+      humanName: Right Middle Proximal
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Cyclist_Lady___cycle:RightHandMiddle2
+      humanName: Right Middle Intermediate
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Cyclist_Lady___cycle:RightHandMiddle3
+      humanName: Right Middle Distal
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Cyclist_Lady___cycle:RightHandRing1
+      humanName: Right Ring Proximal
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Cyclist_Lady___cycle:RightHandRing2
+      humanName: Right Ring Intermediate
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Cyclist_Lady___cycle:RightHandRing3
+      humanName: Right Ring Distal
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Cyclist_Lady___cycle:RightHandPinky1
+      humanName: Right Little Proximal
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Cyclist_Lady___cycle:RightHandPinky2
+      humanName: Right Little Intermediate
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Cyclist_Lady___cycle:RightHandPinky3
+      humanName: Right Little Distal
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Cyclist_Lady___cycle:Spine2
+      humanName: UpperChest
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    skeleton:
+    - name: FPlayer(Clone)
+      parentName: 
+      position: {x: 0, y: 0, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady
+      parentName: FPlayer(Clone)
+      position: {x: -0.00003042996, y: 0.00013298169, z: 0.005967852}
+      rotation: {x: 0.70708054, y: 0, z: -0, w: 0.707133}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:Body_geo
+      parentName: FPlayer(Clone)
+      position: {x: -0, y: 0.00081198325, z: -0.0006610449}
+      rotation: {x: -0.00003705223, y: 0, z: -0, w: 1}
+      scale: {x: 100, y: 100, z: 100}
+    - name: Cyclist_Lady___cycle:Eye_geo
+      parentName: FPlayer(Clone)
+      position: {x: -0, y: 0.00081198325, z: -0.0006610449}
+      rotation: {x: -0.00003705223, y: 0, z: -0, w: 1}
+      scale: {x: 100, y: 100, z: 100}
+    - name: Cyclist_Lady___cycle:Gloves_geo
+      parentName: FPlayer(Clone)
+      position: {x: -0, y: 0.00081198325, z: -0.0006610449}
+      rotation: {x: -0.00003705223, y: 0, z: -0, w: 1}
+      scale: {x: 100, y: 100, z: 100}
+    - name: Cyclist_Lady___cycle:Goggles_geo
+      parentName: FPlayer(Clone)
+      position: {x: -0, y: 0.00081198325, z: -0.0006610449}
+      rotation: {x: -0.00003705223, y: 0, z: -0, w: 1}
+      scale: {x: 100, y: 100, z: 100}
+    - name: Cyclist_Lady___cycle:Hair_geo
+      parentName: FPlayer(Clone)
+      position: {x: -0, y: 0.00081198325, z: -0.0006610449}
+      rotation: {x: -0.00003705223, y: 0, z: -0, w: 1}
+      scale: {x: 100, y: 100, z: 100}
+    - name: Cyclist_Lady___cycle:Hand_geo
+      parentName: FPlayer(Clone)
+      position: {x: -0, y: 0.00081198325, z: -0.0006610449}
+      rotation: {x: -0.00003705223, y: 0, z: -0, w: 1}
+      scale: {x: 100, y: 100, z: 100}
+    - name: Cyclist_Lady___cycle:Hemet_geo
+      parentName: FPlayer(Clone)
+      position: {x: -0, y: 0.00081198325, z: -0.0006610449}
+      rotation: {x: -0.00003705223, y: 0, z: -0, w: 1}
+      scale: {x: 100, y: 100, z: 100}
+    - name: Cyclist_Lady___cycle:Shoe_geo
+      parentName: FPlayer(Clone)
+      position: {x: -0, y: 0.00081198325, z: -0.0006610449}
+      rotation: {x: -0.00003705223, y: 0, z: -0, w: 1}
+      scale: {x: 100, y: 100, z: 100}
+    - name: Cyclist_Lady___cycle:Hips
+      parentName: FPlayer(Clone)
+      position: {x: 0.0000051454417, y: 1.1349028, z: -0.00041627235}
+      rotation: {x: 0.0000011084248, y: 0.0000013532311, z: -0.000043044667, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:LeftUpLeg
+      parentName: Cyclist_Lady___cycle:Hips
+      position: {x: -0.10531764, y: -0.059860077, z: -0.002962346}
+      rotation: {x: 0.00038554517, y: -0.0053303414, z: 0.9999848, w: -0.0013609694}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:LeftLeg
+      parentName: Cyclist_Lady___cycle:LeftUpLeg
+      position: {x: 6.735071e-10, y: 0.5147296, z: 6.0046412e-12}
+      rotation: {x: -0.019094065, y: 0.000024803025, z: -0.0028783472, w: 0.99981356}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:LeftFoot
+      parentName: Cyclist_Lady___cycle:LeftLeg
+      position: {x: -9.4088556e-11, y: 0.44062746, z: -7.6107864e-10}
+      rotation: {x: 0.48862106, y: 0.007875258, z: -0.019753937, w: 0.87223697}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:LeftToeBase
+      parentName: Cyclist_Lady___cycle:LeftFoot
+      position: {x: -7.294792e-11, y: 0.19561172, z: 0.000000008365964}
+      rotation: {x: 0.3065366, y: 0.033979554, z: -0.01095047, w: 0.95118916}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:LeftToe_End
+      parentName: Cyclist_Lady___cycle:LeftToeBase
+      position: {x: 2.6714822e-10, y: 0.06808665, z: 1.3350393e-11}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:RightUpLeg
+      parentName: Cyclist_Lady___cycle:Hips
+      position: {x: 0.10531764, y: -0.059860077, z: 0.00246212}
+      rotation: {x: -0.0004966212, y: -0.013577998, z: 0.9999069, w: 0.0012796809}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:RightLeg
+      parentName: Cyclist_Lady___cycle:RightUpLeg
+      position: {x: 5.1036224e-11, y: 0.5148893, z: 4.2563973e-11}
+      rotation: {x: -0.0073670587, y: -0.000003356964, z: 0.002886004, w: 0.9999687}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:RightFoot
+      parentName: Cyclist_Lady___cycle:RightLeg
+      position: {x: 3.4954717e-10, y: 0.44044617, z: 0.0000000012248813}
+      rotation: {x: 0.48310408, y: -0.0082523925, z: 0.019848341, w: 0.87529904}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:RightToeBase
+      parentName: Cyclist_Lady___cycle:RightFoot
+      position: {x: -1.6954498e-10, y: 0.19400212, z: 0.0000000020943223}
+      rotation: {x: 0.30910206, y: -0.032708902, z: 0.010637962, w: 0.9504067}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:RightToe_End
+      parentName: Cyclist_Lady___cycle:RightToeBase
+      position: {x: -9.6609616e-11, y: 0.068757266, z: 7.9212095e-11}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:Spine
+      parentName: Cyclist_Lady___cycle:Hips
+      position: {x: -0, y: 0.107775725, z: -0.009365058}
+      rotation: {x: -0.043325666, y: -0.0000032168643, z: 0.00004294562, w: 0.999061}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:Spine1
+      parentName: Cyclist_Lady___cycle:Spine
+      position: {x: -0, y: 0.12621218, z: -4.2038578e-10}
+      rotation: {x: 6.861589e-26, y: -1.015224e-13, z: 6.7586946e-13, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:Spine2
+      parentName: Cyclist_Lady___cycle:Spine1
+      position: {x: -0, y: 0.14424251, z: 2.2033475e-10}
+      rotation: {x: -0, y: -1.2621775e-29, z: -3.1791094e-28, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:LeftShoulder
+      parentName: Cyclist_Lady___cycle:Spine2
+      position: {x: -0.053482097, y: 0.14679946, z: -0.0012433251}
+      rotation: {x: 0.53486896, y: -0.46024364, z: 0.5427056, w: 0.45558932}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:LeftArm
+      parentName: Cyclist_Lady___cycle:LeftShoulder
+      position: {x: -2.5253338e-10, y: 0.11140902, z: 0.0000000029776486}
+      rotation: {x: -0.08085635, y: 0.0005751465, z: -0.006421278, w: 0.99670494}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:LeftForeArm
+      parentName: Cyclist_Lady___cycle:LeftArm
+      position: {x: -4.2437917e-10, y: 0.2919173, z: 0.0000000044825392}
+      rotation: {x: -0.0000002085362, y: 0.0010678576, z: 0.0000004753701, w: 0.99999946}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:LeftHand
+      parentName: Cyclist_Lady___cycle:LeftForeArm
+      position: {x: 0.0000000013374368, y: 0.326341, z: -0.000000004579062}
+      rotation: {x: 0.028799778, y: -0.0361604, z: 0.043620802, w: 0.9979781}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:LeftHandPinky1
+      parentName: Cyclist_Lady___cycle:LeftHand
+      position: {x: -0.0424631, y: 0.14836726, z: -0.008668956}
+      rotation: {x: -0.028708411, y: 0.038036965, z: -0.04342, w: 0.99791974}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:LeftHandPinky2
+      parentName: Cyclist_Lady___cycle:LeftHandPinky1
+      position: {x: 0.000014564327, y: 0.029297763, z: 8.246047e-11}
+      rotation: {x: 0.0000013230987, y: -0.00033209243, z: -0.0041749603, w: 0.99999124}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:LeftHandPinky3
+      parentName: Cyclist_Lady___cycle:LeftHandPinky2
+      position: {x: -0.00019118498, y: 0.02436812, z: 1.1310845e-10}
+      rotation: {x: 0.000000034537166, y: -0.00009206741, z: 0.008796175, w: 0.9999613}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:LeftHandPinky4
+      parentName: Cyclist_Lady___cycle:LeftHandPinky3
+      position: {x: 0.00017662035, y: 0.018144734, z: 4.1959325e-10}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:LeftHandRing1
+      parentName: Cyclist_Lady___cycle:LeftHand
+      position: {x: -0.015259024, y: 0.16147551, z: -0.0034709342}
+      rotation: {x: -0.02803959, y: 0.04744964, z: -0.03820865, w: 0.9977487}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:LeftHandRing2
+      parentName: Cyclist_Lady___cycle:LeftHandRing1
+      position: {x: 0.00033052947, y: 0.028809134, z: 2.171518e-11}
+      rotation: {x: 0.000000036949732, y: -0.000056508175, z: -0.011841937, w: 0.9999299}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:LeftHandRing3
+      parentName: Cyclist_Lady___cycle:LeftHandRing2
+      position: {x: -0.0003577943, y: 0.029353961, z: -3.1734684e-11}
+      rotation: {x: -0.0000028106535, y: 0.0004937098, z: 0.006776893, w: 0.99997693}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:LeftHandRing4
+      parentName: Cyclist_Lady___cycle:LeftHandRing3
+      position: {x: 0.000027265458, y: 0.019875908, z: 1.8342419e-10}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:LeftHandMiddle1
+      parentName: Cyclist_Lady___cycle:LeftHand
+      position: {x: 0.0136278905, y: 0.15948503, z: -0.009723887}
+      rotation: {x: -0.029793795, y: 0.014717896, z: -0.047722172, w: 0.99830776}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:LeftHandMiddle2
+      parentName: Cyclist_Lady___cycle:LeftHandMiddle1
+      position: {x: -0.00030471195, y: 0.032218095, z: 0.0000000013506476}
+      rotation: {x: -0.00000017884727, y: -0.00023375246, z: 0.008026177, w: 0.99996775}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:LeftHandMiddle3
+      parentName: Cyclist_Lady___cycle:LeftHandMiddle2
+      position: {x: 0.00020163038, y: 0.030669576, z: -2.7385014e-10}
+      rotation: {x: -0.00000039334543, y: -0.0001397077, z: -0.0012248784, w: 0.9999993}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:LeftHandMiddle4
+      parentName: Cyclist_Lady___cycle:LeftHandMiddle3
+      position: {x: 0.00010308332, y: 0.024901263, z: -5.1097787e-10}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:LeftHandThumb1
+      parentName: Cyclist_Lady___cycle:LeftHand
+      position: {x: 0.026848273, y: 0.050597735, z: 0.016033126}
+      rotation: {x: 0.07299832, y: 0.033890188, z: -0.32008114, w: 0.9439655}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:LeftHandThumb2
+      parentName: Cyclist_Lady___cycle:LeftHandThumb1
+      position: {x: 0.006397309, y: 0.04715301, z: -0.000000001001533}
+      rotation: {x: 0.0002161307, y: 0.0036208925, z: -0.07515904, w: 0.99716496}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:LeftHandThumb3
+      parentName: Cyclist_Lady___cycle:LeftHandThumb2
+      position: {x: -0.0006574813, y: 0.04205726, z: 4.4460362e-11}
+      rotation: {x: -0.00045835823, y: 0.0051810797, z: -0.07247691, w: 0.99735653}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:LeftHandThumb4
+      parentName: Cyclist_Lady___cycle:LeftHandThumb3
+      position: {x: -0.0057398253, y: 0.03540953, z: 0.0000000010965271}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:LeftHandIndex1
+      parentName: Cyclist_Lady___cycle:LeftHand
+      position: {x: 0.04409424, y: 0.15779977, z: -0.005162649}
+      rotation: {x: -0.030438265, y: -0.002490151, z: -0.05012102, w: 0.9982761}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:LeftHandIndex2
+      parentName: Cyclist_Lady___cycle:LeftHandIndex1
+      position: {x: -0.00047229926, y: 0.030839216, z: -0.0000000010907237}
+      rotation: {x: -0.00000037085485, y: -0.000017993889, z: 0.015139072, w: 0.99988544}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:LeftHandIndex3
+      parentName: Cyclist_Lady___cycle:LeftHandIndex2
+      position: {x: 0.00045529063, y: 0.030381981, z: -1.01182424e-10}
+      rotation: {x: -0.0000030263416, y: -0.0004102605, z: -0.0071106222, w: 0.99997467}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:LeftHandIndex4
+      parentName: Cyclist_Lady___cycle:LeftHandIndex3
+      position: {x: 0.000017006852, y: 0.02255117, z: -2.6729494e-10}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:RightShoulder
+      parentName: Cyclist_Lady___cycle:Spine2
+      position: {x: 0.053482097, y: 0.14681692, z: -0.0014442218}
+      rotation: {x: -0.53368396, y: -0.46105686, z: 0.5437307, w: -0.45493403}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:RightArm
+      parentName: Cyclist_Lady___cycle:RightShoulder
+      position: {x: 2.8551e-10, y: 0.11140902, z: 0.0000000029746652}
+      rotation: {x: -0.08069375, y: 0.00009455858, z: 0.008235883, w: 0.99670494}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:RightForeArm
+      parentName: Cyclist_Lady___cycle:RightArm
+      position: {x: 0.0000000010868242, y: 0.29193947, z: 0.000000010464927}
+      rotation: {x: -0.00000024481113, y: -0.0009880492, z: 0.0000001663678, w: 0.9999995}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:RightHand
+      parentName: Cyclist_Lady___cycle:RightForeArm
+      position: {x: -2.9170666e-10, y: 0.32631618, z: 0.000000008363986}
+      rotation: {x: 0.025704999, y: 0.039588578, z: -0.044708006, w: 0.9978844}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:RightHandPinky1
+      parentName: Cyclist_Lady___cycle:RightHand
+      position: {x: 0.04180838, y: 0.14468281, z: -0.006446321}
+      rotation: {x: -0.025665285, y: -0.03649734, z: 0.039574582, w: 0.99821997}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:RightHandPinky2
+      parentName: Cyclist_Lady___cycle:RightHandPinky1
+      position: {x: -0.0002983361, y: 0.02944534, z: -5.9729716e-10}
+      rotation: {x: 0.0000002948952, y: -0.00018432294, z: 0.008833832, w: 0.99996096}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:RightHandPinky3
+      parentName: Cyclist_Lady___cycle:RightHandPinky2
+      position: {x: 0.00019205299, y: 0.02543822, z: -3.666929e-10}
+      rotation: {x: 0.00000022704562, y: -0.000005307852, z: -0.0012601718, w: 0.9999992}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:RightHandPinky4
+      parentName: Cyclist_Lady___cycle:RightHandPinky3
+      position: {x: 0.00010628317, y: 0.021084601, z: 1.1644331e-10}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:RightHandRing1
+      parentName: Cyclist_Lady___cycle:RightHand
+      position: {x: 0.016075296, y: 0.15657029, z: -0.0053921277}
+      rotation: {x: -0.025478154, y: -0.04171809, z: 0.041529316, w: 0.9979408}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:RightHandRing2
+      parentName: Cyclist_Lady___cycle:RightHandRing1
+      position: {x: -0.00019669786, y: 0.030417513, z: 0.0000000014407457}
+      rotation: {x: 0.0000004599441, y: -0.00019722158, z: 0.0050497106, w: 0.99998724}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:RightHandRing3
+      parentName: Cyclist_Lady___cycle:RightHandRing2
+      position: {x: 0.00011112808, y: 0.030637601, z: 2.021494e-12}
+      rotation: {x: -0.00000036589236, y: -0.0000025773506, z: -0.000030905278, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:RightHandRing4
+      parentName: Cyclist_Lady___cycle:RightHandRing3
+      position: {x: 0.00008556965, y: 0.024148915, z: -1.0622031e-10}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:RightHandMiddle1
+      parentName: Cyclist_Lady___cycle:RightHand
+      position: {x: -0.014184944, y: 0.16182142, z: -0.008921796}
+      rotation: {x: -0.02640926, y: -0.02498967, z: 0.046548903, w: 0.9982541}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:RightHandMiddle2
+      parentName: Cyclist_Lady___cycle:RightHandMiddle1
+      position: {x: 0.00014452879, y: 0.032607485, z: 3.4583522e-10}
+      rotation: {x: -0.00000007534697, y: 0.00018302852, z: -0.003378706, w: 0.9999943}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:RightHandMiddle3
+      parentName: Cyclist_Lady___cycle:RightHandMiddle2
+      position: {x: -0.00007093744, y: 0.030726904, z: 2.6383573e-10}
+      rotation: {x: -0.00000029974845, y: -0.00004318927, z: -0.00032946578, w: 0.99999994}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:RightHandMiddle4
+      parentName: Cyclist_Lady___cycle:RightHandMiddle3
+      position: {x: -0.00007358998, y: 0.024919007, z: -7.691696e-11}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:RightHandIndex1
+      parentName: Cyclist_Lady___cycle:RightHand
+      position: {x: -0.043698724, y: 0.15411031, z: -0.0046640635}
+      rotation: {x: -0.027468957, y: 0.0008672429, z: 0.057484213, w: 0.9979681}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:RightHandIndex2
+      parentName: Cyclist_Lady___cycle:RightHandIndex1
+      position: {x: 0.000899634, y: 0.032445133, z: 3.657398e-10}
+      rotation: {x: 0.000008133895, y: 0.0010793223, z: -0.020021487, w: 0.99979895}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:RightHandIndex3
+      parentName: Cyclist_Lady___cycle:RightHandIndex2
+      position: {x: -0.00037561325, y: 0.030533668, z: 1.3892049e-10}
+      rotation: {x: 0.0000074692803, y: -0.00045829345, z: -0.00393076, w: 0.9999922}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:RightHandIndex4
+      parentName: Cyclist_Lady___cycle:RightHandIndex3
+      position: {x: -0.0005240198, y: 0.025968647, z: 3.2480585e-10}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:RightHandThumb1
+      parentName: Cyclist_Lady___cycle:RightHand
+      position: {x: -0.027225727, y: 0.052593507, z: 0.016409192}
+      rotation: {x: 0.07793906, y: -0.040329263, z: 0.29773226, w: 0.95060754}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:RightHandThumb2
+      parentName: Cyclist_Lady___cycle:RightHandThumb1
+      position: {x: -0.009012112, y: 0.048330035, z: 0.0000000022486586}
+      rotation: {x: 0.0005857569, y: -0.0060958695, z: 0.08844399, w: 0.99606234}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:RightHandThumb3
+      parentName: Cyclist_Lady___cycle:RightHandThumb2
+      position: {x: -0.00029879384, y: 0.041369967, z: -0.0000000017649928}
+      rotation: {x: -0.0014063531, y: -0.009570688, z: 0.15253156, w: 0.98825127}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:RightHandThumb4
+      parentName: Cyclist_Lady___cycle:RightHandThumb3
+      position: {x: 0.009310903, y: 0.030201614, z: -5.8747956e-10}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:Neck
+      parentName: Cyclist_Lady___cycle:Spine2
+      position: {x: -0, y: 0.16227268, z: -0.0000000024030355}
+      rotation: {x: 0.043324567, y: -2.6246166e-21, z: 2.169304e-19, w: 0.99906105}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:Head
+      parentName: Cyclist_Lady___cycle:Neck
+      position: {x: -0, y: 0.104493104, z: 0.019264271}
+      rotation: {x: 0, y: 0, z: 1.4777911e-38, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:HeadTop_End
+      parentName: Cyclist_Lady___cycle:Head
+      position: {x: -0, y: 0.27212188, z: 0.0501682}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    globalScale: 1
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 1
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {fileID: 9000000, guid: 0d4b946f198b2f64faac7a01be19a766, type: 3}
+  autoGenerateAvatarMappingIfUnspecified: 1
+  animationType: 3
+  humanoidOversampling: 1
+  avatarSetup: 2
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 1
+  importBlendShapeDeformPercent: 1
+  remapMaterialsIfMaterialImportModeIsNone: 0
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
