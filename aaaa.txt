@@ -1,0 +1,41 @@
+using Fusion;
+using UnityEngine;
+using System.Threading.Tasks;
+
+public class NetworkSetup : MonoBehaviour
+{
+    public NetworkRunner networkRunner;
+    public GameObject playerPrefab; // Assign your player prefab here
+    public string sessionName = "RaceRoom";
+
+    private async void Start()
+    {
+        if (networkRunner == null)
+            networkRunner = gameObject.AddComponent<NetworkRunner>();
+
+        // Enable local input
+        networkRunner.ProvideInput = true;
+
+        // Start the session as Host
+        await networkRunner.StartGame(new StartGameArgs
+        {
+            GameMode = GameMode.Host,
+            SessionName = sessionName
+        });
+
+        // Spawn the local player
+        if (networkRunner.IsServer) // or HasInputAuthority if you prefer
+        {
+            Vector3 spawnPos = Vector3.zero; // choose a spawn point
+            Quaternion spawnRot = Quaternion.identity;
+
+            networkRunner.Spawn(
+                playerPrefab,
+                spawnPos,
+                spawnRot,
+                networkRunner.LocalPlayer,
+                null
+            );
+        }
+    }
+}

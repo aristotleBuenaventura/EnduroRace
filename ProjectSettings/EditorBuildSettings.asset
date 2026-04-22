@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1045 &1
+EditorBuildSettings:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/MainMenu.unity
+    guid: 1a1c3d26edac8e8459733f08c7826dc1
+  - enabled: 1
+    path: Assets/Scenes/Tutorial.unity
+    guid: 81b3a8f749b15e34e8c0640040e7de5c
+  - enabled: 1
+    path: Assets/Scenes/Lobby.unity
+    guid: dd4ad6fd6e71420459b717294c9385aa
+  - enabled: 1
+    path: Assets/Scenes/Profile.unity
+    guid: 30699cbab4ccdb64195d0424cb244981
+  - enabled: 1
+    path: Assets/Scenes/RaceScene.unity
+    guid: 88dba821d41ada54b89a10f8aa393413
+  - enabled: 1
+    path: Assets/Scenes/RaceScene_Intermediate.unity
+    guid: 44d311c9870353346b3a62ca34e58cd9
+  - enabled: 1
+    path: Assets/Scenes/Settings.unity
+    guid: 59838cb8abcbc5f46a2652984e60257b
+  - enabled: 1
+    path: Assets/Scenes/Shop.unity
+    guid: 70452d31db7447e4091a29dc59ed69fc
+  - enabled: 1
+    path: Assets/Scenes/LeaderboardsAchievementsScene.unity
+    guid: 69d0351022b9da6418b920e61da3dd8f
+  - enabled: 1
+    path: Assets/Scenes/RaceScene_Pro.unity
+    guid: bfa8f1cf7917ae44d8e823277427f342
+  - enabled: 1
+    path: Assets/Scenes/PreRaceOverview.unity
+    guid: 2314181c96af50249895309c26268a6f
+  m_configObjects:
+    com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  m_UseUCBPForAssetBundles: 0
