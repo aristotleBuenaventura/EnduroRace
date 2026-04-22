@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41ae8a6f037f16a4693199d5957e7f82, type: 3}
+  m_Name: Underarmor
+  m_EditorClassIdentifier: Assembly-CSharp::ShopItem
+  itemId: Underarmor
+  displayName: Underarmor
+  previewSprite: {fileID: 21300000, guid: 8698a1f96d6a6cc4ab6daf2af1eae31a, type: 3}
+  price: 200
+  maleFootMaterial: {fileID: 2100000, guid: dd3cafdd95fb13440b0ee6b619cbb89e, type: 2}
+  maleJerkinMaterial: {fileID: 2100000, guid: dd3cafdd95fb13440b0ee6b619cbb89e, type: 2}
+  maleShotsMaterial: {fileID: 2100000, guid: dd3cafdd95fb13440b0ee6b619cbb89e, type: 2}
+  femaleFootTexture: {fileID: 0}
+  femaleBikeTexture: {fileID: 0}
+  staminaDecreaseReduction: 0
+  moveSpeedBonus: 0
+  moveSpeedMultiplierBonus: 1
+  swimSpeedBonus: 0
+  cycleSpeedBonus: 0

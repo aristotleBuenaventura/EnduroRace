@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "217143046508",
+    "project_id": "endurorace-e0d5f",
+    "storage_bucket": "endurorace-e0d5f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:217143046508:android:ca56e9f86f13f4ed434349",
+        "android_client_info": {
+          "package_name": "com.DefaultCompany.EnduroRace"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAonJSmYJ8IPsesfvaxkrZbNZ1KJBkckoI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

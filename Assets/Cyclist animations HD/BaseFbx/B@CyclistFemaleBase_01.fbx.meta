@@ -1,0 +1,977 @@
+fileFormatVersion: 2
+guid: 25ff74ed794990d44bee109754f69cf3
+ModelImporter:
+  serializedVersion: 24200
+  internalIDToNameTable:
+  - first:
+      1: 100000
+    second: //RootNode
+  - first:
+      1: 100002
+    second: Back_Wheel
+  - first:
+      1: 100004
+    second: Bike
+  - first:
+      1: 100006
+    second: bk_handle
+  - first:
+      1: 100008
+    second: bk_susp_child
+  - first:
+      1: 100010
+    second: bk_susp_pare
+  - first:
+      1: 100012
+    second: bk_suspention
+  - first:
+      1: 100014
+    second: bk_wheel
+  - first:
+      1: 100016
+    second: bk_wheel0
+  - first:
+      1: 100018
+    second: body1
+  - first:
+      1: 100020
+    second: Chest_J
+  - first:
+      1: 100022
+    second: Cycle_body
+  - first:
+      1: 100024
+    second: Cyclist_Lady
+  - first:
+      1: 100026
+    second: Cyclist_Lady___cycle:Body_geo
+  - first:
+      1: 100028
+    second: Cyclist_Lady___cycle:Eye_geo
+  - first:
+      1: 100030
+    second: Cyclist_Lady___cycle:Gloves_geo
+  - first:
+      1: 100032
+    second: Cyclist_Lady___cycle:Goggles_geo
+  - first:
+      1: 100034
+    second: Cyclist_Lady___cycle:Hair_geo
+  - first:
+      1: 100036
+    second: Cyclist_Lady___cycle:Hand_geo
+  - first:
+      1: 100038
+    second: Cyclist_Lady___cycle:Hemet_geo
+  - first:
+      1: 100040
+    second: Cyclist_Lady___cycle:Shoe_geo
+  - first:
+      1: 100042
+    second: Cyclist_Lady_Character
+  - first:
+      1: 100044
+    second: Front_Wheel
+  - first:
+      1: 100046
+    second: FT_wheel_Ball
+  - first:
+      1: 100048
+    second: ft_wheel_suspention
+  - first:
+      1: 100050
+    second: handle
+  - first:
+      1: 100052
+    second: joint2
+  - first:
+      1: 100054
+    second: joint3
+  - first:
+      1: 100056
+    second: L_Ankle_J
+  - first:
+      1: 100058
+    second: L_Arm_J
+  - first:
+      1: 100060
+    second: L_Ball_J
+  - first:
+      1: 100062
+    second: L_Clavicle_J
+  - first:
+      1: 100064
+    second: L_Elbow_J
+  - first:
+      1: 100066
+    second: L_Hip_J
+  - first:
+      1: 100068
+    second: L_Index_01_J
+  - first:
+      1: 100070
+    second: L_Index_02_J
+  - first:
+      1: 100072
+    second: L_Index_03_J
+  - first:
+      1: 100074
+    second: L_Knee_J
+  - first:
+      1: 100076
+    second: L_Middle_01_J
+  - first:
+      1: 100078
+    second: L_Middle_02_J
+  - first:
+      1: 100080
+    second: L_Middle_03_J
+  - first:
+      1: 100082
+    second: L_ProWrist_J
+  - first:
+      1: 100084
+    second: L_Thumb_01_J
+  - first:
+      1: 100086
+    second: L_Thumb_02_J
+  - first:
+      1: 100088
+    second: L_Toe_J
+  - first:
+      1: 100090
+    second: L_Wrist_J
+  - first:
+      1: 100092
+    second: Neck_J
+  - first:
+      1: 100094
+    second: pedal_J
+  - first:
+      1: 100096
+    second: Peddle
+  - first:
+      1: 100098
+    second: Pelvis_J
+  - first:
+      1: 100100
+    second: R_Ankle_J
+  - first:
+      1: 100102
+    second: R_Arm_J
+  - first:
+      1: 100104
+    second: R_Ball_J
+  - first:
+      1: 100106
+    second: R_Clavicle_J
+  - first:
+      1: 100108
+    second: R_Elbow_J
+  - first:
+      1: 100110
+    second: R_Hip_J
+  - first:
+      1: 100112
+    second: R_Index_01_J
+  - first:
+      1: 100114
+    second: R_Index_02_J
+  - first:
+      1: 100116
+    second: R_Index_03_J
+  - first:
+      1: 100118
+    second: R_Knee_J
+  - first:
+      1: 100120
+    second: R_Middle_01_J
+  - first:
+      1: 100122
+    second: R_Middle_02_J
+  - first:
+      1: 100124
+    second: R_Middle_03_J
+  - first:
+      1: 100126
+    second: R_ProWrist_J
+  - first:
+      1: 100128
+    second: R_Thumb_01_J
+  - first:
+      1: 100130
+    second: R_Thumb_02_J
+  - first:
+      1: 100132
+    second: R_Toe_J
+  - first:
+      1: 100134
+    second: R_Wrist_J
+  - first:
+      1: 100136
+    second: Root_J
+  - first:
+      1: 100138
+    second: Root_J 1
+  - first:
+      1: 100140
+    second: Spline_01_J
+  - first:
+      1: 100142
+    second: Spline_02_J
+  - first:
+      4: 400000
+    second: //RootNode
+  - first:
+      4: 400002
+    second: Back_Wheel
+  - first:
+      4: 400004
+    second: Bike
+  - first:
+      4: 400006
+    second: bk_handle
+  - first:
+      4: 400008
+    second: bk_susp_child
+  - first:
+      4: 400010
+    second: bk_susp_pare
+  - first:
+      4: 400012
+    second: bk_suspention
+  - first:
+      4: 400014
+    second: bk_wheel
+  - first:
+      4: 400016
+    second: bk_wheel0
+  - first:
+      4: 400018
+    second: body1
+  - first:
+      4: 400020
+    second: Chest_J
+  - first:
+      4: 400022
+    second: Cycle_body
+  - first:
+      4: 400024
+    second: Cyclist_Lady
+  - first:
+      4: 400026
+    second: Cyclist_Lady___cycle:Body_geo
+  - first:
+      4: 400028
+    second: Cyclist_Lady___cycle:Eye_geo
+  - first:
+      4: 400030
+    second: Cyclist_Lady___cycle:Gloves_geo
+  - first:
+      4: 400032
+    second: Cyclist_Lady___cycle:Goggles_geo
+  - first:
+      4: 400034
+    second: Cyclist_Lady___cycle:Hair_geo
+  - first:
+      4: 400036
+    second: Cyclist_Lady___cycle:Hand_geo
+  - first:
+      4: 400038
+    second: Cyclist_Lady___cycle:Hemet_geo
+  - first:
+      4: 400040
+    second: Cyclist_Lady___cycle:Shoe_geo
+  - first:
+      4: 400042
+    second: Cyclist_Lady_Character
+  - first:
+      4: 400044
+    second: Front_Wheel
+  - first:
+      4: 400046
+    second: FT_wheel_Ball
+  - first:
+      4: 400048
+    second: ft_wheel_suspention
+  - first:
+      4: 400050
+    second: handle
+  - first:
+      4: 400052
+    second: joint2
+  - first:
+      4: 400054
+    second: joint3
+  - first:
+      4: 400056
+    second: L_Ankle_J
+  - first:
+      4: 400058
+    second: L_Arm_J
+  - first:
+      4: 400060
+    second: L_Ball_J
+  - first:
+      4: 400062
+    second: L_Clavicle_J
+  - first:
+      4: 400064
+    second: L_Elbow_J
+  - first:
+      4: 400066
+    second: L_Hip_J
+  - first:
+      4: 400068
+    second: L_Index_01_J
+  - first:
+      4: 400070
+    second: L_Index_02_J
+  - first:
+      4: 400072
+    second: L_Index_03_J
+  - first:
+      4: 400074
+    second: L_Knee_J
+  - first:
+      4: 400076
+    second: L_Middle_01_J
+  - first:
+      4: 400078
+    second: L_Middle_02_J
+  - first:
+      4: 400080
+    second: L_Middle_03_J
+  - first:
+      4: 400082
+    second: L_ProWrist_J
+  - first:
+      4: 400084
+    second: L_Thumb_01_J
+  - first:
+      4: 400086
+    second: L_Thumb_02_J
+  - first:
+      4: 400088
+    second: L_Toe_J
+  - first:
+      4: 400090
+    second: L_Wrist_J
+  - first:
+      4: 400092
+    second: Neck_J
+  - first:
+      4: 400094
+    second: pedal_J
+  - first:
+      4: 400096
+    second: Peddle
+  - first:
+      4: 400098
+    second: Pelvis_J
+  - first:
+      4: 400100
+    second: R_Ankle_J
+  - first:
+      4: 400102
+    second: R_Arm_J
+  - first:
+      4: 400104
+    second: R_Ball_J
+  - first:
+      4: 400106
+    second: R_Clavicle_J
+  - first:
+      4: 400108
+    second: R_Elbow_J
+  - first:
+      4: 400110
+    second: R_Hip_J
+  - first:
+      4: 400112
+    second: R_Index_01_J
+  - first:
+      4: 400114
+    second: R_Index_02_J
+  - first:
+      4: 400116
+    second: R_Index_03_J
+  - first:
+      4: 400118
+    second: R_Knee_J
+  - first:
+      4: 400120
+    second: R_Middle_01_J
+  - first:
+      4: 400122
+    second: R_Middle_02_J
+  - first:
+      4: 400124
+    second: R_Middle_03_J
+  - first:
+      4: 400126
+    second: R_ProWrist_J
+  - first:
+      4: 400128
+    second: R_Thumb_01_J
+  - first:
+      4: 400130
+    second: R_Thumb_02_J
+  - first:
+      4: 400132
+    second: R_Toe_J
+  - first:
+      4: 400134
+    second: R_Wrist_J
+  - first:
+      4: 400136
+    second: Root_J
+  - first:
+      4: 400138
+    second: Root_J 1
+  - first:
+      4: 400140
+    second: Spline_01_J
+  - first:
+      4: 400142
+    second: Spline_02_J
+  - first:
+      43: 4300000
+    second: Cyclist_Lady___cycle:Body_geo
+  - first:
+      43: 4300002
+    second: Cyclist_Lady___cycle:Hair_geo
+  - first:
+      43: 4300004
+    second: Cyclist_Lady___cycle:Goggles_geo
+  - first:
+      43: 4300006
+    second: Cyclist_Lady___cycle:Eye_geo
+  - first:
+      43: 4300008
+    second: Cyclist_Lady___cycle:Hemet_geo
+  - first:
+      43: 4300010
+    second: Cyclist_Lady___cycle:Gloves_geo
+  - first:
+      43: 4300012
+    second: Cyclist_Lady___cycle:Shoe_geo
+  - first:
+      43: 4300014
+    second: Cyclist_Lady___cycle:Hand_geo
+  - first:
+      43: 4300016
+    second: Front_Wheel
+  - first:
+      43: 4300018
+    second: Back_Wheel
+  - first:
+      43: 4300020
+    second: Peddle
+  - first:
+      43: 4300022
+    second: Cycle_body
+  - first:
+      95: 9500000
+    second: //RootNode
+  - first:
+      137: 13700000
+    second: Back_Wheel
+  - first:
+      137: 13700002
+    second: Cycle_body
+  - first:
+      137: 13700004
+    second: Cyclist_Lady___cycle:Body_geo
+  - first:
+      137: 13700006
+    second: Cyclist_Lady___cycle:Eye_geo
+  - first:
+      137: 13700008
+    second: Cyclist_Lady___cycle:Gloves_geo
+  - first:
+      137: 13700010
+    second: Cyclist_Lady___cycle:Goggles_geo
+  - first:
+      137: 13700012
+    second: Cyclist_Lady___cycle:Hair_geo
+  - first:
+      137: 13700014
+    second: Cyclist_Lady___cycle:Hand_geo
+  - first:
+      137: 13700016
+    second: Cyclist_Lady___cycle:Hemet_geo
+  - first:
+      137: 13700018
+    second: Cyclist_Lady___cycle:Shoe_geo
+  - first:
+      137: 13700020
+    second: Front_Wheel
+  - first:
+      137: 13700022
+    second: Peddle
+  externalObjects: {}
+  materials:
+    materialImportMode: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 0
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    removeConstantScaleCurves: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 3
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 100
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importPhysicalCameras: 0
+    importVisibility: 0
+    importBlendShapes: 1
+    importCameras: 0
+    importLights: 0
+    nodeNameCollisionStrategy: 0
+    fileIdsGeneration: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    keepQuads: 0
+    weldVertices: 1
+    bakeAxisConversion: 0
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    optimizeBones: 1
+    generateMeshLods: 0
+    meshLodGenerationFlags: 0
+    maximumMeshLod: -1
+    meshOptimizationFlags: -1
+    indexFormat: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 0
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+    strictVertexDataChecks: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 0
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 1
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
+  importAnimation: 1
+  humanDescription:
+    serializedVersion: 3
+    human: []
+    skeleton:
+    - name: B@CyclistFemaleBase_01(Clone)
+      parentName: 
+      position: {x: 0, y: 0, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Bike
+      parentName: B@CyclistFemaleBase_01(Clone)
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Root_J 1
+      parentName: Bike
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: body1
+      parentName: Root_J 1
+      position: {x: 0.007905115, y: 0.5849958, z: 0.106426224}
+      rotation: {x: 0, y: -0, z: -0.00013356243, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: bk_handle
+      parentName: body1
+      position: {x: -2.8709674e-16, y: -0.16553544, z: -0.32536316}
+      rotation: {x: 0.7052589, y: 0.05108749, z: 0.7052589, w: 0.051087495}
+      scale: {x: 1, y: 1, z: 1}
+    - name: bk_susp_child
+      parentName: bk_handle
+      position: {x: -0.3413594, y: -0.15605958, z: 5.7245875e-16}
+      rotation: {x: -2.07423e-16, y: 1.4193731e-16, z: 0.8825932, w: 0.47013748}
+      scale: {x: 1, y: 1, z: 1}
+    - name: bk_suspention
+      parentName: bk_handle
+      position: {x: -0.4400298, y: -0.059378646, z: -0.0062337248}
+      rotation: {x: 2.5903758e-31, y: 6.4711246e-32, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: bk_wheel0
+      parentName: bk_suspention
+      position: {x: -2.246467e-16, y: -5.551115e-17, z: 3.330669e-16}
+      rotation: {x: -1.5700926e-16, y: -0.7071068, z: -1.5700926e-16, w: 0.7071068}
+      scale: {x: 1, y: 1, z: 1}
+    - name: bk_wheel
+      parentName: bk_suspention
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: -0.007937256, y: -0.7070294, z: -0.0067857867, w: 0.70710707}
+      scale: {x: 1, y: 1, z: 1}
+    - name: bk_susp_pare
+      parentName: body1
+      position: {x: -0, y: 0.15479226, z: -0.5824685}
+      rotation: {x: -0.37665808, y: -0.59843856, z: 0.37665808, w: 0.59843856}
+      scale: {x: 1, y: 1, z: 1}
+    - name: pedal_J
+      parentName: body1
+      position: {x: 0.0081648305, y: -0.23402475, z: -0.23942056}
+      rotation: {x: 0.6720662, y: -0, z: -0, w: 0.74049115}
+      scale: {x: 1, y: 1, z: 1}
+    - name: joint2
+      parentName: pedal_J
+      position: {x: -0.16907544, y: -0.145283, z: 0.15889159}
+      rotation: {x: 0.80982196, y: 0, z: 0, w: 0.5866757}
+      scale: {x: 1, y: 1, z: 1}
+    - name: joint3
+      parentName: pedal_J
+      position: {x: 0.14559296, y: 0.11810191, z: -0.17691295}
+      rotation: {x: -0.64809304, y: 0, z: -0, w: 0.76156116}
+      scale: {x: 1, y: 1, z: 1}
+    - name: handle
+      parentName: body1
+      position: {x: -0.011548664, y: 0.6272105, z: 0.37915927}
+      rotation: {x: 0.4131315, y: 0.5791506, z: 0.40812734, w: 0.5721355}
+      scale: {x: 1, y: 1, z: 1}
+    - name: ft_wheel_suspention
+      parentName: handle
+      position: {x: -0.8556536, y: 0.03482872, z: -0.00092311593}
+      rotation: {x: -0.033397637, y: -0.70805335, z: -0.02537351, w: 0.70491225}
+      scale: {x: 1, y: 1, z: 1}
+    - name: FT_wheel_Ball
+      parentName: ft_wheel_suspention
+      position: {x: -0, y: 1.110223e-16, z: 5.507747e-17}
+      rotation: {x: -0.008010627, y: 0, z: -0, w: 0.99996793}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady_Character
+      parentName: B@CyclistFemaleBase_01(Clone)
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:Body_geo
+      parentName: Cyclist_Lady_Character
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:Hair_geo
+      parentName: Cyclist_Lady_Character
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:Goggles_geo
+      parentName: Cyclist_Lady_Character
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:Eye_geo
+      parentName: Cyclist_Lady_Character
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:Hemet_geo
+      parentName: Cyclist_Lady_Character
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:Gloves_geo
+      parentName: Cyclist_Lady_Character
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:Shoe_geo
+      parentName: Cyclist_Lady_Character
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady___cycle:Hand_geo
+      parentName: Cyclist_Lady_Character
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cyclist_Lady
+      parentName: B@CyclistFemaleBase_01(Clone)
+      position: {x: -0.003042996, y: 0.6628847, z: 0.067949295}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Front_Wheel
+      parentName: Cyclist_Lady
+      position: {x: 0.003042996, y: -0.6628847, z: -0.067949295}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Back_Wheel
+      parentName: Cyclist_Lady
+      position: {x: 0.003042996, y: -0.6628847, z: -0.067949295}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Peddle
+      parentName: Cyclist_Lady
+      position: {x: 0.003042996, y: -0.6628847, z: -0.067949295}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Cycle_body
+      parentName: Cyclist_Lady
+      position: {x: 0.003042996, y: -0.6628847, z: -0.067949295}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Root_J
+      parentName: B@CyclistFemaleBase_01(Clone)
+      position: {x: 0.00012885433, y: 1.0825742, z: 0.06142079}
+      rotation: {x: 6.123234e-17, y: 1, z: -6.123234e-17, w: -6.123234e-17}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Pelvis_J
+      parentName: Root_J
+      position: {x: -0, y: -8.881784e-16, z: 5.0653925e-16}
+      rotation: {x: 0, y: 0, z: -4.827153e-33, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: L_Hip_J
+      parentName: Pelvis_J
+      position: {x: 0.10182559, y: -0.10591009, z: 0.0031256706}
+      rotation: {x: 0.5218453, y: 0.5321987, z: 0.46114138, w: 0.48144644}
+      scale: {x: 1, y: 1, z: 1}
+    - name: L_Knee_J
+      parentName: L_Hip_J
+      position: {x: -0.4496321, y: -0.0068930355, z: 0.014210313}
+      rotation: {x: 0.51255774, y: -0.46494725, z: 0.5292177, w: 0.4909554}
+      scale: {x: 1, y: 1, z: 1}
+    - name: L_Ankle_J
+      parentName: L_Knee_J
+      position: {x: 0.007235806, y: 0.38508692, z: -0.054392707}
+      rotation: {x: 0.0360627, y: 0.9078201, z: -0.39360827, w: -0.14012426}
+      scale: {x: 1, y: 1, z: 1}
+    - name: L_Ball_J
+      parentName: L_Ankle_J
+      position: {x: 0.013798415, y: -0.040242046, z: -0.21046251}
+      rotation: {x: 0.6247688, y: 0.25293162, z: 0.69094115, w: 0.26132333}
+      scale: {x: 1, y: 1, z: 1}
+    - name: L_Toe_J
+      parentName: L_Ball_J
+      position: {x: -0.06114991, y: -4.510281e-17, z: 5.551115e-17}
+      rotation: {x: 0.52773654, y: 0.5187315, z: 0.48452982, w: -0.46652186}
+      scale: {x: 1, y: 1, z: 1}
+    - name: R_Hip_J
+      parentName: Pelvis_J
+      position: {x: -0.10182515, y: -0.10591023, z: 0.0031256895}
+      rotation: {x: -0.48043865, y: 0.46002263, z: -0.53313935, w: 0.5228005}
+      scale: {x: 1, y: 1, z: 1}
+    - name: R_Knee_J
+      parentName: R_Hip_J
+      position: {x: 0.44963148, y: 0.0068930807, z: -0.014210976}
+      rotation: {x: 0.51255774, y: -0.46494725, z: 0.5292177, w: 0.4909554}
+      scale: {x: 1, y: 1, z: 1}
+    - name: R_Ankle_J
+      parentName: R_Knee_J
+      position: {x: -0.007235082, y: -0.38508752, z: 0.054392833}
+      rotation: {x: 0.036406495, y: 0.9075109, z: -0.3936848, w: -0.14181322}
+      scale: {x: 1, y: 1, z: 1}
+    - name: R_Ball_J
+      parentName: R_Ankle_J
+      position: {x: -0.01379791, y: 0.040242095, z: 0.21046235}
+      rotation: {x: 0.6251109, y: 0.25279447, z: 0.6906181, w: 0.26149178}
+      scale: {x: 1, y: 1, z: 1}
+    - name: R_Toe_J
+      parentName: R_Ball_J
+      position: {x: 0.061150186, y: 0.00000003782986, z: 0.00000042566228}
+      rotation: {x: 0.52773654, y: 0.5187315, z: 0.48452982, w: -0.46652186}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Spline_01_J
+      parentName: Root_J
+      position: {x: 5.583641e-18, y: 0.07150182, z: 1.179612e-16}
+      rotation: {x: -0.5096132, y: 0.49019828, z: 0.5096132, w: -0.49019828}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Spline_02_J
+      parentName: Spline_01_J
+      position: {x: -0.08996831, y: -0.0062041027, z: -8.6898804e-17}
+      rotation: {x: 0.013797167, y: 0.00033982424, z: 0.024620188, w: 0.9996016}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Chest_J
+      parentName: Spline_02_J
+      position: {x: -0.1397623, y: -2.0816682e-17, z: -1.791102e-16}
+      rotation: {x: 0.028789628, y: -0.70545673, z: 0.04827868, w: 0.70652044}
+      scale: {x: 1, y: 1, z: 1}
+    - name: L_Clavicle_J
+      parentName: Chest_J
+      position: {x: -0.084877774, y: 0.0768028, z: 0.17497633}
+      rotation: {x: 0.74456435, y: 0.1183955, z: 0.1372075, w: 0.64248}
+      scale: {x: 1, y: 1, z: 1}
+    - name: L_Arm_J
+      parentName: L_Clavicle_J
+      position: {x: -0.08667198, y: 0.009901624, z: -0.056865945}
+      rotation: {x: -0.45151222, y: 0.27725214, z: -0.6374818, w: 0.5593612}
+      scale: {x: 1, y: 1, z: 1}
+    - name: L_Elbow_J
+      parentName: L_Arm_J
+      position: {x: -0.019367678, y: -0.036538035, z: -0.29077962}
+      rotation: {x: 0.07020861, y: 0.05786273, z: -0.028660499, w: 0.9954403}
+      scale: {x: 1, y: 1, z: 1}
+    - name: L_ProWrist_J
+      parentName: L_Elbow_J
+      position: {x: 0.003087847, y: -0.037585143, z: -0.12852685}
+      rotation: {x: -0.16867842, y: -3.287408e-18, z: 3.4636253e-17, w: 0.98567116}
+      scale: {x: 1, y: 1, z: 1}
+    - name: L_Wrist_J
+      parentName: L_Elbow_J
+      position: {x: 0.0081938915, y: -0.10138993, z: -0.28658003}
+      rotation: {x: -0.1631069, y: -7.55059e-15, z: 6.0799944e-15, w: 0.9866084}
+      scale: {x: 1, y: 1, z: 1}
+    - name: L_Thumb_01_J
+      parentName: L_Wrist_J
+      position: {x: 0.032418538, y: -0.047376316, z: -0.061847355}
+      rotation: {x: 0.6127979, y: -0.64085305, z: -0.44490185, w: -0.12589045}
+      scale: {x: 1, y: 1, z: 1}
+    - name: L_Thumb_02_J
+      parentName: L_Thumb_01_J
+      position: {x: 0.04271785, y: -0.020828357, z: 0.0046403566}
+      rotation: {x: 0.9834617, y: -0.16826405, z: 0.032525092, w: 0.058587883}
+      scale: {x: 1, y: 1, z: 1}
+    - name: L_Index_01_J
+      parentName: L_Wrist_J
+      position: {x: 0.000684364, y: -0.028283048, z: -0.10373429}
+      rotation: {x: 0.5560353, y: -0.49728355, z: 0.48471203, w: 0.45671448}
+      scale: {x: 1, y: 1, z: 1}
+    - name: L_Index_02_J
+      parentName: L_Index_01_J
+      position: {x: -0.051738452, y: -0.0068701566, z: 0.0028389792}
+      rotation: {x: -0.010897874, y: 0.9870213, z: 0.15628453, w: -0.035290103}
+      scale: {x: 1, y: 1, z: 1}
+    - name: L_Index_03_J
+      parentName: L_Index_02_J
+      position: {x: 0.032146253, y: -0.0050866394, z: -0.0009779336}
+      rotation: {x: -0.44913447, y: 0.50317, z: 0.6311701, w: -0.3830439}
+      scale: {x: 1, y: 1, z: 1}
+    - name: L_Middle_01_J
+      parentName: L_Wrist_J
+      position: {x: 0.0043854793, y: 0.02294364, z: -0.10856452}
+      rotation: {x: 0.1262515, y: 0.004749325, z: -0.16095969, w: 0.9788411}
+      scale: {x: 1, y: 1, z: 1}
+    - name: L_Middle_02_J
+      parentName: L_Middle_01_J
+      position: {x: 0.008154138, y: -0.0014144242, z: -0.046180177}
+      rotation: {x: -0.6864365, y: 0.24347878, z: 0.5041552, w: 0.4640589}
+      scale: {x: 1, y: 1, z: 1}
+    - name: L_Middle_03_J
+      parentName: L_Middle_02_J
+      position: {x: 0.03003416, y: 0.005898087, z: -0.001029655}
+      rotation: {x: -0.48477793, y: 0.47676596, z: 0.55945736, w: -0.47401693}
+      scale: {x: 1, y: 1, z: 1}
+    - name: R_Clavicle_J
+      parentName: Chest_J
+      position: {x: 0.08462004, y: 0.07680334, z: 0.1749811}
+      rotation: {x: -0.7480606, y: -0.0000000013264063, z: -0.0000000017329679, w: 0.6636305}
+      scale: {x: 1, y: 1, z: 1}
+    - name: R_Arm_J
+      parentName: R_Clavicle_J
+      position: {x: 0.1012491, y: -0.0154, z: 0.01884497}
+      rotation: {x: -0.4881888, y: 0.4431453, z: -0.4905572, w: 0.56977856}
+      scale: {x: 1, y: 1, z: 1}
+    - name: R_Elbow_J
+      parentName: R_Arm_J
+      position: {x: 0.019372117, y: 0.036537807, z: 0.2907759}
+      rotation: {x: 0.070221275, y: 0.057910025, z: -0.028516665, w: 0.9954408}
+      scale: {x: 1, y: 1, z: 1}
+    - name: R_ProWrist_J
+      parentName: R_Elbow_J
+      position: {x: -0.0030899467, y: 0.03758531, z: 0.12852913}
+      rotation: {x: -0.16867842, y: -3.9795017e-17, z: 7.607871e-18, w: 0.98567116}
+      scale: {x: 1, y: 1, z: 1}
+    - name: R_Wrist_J
+      parentName: R_Elbow_J
+      position: {x: -0.00819892, y: 0.101390146, z: 0.28658402}
+      rotation: {x: -0.1630238, y: -0.00044816473, z: -0.0071909893, w: 0.98659587}
+      scale: {x: 1, y: 1, z: 1}
+    - name: R_Thumb_01_J
+      parentName: R_Wrist_J
+      position: {x: -0.03241709, y: 0.047376577, z: 0.061846472}
+      rotation: {x: 0.72601163, y: -0.51000357, z: -0.4107067, w: -0.21005604}
+      scale: {x: 1, y: 1, z: 1}
+    - name: R_Thumb_02_J
+      parentName: R_Thumb_01_J
+      position: {x: -0.047407653, y: 0.0033806819, z: -0.0046402356}
+      rotation: {x: 0.9975149, y: 0.021761784, z: 0.043069616, w: 0.051336434}
+      scale: {x: 1, y: 1, z: 1}
+    - name: R_Index_01_J
+      parentName: R_Wrist_J
+      position: {x: -0.0006841338, y: 0.028283106, z: 0.10373398}
+      rotation: {x: 0.55604726, y: -0.49728087, z: 0.48469812, w: 0.4567176}
+      scale: {x: 1, y: 1, z: 1}
+    - name: R_Index_02_J
+      parentName: R_Index_01_J
+      position: {x: 0.051737964, y: 0.0068697194, z: -0.0028396451}
+      rotation: {x: 0.023092115, y: 0.99298054, z: 0.108089425, w: -0.042107914}
+      scale: {x: 1, y: 1, z: 1}
+    - name: R_Index_03_J
+      parentName: R_Index_02_J
+      position: {x: -0.031691078, y: 0.0074722497, z: 0.0002732668}
+      rotation: {x: -0.41302916, y: 0.549078, z: 0.61944497, w: -0.37974766}
+      scale: {x: 1, y: 1, z: 1}
+    - name: R_Middle_01_J
+      parentName: R_Wrist_J
+      position: {x: -0.004380283, y: -0.022942657, z: 0.10856132}
+      rotation: {x: 0.12458919, y: -0.020923147, z: 0.041174233, w: 0.9911329}
+      scale: {x: 1, y: 1, z: 1}
+    - name: R_Middle_02_J
+      parentName: R_Middle_01_J
+      position: {x: -0.006923642, y: 0.0045404662, z: 0.0461848}
+      rotation: {x: -0.017745709, y: 0.05796671, z: 0.0073042368, w: 0.9981341}
+      scale: {x: 1, y: 1, z: 1}
+    - name: R_Middle_03_J
+      parentName: R_Middle_02_J
+      position: {x: -0.009943588, y: 0.0014311915, z: 0.028925704}
+      rotation: {x: -0.03017084, y: -0.29641593, z: -0.022451436, w: 0.9543182}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Neck_J
+      parentName: Chest_J
+      position: {x: -0.0000000013893344, y: 0.059980653, z: 0.32350016}
+      rotation: {x: -0.10851135, y: 0.11485917, z: 0.7177763, w: 0.6781076}
+      scale: {x: 1, y: 1, z: 1}
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    globalScale: 100
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 1
+    skeletonHasParents: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
+  animationType: 2
+  humanoidOversampling: 1
+  avatarSetup: 1
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 0
+  importBlendShapeDeformPercent: 0
+  remapMaterialsIfMaterialImportModeIsNone: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
