@@ -7,7 +7,7 @@ public class CoinPickup : NetworkBehaviour
 {
     [Header("Settings")]
     public int coinValue    = 1;
-    public float respawnTime = 30f;
+    private float respawnTime = 5f;
 
     [Header("Visuals")]
     public GameObject coinVisual;

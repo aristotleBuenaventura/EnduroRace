@@ -9,7 +9,7 @@ public class PowerUpMultiplayer : NetworkBehaviour
     [SerializeField] private float staminaRestoreAmount = 30f;
 
     [Header("Respawn Settings")]
-    [SerializeField] private float respawnTime = 15f;
+    private float respawnTime = 5f;
 
     [Header("Feedback")]
     [SerializeField] private AudioClip pickupSound;
