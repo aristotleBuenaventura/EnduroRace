@@ -1,24 +1,30 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 using FishNet.Object;
 
-/// <summary>
-/// Attach this to your player prefab (same GameObject as NetworkPlayer or a child).
-/// It reads the PlayerName SyncVar and displays it in world space above the player's head.
-/// The nameplate always faces the camera (billboard effect).
-/// </summary>
 public class PlayerNameplate : NetworkBehaviour
 {
-    [Header("Nameplate Settings")]
+    [Header("Settings")]
     [SerializeField] private Vector3 offset = new Vector3(0f, 2.2f, 0f);
-    [SerializeField] private float textSize = 3f;
-    [SerializeField] private Color nameColor = Color.white;
-    [SerializeField] private Color localPlayerColor = Color.yellow; // own name shows in yellow
+    [SerializeField] private float paddingX = 0.25f;
+    [SerializeField] private float paddingY = 0.12f;
+
+    [Header("UI References")]
+    [SerializeField] private TextMeshProUGUI frontText;
+    [SerializeField] private Image frontBackground;
+
+    [SerializeField] private TextMeshProUGUI backText;
+    [SerializeField] private Image backBackground;
+
+    private RectTransform frontBgRect;
+    private RectTransform backBgRect;
 
     private NetworkPlayer networkPlayer;
-    private GameObject nameplateObject;
-    private TextMeshPro nameText;
+    private GameObject root;
     private Camera mainCamera;
+
+    private string currentName;
 
     public override void OnStartClient()
     {
@@ -29,21 +35,15 @@ public class PlayerNameplate : NetworkBehaviour
             networkPlayer = GetComponentInParent<NetworkPlayer>();
 
         if (networkPlayer == null)
-        {
-            Debug.LogError("[PlayerNameplate] NetworkPlayer not found!");
             return;
-        }
 
         CreateNameplate();
 
-        // Listen for name changes so it updates even if name arrives late
         networkPlayer.PlayerName.OnChange += OnNameChanged;
 
-        // Set name immediately if already available
         if (!string.IsNullOrEmpty(networkPlayer.PlayerName.Value))
             UpdateNameplate(networkPlayer.PlayerName.Value);
 
-        // If this is our own player, set name from LobbyDataTransfer
         if (IsOwner)
             SetNameFromLobbyData();
 
@@ -58,38 +58,42 @@ public class PlayerNameplate : NetworkBehaviour
 
     private void CreateNameplate()
     {
-        // Create a world-space TextMeshPro object
-        nameplateObject = new GameObject("Nameplate");
-        nameplateObject.transform.SetParent(transform);
-        nameplateObject.transform.localPosition = offset;
-        nameplateObject.transform.localRotation = Quaternion.identity;
+        root = new GameObject("NameplateRoot");
+        root.transform.SetParent(transform);
+        root.transform.localPosition = offset;
+        root.transform.localRotation = Quaternion.identity;
 
-        nameText = nameplateObject.AddComponent<TextMeshPro>();
-        nameText.alignment = TextAlignmentOptions.Center;
-        nameText.fontSize = textSize;
-        nameText.color = IsOwner ? localPlayerColor : nameColor;
-        nameText.text = "";
+        if (frontText == null || backText == null || frontBackground == null || backBackground == null)
+            return;
 
-        // Make it render on top (optional — remove if you want depth occlusion)
-        nameText.fontMaterial.renderQueue = 3000;
+        frontBgRect = frontBackground.GetComponent<RectTransform>();
+        backBgRect = backBackground.GetComponent<RectTransform>();
+
+        frontText.enableWordWrapping = false;
+        backText.enableWordWrapping = false;
+
+        frontText.overflowMode = TextOverflowModes.Overflow;
+        backText.overflowMode = TextOverflowModes.Overflow;
+
+        frontText.alignment = TextAlignmentOptions.Center;
+        backText.alignment = TextAlignmentOptions.Center;
+
+        frontBackground.color = Color.white;
+        backBackground.color = Color.white;
+
+        frontText.color = Color.black;
+        backText.color = Color.black;
     }
 
     private void SetNameFromLobbyData()
     {
         if (LobbyDataTransfer.Instance == null)
-        {
-            Debug.LogWarning("[PlayerNameplate] LobbyDataTransfer not found!");
             return;
-        }
 
         var localData = LobbyDataTransfer.Instance.GetLocalPlayerData();
         if (localData == null)
-        {
-            Debug.LogWarning("[PlayerNameplate] Local player data not found in LobbyDataTransfer!");
             return;
-        }
 
-        Debug.Log($"[PlayerNameplate] Setting name: {localData.displayName}");
         networkPlayer.ServerSetPlayerName(localData.displayName);
     }
 
@@ -100,21 +104,54 @@ public class PlayerNameplate : NetworkBehaviour
 
     private void UpdateNameplate(string playerName)
     {
-        if (nameText == null) return;
-        nameText.text = playerName;
+        if (frontText == null || backText == null) return;
+
+        currentName = playerName;
+
+        frontText.text = playerName;
+        backText.text = playerName;
+
+        frontText.color = Color.black;
+        backText.color = Color.black;
+
+        Canvas.ForceUpdateCanvases();
+        LayoutRebuild();
+    }
+
+    private void LayoutRebuild()
+    {
+        frontText.ForceMeshUpdate();
+
+        Vector2 size = frontText.GetPreferredValues(currentName);
+
+        float width = size.x + paddingX;
+        float height = size.y + paddingY;
+
+        SetBg(frontBackground, frontBgRect, width, height);
+        SetBg(backBackground, backBgRect, width, height);
+    }
+
+    private void SetBg(Image img, RectTransform rect, float w, float h)
+    {
+        if (img == null || rect == null) return;
+
+        rect.sizeDelta = new Vector2(w, h);
+        img.color = Color.white;
     }
 
     private void LateUpdate()
     {
-        if (nameplateObject == null) return;
+        if (root == null) return;
 
-        // Billboard — always face the camera
         if (mainCamera == null)
             mainCamera = Camera.main;
 
-        if (mainCamera != null)
-            nameplateObject.transform.rotation = Quaternion.LookRotation(
-                nameplateObject.transform.position - mainCamera.transform.position
-            );
+        if (mainCamera == null) return;
+
+        root.transform.position = transform.position + offset;
+
+        Vector3 dir = (mainCamera.transform.position - root.transform.position).normalized;
+
+        root.transform.rotation = Quaternion.LookRotation(dir, Vector3.up);
     }
 }
