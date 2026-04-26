@@ -54,6 +54,12 @@ public class CyclingController : NetworkBehaviour
     [SerializeField] private CinemachineImpulseSource impulseSource;
     [SerializeField] private float speedBumpShakeIntensity = 1.2f;
     [SerializeField] private float potholeShakeIntensity = 1f;
+    [SerializeField] private float stunShakeIntensity = 1.5f;
+
+    [Header("Stun Effects")]
+    [SerializeField] private GameObject stunStarPrefab;
+    [SerializeField] private Transform stunStarSpawnPoint;
+    private GameObject activeStunStar;
 
     private CharacterController characterController;
     private AudioSource cyclingSource;
@@ -70,6 +76,7 @@ public class CyclingController : NetworkBehaviour
     public bool isActiveModel = false;
     private Transform rootTransform;
     private float targetYRotation;
+    private NetworkPlayer netPlayer;
 
     public override void OnStartClient()
     {
@@ -100,6 +107,7 @@ public class CyclingController : NetworkBehaviour
         exhaustionAudioSource.loop       = true;
 
         rootTransform   = GetComponentInParent<NetworkPlayer>()?.transform ?? transform;
+        netPlayer       = GetComponentInParent<NetworkPlayer>();
         targetYRotation = rootTransform.eulerAngles.y;
 
         ApplyTierStaminaSettings();
@@ -145,6 +153,14 @@ public class CyclingController : NetworkBehaviour
     {
         if (!IsOwner || !isActiveModel || characterController == null)
             return;
+
+        if (netPlayer != null && netPlayer.IsStunned.Value)
+        {
+            moveInput = Vector2.zero;
+            isAccelerating = false;
+            HandleAnimations();
+            return;
+        }
 
         HandleStamina();
         UpdateExhaustionState();
@@ -402,6 +418,46 @@ public class CyclingController : NetworkBehaviour
         for (float t = 0; t < half; t += Time.deltaTime) { bikeModel.localPosition = Vector3.Lerp(dip, start, t / half); yield return null; }
         bikeModel.localPosition = start;
         isOnPothole = false;
+    }
+
+    public IEnumerator StunCyclist(float duration)
+    {
+        if (netPlayer == null || netPlayer.IsStunned.Value) yield break;
+
+        netPlayer.ServerSetStunned(true);
+        ShowStunStars(true);
+        animator?.SetTrigger("Bump");
+        TriggerCameraShake(stunShakeIntensity);
+
+        yield return new WaitForSeconds(duration);
+
+        ShowStunStars(false);
+        netPlayer.ServerSetStunned(false);
+    }
+
+    private void ShowStunStars(bool show)
+    {
+        if (stunStarPrefab == null) return;
+
+        if (show)
+        {
+            if (activeStunStar == null)
+            {
+                Vector3 spawnPos = stunStarSpawnPoint != null
+                    ? stunStarSpawnPoint.position
+                    : transform.position + Vector3.up * 2f;
+                activeStunStar = Instantiate(stunStarPrefab, spawnPos, Quaternion.identity, transform);
+            }
+            else
+            {
+                activeStunStar.SetActive(true);
+            }
+        }
+        else
+        {
+            if (activeStunStar != null)
+                activeStunStar.SetActive(false);
+        }
     }
 
     public void ApplySpeedBoost(float multiplier, float duration)
