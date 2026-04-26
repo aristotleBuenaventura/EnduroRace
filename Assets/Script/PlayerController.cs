@@ -105,6 +105,7 @@ public class PlayerController : NetworkBehaviour
     private bool canRotate = true;
     private NetworkPlayer netPlayer;
     private bool playedTripAnim;
+    private bool wasStunnedLastFrame;
     public float currentStamina;
     private float targetYRotation;
     private bool localIsInWater = false;
@@ -281,7 +282,14 @@ public class PlayerController : NetworkBehaviour
         {
             StopMovement();
             UpdateAnimationState(0);
+            wasStunnedLastFrame = true;
             return;
+        }
+
+        if (wasStunnedLastFrame)
+        {
+            RecoverFromStunAnimation();
+            wasStunnedLastFrame = false;
         }
 
         HandleStamina();
@@ -536,7 +544,18 @@ public class PlayerController : NetworkBehaviour
         yield return new WaitForSeconds(duration > 0 ? duration : defaultStunDuration);
 
         ShowStunStars(false);
+        animator?.ResetTrigger("Stunned");
         netPlayer.ServerSetStunned(false);
+    }
+
+    private void RecoverFromStunAnimation()
+    {
+        if (animator == null) return;
+
+        // Force-reset to base locomotion state so we don't get stuck in stun animation.
+        animator.Rebind();
+        animator.Update(0f);
+        UpdateAnimationState(0);
     }
 
     private void ShowStunStars(bool show)
