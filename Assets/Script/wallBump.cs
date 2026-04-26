@@ -33,12 +33,19 @@ public class wallBump : MonoBehaviour
         if (!netPlayer.IsOwner || netPlayer.IsStunned.Value)
             return;
 
-        Debug.Log("[wallBump] Wall bump triggered");
+        bool cyclistActive = hitCyclist != null && hitCyclist.isActiveModel;
+        bool playerActive = hitPlayer != null && hitPlayer.isActiveModel;
 
-        if (hitPlayer != null)
+        // Prefer whichever model is currently active to avoid triggering the wrong controller.
+        bool useCyclist = cyclistActive || (hitCyclist != null && !playerActive);
+        bool usePlayer = !useCyclist && hitPlayer != null;
+
+        Debug.Log($"[wallBump] Wall bump triggered | useCyclist={useCyclist}, usePlayer={usePlayer}");
+
+        if (usePlayer && hitPlayer != null)
             hitPlayer.currentStamina = Mathf.Max(0f, hitPlayer.currentStamina - tripStaminaCost);
 
-        if (hitCyclist != null)
+        if (useCyclist && hitCyclist != null)
             hitCyclist.currentStamina = Mathf.Max(0f, hitCyclist.currentStamina - tripStaminaCost);
 
         if (knockbackDistance > 0f)
@@ -48,19 +55,19 @@ public class wallBump : MonoBehaviour
             knockbackDir.y = 0f;
             knockbackDir.Normalize();
 
-            if (hitPlayer != null && hitPlayer.characterController != null)
+            if (usePlayer && hitPlayer != null && hitPlayer.characterController != null)
                 hitPlayer.characterController.Move(knockbackDir * knockbackDistance);
 
-            CharacterController cyclistController = hitCyclist != null
+            CharacterController cyclistController = (useCyclist && hitCyclist != null)
                 ? hitCyclist.GetComponent<CharacterController>()
                 : null;
             if (cyclistController != null)
                 cyclistController.Move(knockbackDir * knockbackDistance);
         }
 
-        if (hitPlayer != null)
+        if (usePlayer && hitPlayer != null)
             hitPlayer.StartCoroutine(hitPlayer.StunPlayer(stunDuration));
-        else if (hitCyclist != null)
+        else if (useCyclist && hitCyclist != null)
             hitCyclist.StartCoroutine(hitCyclist.StunCyclist(stunDuration));
     }
 }

@@ -280,6 +280,7 @@ public class PlayerController : NetworkBehaviour
         if (netPlayer.IsStunned.Value)
         {
             StopMovement();
+            UpdateAnimationState(0);
             return;
         }
 
