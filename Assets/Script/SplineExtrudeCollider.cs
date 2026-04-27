@@ -18,11 +18,17 @@ public class SplineExtrudeCollider : MonoBehaviour
     public float stunDuration = 1f;
     public float knockbackDistance = 0.5f;
 
+    [Header("Debug")]
+    public bool enableDebugLogs = true;
+
     [ContextMenu("Generate Colliders")]
     public void GenerateColliders()
     {
         if (splineContainer == null)
             splineContainer = GetComponent<SplineContainer>();
+
+        if (enableDebugLogs)
+            Debug.Log($"[SplineExtrudeCollider] GenerateColliders start on {name} | parentLayer={LayerMask.LayerToName(gameObject.layer)}({gameObject.layer})");
 
         // Clear old colliders
         for (int i = transform.childCount - 1; i >= 0; i--)
@@ -49,6 +55,7 @@ public class SplineExtrudeCollider : MonoBehaviour
             colObj.transform.SetParent(transform);
             colObj.transform.position = pos + rot * centerOffset;
             colObj.transform.rotation = rot;
+            colObj.layer = gameObject.layer;
 
             // Box Collider
             BoxCollider col = colObj.AddComponent<BoxCollider>();
@@ -65,7 +72,16 @@ public class SplineExtrudeCollider : MonoBehaviour
             wallBump.tripStaminaCost = tripStaminaCost;
             wallBump.stunDuration = stunDuration;
             wallBump.knockbackDistance = knockbackDistance;
+            wallBump.enableDebugLogs = enableDebugLogs;
+
+            if (enableDebugLogs)
+            {
+                Debug.Log($"[SplineExtrudeCollider] Created {colObj.name} | pos={colObj.transform.position} | layer={LayerMask.LayerToName(colObj.layer)}({colObj.layer})");
+            }
         }
+
+        if (enableDebugLogs)
+            Debug.Log($"[SplineExtrudeCollider] GenerateColliders done. Total colliders attempted: {count}");
     }
 
     private void OnDrawGizmos()

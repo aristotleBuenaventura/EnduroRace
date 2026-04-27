@@ -93,12 +93,7 @@ public class NetworkedAIOpponent : NetworkBehaviour
     {
         base.OnStartNetwork();
 
-        Debug.Log($"[NetworkedAI] {opponentName} OnStartNetwork - IsServer: {IsServerInitialized}, IsClient: {IsClientStarted}");
-
         characterController = GetComponent<CharacterController>();
-
-        if (characterController == null)
-            Debug.LogError($"{opponentName}: No CharacterController found!");
 
         currentStamina = maxStamina;
         currentSpeed = baseSpeed + Random.Range(-speedVariation, speedVariation);
@@ -113,8 +108,6 @@ public class NetworkedAIOpponent : NetworkBehaviour
 
         if (runnerModel != null && cyclistModel != null)
             SetSegment(AISegment.Swim);
-        else
-            Debug.LogError($"{opponentName}: Models not assigned!");
     }
 
     // FIX: FishNet v4 SyncVar<T>.OnChange delegate signature:
@@ -124,7 +117,6 @@ public class NetworkedAIOpponent : NetworkBehaviour
         if (!asServer)
         {
             SetSegment(next);
-            Debug.Log($"[NetworkedAI Client] {opponentName} segment changed to {next}");
         }
     }
 
@@ -138,9 +130,6 @@ public class NetworkedAIOpponent : NetworkBehaviour
 
         if (!raceStarted)
             return;
-
-        if (Time.frameCount % 60 == 0)
-            Debug.Log($"[AI {opponentName}] Running on server. Path: {waypointPath?.Length ?? 0} waypoints, Current WP: {currentWaypointIndex}");
 
         HandleStamina();
         HandleSprinting();
@@ -222,15 +211,11 @@ public class NetworkedAIOpponent : NetworkBehaviour
     {
         if (waypointPath == null || waypointPath.Length == 0)
         {
-            if (Time.frameCount % 120 == 0)
-                Debug.LogWarning($"[AI {opponentName}] No waypoint path assigned!");
             return;
         }
 
         if (currentWaypointIndex >= waypointPath.Length)
         {
-            if (Time.frameCount % 120 == 0)
-                Debug.Log($"[AI {opponentName}] Reached end of path");
             return;
         }
 
@@ -238,7 +223,6 @@ public class NetworkedAIOpponent : NetworkBehaviour
 
         if (targetWaypoint == null)
         {
-            Debug.LogError($"[AI {opponentName}] Waypoint {currentWaypointIndex} is NULL!");
             currentWaypointIndex++;
             return;
         }
@@ -274,7 +258,6 @@ public class NetworkedAIOpponent : NetworkBehaviour
 
         if (characterController == null)
         {
-            Debug.LogError($"[AI {opponentName}] CharacterController is NULL!");
             return;
         }
 
@@ -286,10 +269,7 @@ public class NetworkedAIOpponent : NetworkBehaviour
         );
 
         if (distance < waypointReachDistance)
-        {
-            Debug.Log($"[AI {opponentName}] Reached waypoint {currentWaypointIndex} (distance: {distance:F2})");
             currentWaypointIndex++;
-        }
     }
 
     private void ApplyGravity()
@@ -441,8 +421,6 @@ public class NetworkedAIOpponent : NetworkBehaviour
     public void TransitionToSegment(AISegment newSegment, Vector3 transitionPosition)
     {
         currentWaypointIndex = 0;
-        Debug.LogWarning($"[AI {opponentName}] TransitionToSegment called without a new path. " +
-                         $"Make sure SetWaypointPath() was called first, or use the overload with Transform[].");
         StartCoroutine(TransitionRoutine(newSegment, transitionPosition));
     }
 
@@ -471,16 +449,12 @@ public class NetworkedAIOpponent : NetworkBehaviour
     {
         waypointPath = newPath;
         currentWaypointIndex = 0;
-
-        if (IsServerInitialized)
-            Debug.Log($"[AI {opponentName}] Waypoints assigned: {newPath?.Length ?? 0}, index reset to 0");
     }
 
     [Server]
     public void StartRace()
     {
         raceStarted = true;
-        Debug.Log($"[AI {opponentName}] Race started!");
     }
 
     [Server]
@@ -524,7 +498,6 @@ public class NetworkedAIOpponent : NetworkBehaviour
             characterController.enabled = true;
         }
 
-        Debug.Log($"{opponentName}: Entered water, snapped to Y={transform.position.y}");
     }
 
     private void OnTriggerExit(Collider other)
@@ -551,7 +524,6 @@ public class NetworkedAIOpponent : NetworkBehaviour
         isFullyInWater = false;
 
         velocity = Vector3.zero;
-        Debug.Log($"{opponentName}: Exited water");
     }
 
     private void OnTriggerStay(Collider other)

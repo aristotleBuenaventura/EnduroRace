@@ -6,14 +6,36 @@ public class wallBumpMesh : MonoBehaviour
     public float tripStaminaCost = 10f;
     public float stunDuration = 1f;
     public float knockbackDistance = 0.5f;
+    
+    [Header("Debug")]
+    public bool enableDebugLogs = true;
+    private bool hasLoggedStay;
+
+    private void Awake()
+    {
+        if (!enableDebugLogs) return;
+
+        Collider ownCollider = GetComponent<Collider>();
+        Rigidbody ownRb = GetComponent<Rigidbody>();
+        Debug.Log($"[wallBumpMesh] Ready on {name} | layer={LayerMask.LayerToName(gameObject.layer)}({gameObject.layer}) | hasCollider={ownCollider != null} trigger={ownCollider != null && ownCollider.isTrigger} | hasRigidbody={ownRb != null}");
+    }
 
     private void OnTriggerEnter(Collider other)
     {
+        if (enableDebugLogs)
+        {
+            Debug.Log($"[wallBumpMesh] OnTriggerEnter on {name} with {other.name} | otherLayer={LayerMask.LayerToName(other.gameObject.layer)}({other.gameObject.layer})");
+        }
+
         PlayerController hitPlayer = other.GetComponentInParent<PlayerController>();
         CyclingController hitCyclist = other.GetComponentInParent<CyclingController>();
 
         if (hitPlayer == null && hitCyclist == null)
+        {
+            if (enableDebugLogs)
+                Debug.Log($"[wallBumpMesh] Ignored trigger: no PlayerController/CyclingController in parent hierarchy of {other.name}");
             return;
+        }
 
         NetworkPlayer netPlayer = other.GetComponentInParent<NetworkPlayer>();
 
@@ -32,7 +54,11 @@ public class wallBumpMesh : MonoBehaviour
         }
 
         if (!netPlayer.IsOwner || netPlayer.IsStunned.Value)
+        {
+            if (enableDebugLogs)
+                Debug.Log($"[wallBumpMesh] Ignored trigger: IsOwner={netPlayer.IsOwner}, IsStunned={netPlayer.IsStunned.Value}");
             return;
+        }
 
         bool cyclistActive = hitCyclist != null && hitCyclist.isActiveModel;
         bool playerActive = hitPlayer != null && hitPlayer.isActiveModel;
@@ -70,5 +96,12 @@ public class wallBumpMesh : MonoBehaviour
             hitPlayer.StartCoroutine(hitPlayer.StunPlayer(stunDuration));
         else if (useCyclist && hitCyclist != null)
             hitCyclist.StartCoroutine(hitCyclist.StunCyclist(stunDuration));
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        if (!enableDebugLogs || hasLoggedStay) return;
+        hasLoggedStay = true;
+        Debug.Log($"[wallBumpMesh] OnTriggerStay detected with {other.name}. Trigger system is active.");
     }
 }
