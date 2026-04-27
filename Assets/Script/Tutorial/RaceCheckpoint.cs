@@ -14,17 +14,14 @@ public class RaceCheckpoint : MonoBehaviour
         
         if (rankingSystem == null)
         {
-            Debug.LogError($"Checkpoint {checkpointIndex}: RaceRankingSystem not found in scene!");
         }
     }
     
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log($"🎯 Checkpoint {checkpointIndex} triggered by: {other.name}");
         
         if (rankingSystem == null) 
         {
-            Debug.LogError($"❌ No RankingSystem found!");
             return;
         }
         
@@ -48,7 +45,6 @@ public class RaceCheckpoint : MonoBehaviour
         if (isPlayer)
         {
             rankingSystem.OnCheckpointPassed(racerTransform, checkpointIndex);
-            Debug.Log($"✅ PLAYER (via {other.name}) passed checkpoint {checkpointIndex}");
             
             // ADD THIS: Notify wrong way detector
             if (wrongWayDetector != null)
@@ -73,11 +69,9 @@ public class RaceCheckpoint : MonoBehaviour
         if (ai != null)
         {
             rankingSystem.OnCheckpointPassed(racerTransform, checkpointIndex);
-            Debug.Log($"✅ AI {ai.opponentName} (via {other.name}) passed checkpoint {checkpointIndex}");
         }
         else
         {
-            Debug.LogWarning($"⚠️ {other.name} hit checkpoint but no Player tag or AIOpponentController found");
         }
     }
 }

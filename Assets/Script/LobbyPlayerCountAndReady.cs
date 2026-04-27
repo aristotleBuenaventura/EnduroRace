@@ -34,7 +34,6 @@ public class LobbyPlayerCountAndReady : MonoBehaviour
     {
         if (string.IsNullOrEmpty(lobbyId))
         {
-            Debug.LogError("Lobby ID is null! Cannot listen for players.");
             return;
         }
 

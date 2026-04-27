@@ -48,11 +48,9 @@ public class ParentFollowsChild : NetworkBehaviour
             if (controllers.Length > 0)
             {
                 childToFollow = controllers[0].transform;
-                Debug.Log($"[ParentFollowsChild] Auto-assigned child: {childToFollow.name}");
             }
             else
             {
-                Debug.LogError("[ParentFollowsChild] No child with CharacterController found!");
                 enabled = false;
                 return;
             }
@@ -60,7 +58,6 @@ public class ParentFollowsChild : NetworkBehaviour
         
         if (childToFollow.parent != transform)
         {
-            Debug.LogWarning($"[ParentFollowsChild] Child '{childToFollow.name}' is not a direct child of '{name}'!");
         }
         
         // Store initial positions
@@ -69,7 +66,6 @@ public class ParentFollowsChild : NetworkBehaviour
         
         initialized = true;
         
-        Debug.Log($"[ParentFollowsChild] Initialized - Parent '{name}' will follow child '{childToFollow.name}'");
     }
 
     private void LateUpdate()
@@ -103,7 +99,6 @@ public class ParentFollowsChild : NetworkBehaviour
             if (showDebugLogs)
             {
                 Vector3 delta = currentChildPos - lastChildPosition;
-                Debug.Log($"[ParentFollowsChild] Child moved {delta.magnitude:F3} units, parent synced to {targetPosition}");
             }
             
             lastChildPosition = currentChildPos;
@@ -124,7 +119,6 @@ public class ParentFollowsChild : NetworkBehaviour
             
             if (showDebugLogs)
             {
-                Debug.Log($"[ParentFollowsChild] Child rotated, parent synced to {currentChildRot.eulerAngles}");
             }
             
             lastChildRotation = currentChildRot;
@@ -146,7 +140,6 @@ public class ParentFollowsChild : NetworkBehaviour
         lastChildPosition = childToFollow.position;
         lastChildRotation = childToFollow.rotation;
         
-        Debug.Log("[ParentFollowsChild] Force synced parent to child");
     }
 
     // ✅ Switch which child to follow (for Runner <-> Cyclist switching)
@@ -154,7 +147,6 @@ public class ParentFollowsChild : NetworkBehaviour
     {
         if (newChild == null)
         {
-            Debug.LogError("[ParentFollowsChild] Cannot set null child!");
             return;
         }
         
@@ -165,7 +157,6 @@ public class ParentFollowsChild : NetworkBehaviour
         // Immediately sync to new child
         ForceSync();
         
-        Debug.Log($"[ParentFollowsChild] Now following: {childToFollow.name}");
     }
 
     private void OnDrawGizmosSelected()

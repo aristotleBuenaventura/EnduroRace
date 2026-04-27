@@ -150,7 +150,6 @@ public class MultiplayerRaceRanking : NetworkBehaviour
                 if (np.IsOwner)
                 {
                     _cachedLocalOwnerId = np.OwnerId;
-                    Debug.Log($"[Client] Cached local OwnerId: {_cachedLocalOwnerId}");
                     yield break;
                 }
             }
@@ -159,7 +158,6 @@ public class MultiplayerRaceRanking : NetworkBehaviour
             yield return new WaitForSeconds(0.2f);
         }
 
-        Debug.LogWarning("[Client] Could not find local NetworkPlayer after timeout.");
     }
 
     private void LateUpdate()
@@ -204,9 +202,7 @@ public class MultiplayerRaceRanking : NetworkBehaviour
         }
 
         if (tracker == null)
-            Debug.LogWarning("[Server] RacePlayerTracker not found after timeout — names will use OwnerId fallback.");
         else if (!tracker.IsDataReady())
-            Debug.LogWarning("[Server] RacePlayerTracker not ready after timeout — names may be inaccurate.");
 
         InitializeRacers();
     }
@@ -215,10 +211,8 @@ public class MultiplayerRaceRanking : NetworkBehaviour
     private void InitializeRacers()
     {
         racers.Clear();
-        Debug.Log("=== MultiplayerRaceRanking: InitializeRacers (SERVER) ===");
 
         NetworkPlayer[] allPlayers = FindObjectsByType<NetworkPlayer>(FindObjectsSortMode.None);
-        Debug.Log($"Found {allPlayers.Length} network players");
 
         RacePlayerTracker tracker = FindFirstObjectByType<RacePlayerTracker>();
 
@@ -229,7 +223,6 @@ public class MultiplayerRaceRanking : NetworkBehaviour
         }
         else
         {
-            Debug.LogError("[Server] RacePlayerTracker NOT FOUND — all players will use fallback names!");
         }
 
         foreach (var netPlayer in allPlayers)
@@ -246,7 +239,6 @@ public class MultiplayerRaceRanking : NetworkBehaviour
                 if (pd != null && !string.IsNullOrEmpty(pd.displayName))
                     playerName = pd.displayName;
                 else
-                    Debug.LogWarning($"[Server] No tracker data for OwnerId {netPlayer.OwnerId} — using fallback name '{playerName}'");
             }
 
             Vector3 startPos = netPlayer.transform.position;
@@ -264,7 +256,6 @@ public class MultiplayerRaceRanking : NetworkBehaviour
                 segmentLength   = firstSegLen,
             });
 
-            Debug.Log($"Added player: {playerName} (OwnerId {netPlayer.OwnerId})");
         }
 
         if (aiManager != null)
@@ -297,14 +288,12 @@ public class MultiplayerRaceRanking : NetworkBehaviour
                                 segmentStartPos = aiStartPos,
                                 segmentLength   = aiSegLen,
                             });
-                            Debug.Log($"Added AI: {aiName}");
                         }
                     }
                 }
             }
         }
 
-        Debug.Log($"Total racers: {racers.Count}");
         SortAndBroadcast();
     }
 
@@ -422,7 +411,6 @@ public class MultiplayerRaceRanking : NetworkBehaviour
 
         if (racer == null)
         {
-            Debug.LogError($"[Server] Checkpoint {checkpointIndex} — OwnerId {ownerId} NOT FOUND in rankings!");
             return;
         }
 
@@ -465,14 +453,12 @@ public class MultiplayerRaceRanking : NetworkBehaviour
                     segmentLength   = aiSegLen,
                 };
                 racers.Add(racer);
-                Debug.Log($"[Server] Added missing AI on checkpoint: {ai.opponentName}");
             }
         }
 
         if (racer != null)
             ServerUpdateCheckpoint(racer, checkpointIndex);
         else
-            Debug.LogError($"[Server] AI checkpoint {checkpointIndex} — transform not found and could not be added!");
     }
 
     // -------------------------------------------------------------------------
@@ -484,7 +470,6 @@ public class MultiplayerRaceRanking : NetworkBehaviour
     {
         if (checkpointIndex < racer.checkpointsPassed)
         {
-            Debug.LogWarning($"[Server] {racer.name} sent stale checkpoint {checkpointIndex} (already at {racer.checkpointsPassed})");
             return;
         }
 
@@ -504,11 +489,9 @@ public class MultiplayerRaceRanking : NetworkBehaviour
         }
         else
         {
-            Debug.LogWarning($"[Server] {racer.name} has null transform at checkpoint {checkpointIndex} — segment not updated.");
         }
 
         string tag = racer.type == RacerType.NetworkPlayer ? "PLAYER" : "AI";
-        Debug.Log($"[Server][{tag}] {racer.name} passed CP {checkpointIndex} → {racer.checkpointsPassed}/{checkpoints?.Length}");
 
         SortAndBroadcast();
     }

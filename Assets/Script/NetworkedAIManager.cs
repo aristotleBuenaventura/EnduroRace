@@ -48,7 +48,6 @@ public class NetworkedAIManager : NetworkBehaviour
     public override void OnStartServer()
     {
         base.OnStartServer();
-        Debug.Log("[NetworkedAIManager] Server started - ready to spawn AI");
     }
 
     private void Update()
@@ -68,18 +67,15 @@ public class NetworkedAIManager : NetworkBehaviour
             {
                 if (currentSeg == NetworkedAIOpponent.AISegment.Swim)
                 {
-                    Debug.Log($"[AIManager] {opponent.opponentName} finished swim → transitioning to bike");
                     TransitionOpponent(opponent, NetworkedAIOpponent.AISegment.Bike);
                 }
                 else if (currentSeg == NetworkedAIOpponent.AISegment.Bike)
                 {
-                    Debug.Log($"[AIManager] {opponent.opponentName} finished bike → transitioning to run");
                     TransitionOpponent(opponent, NetworkedAIOpponent.AISegment.Run);
                 }
                 else if (currentSeg == NetworkedAIOpponent.AISegment.Run)
                 {
                     // AI finished the race — mark done so we stop checking
-                    Debug.Log($"[AIManager] {opponent.opponentName} finished race!");
                     aiSegments[opponent] = (NetworkedAIOpponent.AISegment)99; // sentinel: finished
                 }
             }
@@ -109,14 +105,12 @@ public class NetworkedAIManager : NetworkBehaviour
 
         if (newPath == null || newPath.Length == 0)
         {
-            Debug.LogError($"[AIManager] No valid path for {opponent.opponentName} segment {newSegment}!");
             return;
         }
 
         // Update tracked segment BEFORE calling transition so Update() doesn't re-trigger
         aiSegments[opponent] = newSegment;
 
-        Debug.Log($"[AIManager] {opponent.opponentName} → {newSegment} with {newPath.Length} waypoints");
 
         // FIX: Use the overload that takes the path so index resets correctly
         opponent.TransitionToSegment(newSegment, transitionPos, newPath);
@@ -125,11 +119,9 @@ public class NetworkedAIManager : NetworkBehaviour
     [Server]
     public void SpawnOpponents()
     {
-        Debug.Log("=== NetworkedAIManager: SpawnOpponents called ===");
 
         if (aiOpponentPrefab == null && aiOpponentPrefab1 == null)
         {
-            Debug.LogError("Cannot spawn AI: both prefabs are NULL!");
             return;
         }
 
@@ -140,18 +132,15 @@ public class NetworkedAIManager : NetworkBehaviour
             if (sp != null)
             {
                 reserved.Add(sp);
-                Debug.Log($"[NetworkedAIManager] Pre-reserved spawn point: {sp.name}");
             }
             else
             {
-                Debug.LogError($"[NetworkedAIManager] Could not reserve spawn point for AI {i}!");
             }
         }
 
         for (int i = 0; i < reserved.Count; i++)
             SpawnOpponent(i, reserved[i]);
 
-        Debug.Log($"=== Spawn complete. Active opponents: {activeOpponents.Count} ===");
     }
 
     [Server]
@@ -175,14 +164,12 @@ public class NetworkedAIManager : NetworkBehaviour
 
         if (selectedPrefab == null)
         {
-            Debug.LogError("Selected AI prefab is NULL!");
             spawnPoint.Release();
             return;
         }
 
         if (spawnPoint == null)
         {
-            Debug.LogError("No spawn point for AI!");
             return;
         }
 
@@ -192,7 +179,6 @@ public class NetworkedAIManager : NetworkBehaviour
         NetworkedAIOpponent ai = aiGO.GetComponent<NetworkedAIOpponent>();
         if (ai == null)
         {
-            Debug.LogError("NetworkedAIOpponent component not found on prefab!");
             Destroy(aiGO);
             spawnPoint.Release();
             return;
@@ -213,18 +199,15 @@ public class NetworkedAIManager : NetworkBehaviour
         if (chosenSwimPath != null && chosenSwimPath.Length > 0)
         {
             ai.SetWaypointPath(chosenSwimPath);
-            Debug.Log($"✓ Assigned {chosenSwimPath.Length} swim waypoints to {ai.opponentName}");
         }
         else
         {
-            Debug.LogError($"✗ Could not get swim path for {ai.opponentName}!");
         }
 
         // Track starting segment
         aiSegments[ai] = NetworkedAIOpponent.AISegment.Swim;
 
         activeOpponents.Add(ai);
-        Debug.Log($"✓ Spawned {ai.opponentName} at {spawnPoint.name} (Speed: {ai.baseSpeed:F1})");
     }
 
     private Transform[] GetRandomFromList(List<Transform[]> paths)
@@ -238,7 +221,6 @@ public class NetworkedAIManager : NetworkBehaviour
 
         if (validPaths.Count == 0)
         {
-            Debug.LogWarning("No valid paths found!");
             return null;
         }
 
@@ -259,7 +241,6 @@ public class NetworkedAIManager : NetworkBehaviour
             if (opponent != null)
                 opponent.StartRace();
         }
-        Debug.Log($"[NetworkedAIManager] Started race for {activeOpponents.Count} AI opponents");
     }
 
     [Server]
@@ -270,7 +251,6 @@ public class NetworkedAIManager : NetworkBehaviour
             if (opponent != null)
                 opponent.StopRace();
         }
-        Debug.Log($"[NetworkedAIManager] Stopped race for all AI");
     }
 
     [Server]
@@ -293,6 +273,5 @@ public class NetworkedAIManager : NetworkBehaviour
         activeOpponents.Clear();
         usedSpawnPoints.Clear();
         aiSegments.Clear();
-        Debug.Log("All AI opponents removed");
     }
 }

@@ -138,7 +138,6 @@ public class PodiumManager : NetworkBehaviour
     {
         finalPlacement = placement;
         finalRaceTime  = raceTime;
-        Debug.Log($"[PodiumManager] My result received — placement: {placement}, time: {FormatTime(raceTime)}");
     }
 
     // ─────────────────────────────────────────────
@@ -240,7 +239,6 @@ public class PodiumManager : NetworkBehaviour
                     if (matched != null)
                         PositionAIOnPodium(matched, podiumPositions[podiumSlot], podiumSlot + 1);
                     else
-                        Debug.LogWarning($"[PodiumManager] AI '{snap.name}' not found on this client");
                 }
                 else
                 {
@@ -357,7 +355,6 @@ public class PodiumManager : NetworkBehaviour
         }
         else
         {
-            Debug.LogWarning($"[PodiumManager] No Animator found on {root.name}!");
         }
 
         StartCoroutine(LockPodiumPosition(root, podiumPoint.position, podiumPoint.rotation));
@@ -425,11 +422,9 @@ public class PodiumManager : NetworkBehaviour
             animator.applyRootMotion = false;
             string trigger = rank == 1 ? "Victory" : "Clap";
             animator.SetTrigger(trigger);
-            Debug.Log($"[PodiumManager] AI '{ai.opponentName}' → rank {rank} → trigger '{trigger}'");
         }
         else
         {
-            Debug.LogWarning($"[PodiumManager] No Animator found on AI '{ai.opponentName}'");
         }
 
         StartCoroutine(LockPodiumPosition(aiRoot, podiumPoint.position, podiumPoint.rotation));
@@ -460,7 +455,6 @@ public class PodiumManager : NetworkBehaviour
     {
         if (leaderboardPanel == null || leaderboardContainer == null || leaderboardEntryPrefab == null)
         {
-            Debug.LogWarning("[PodiumManager] Leaderboard references not assigned — skipping.");
             yield break;
         }
 
@@ -617,9 +611,7 @@ public class PodiumManager : NetworkBehaviour
             .ContinueWithOnMainThread(task =>
             {
                 if (task.IsFaulted)
-                    Debug.LogError("[PodiumManager] Failed to update player data: " + task.Exception);
                 else
-                    Debug.Log($"[PodiumManager] Updated — Points: {newPoints}, Tier: {newTier}");
                 done = true;
             });
 

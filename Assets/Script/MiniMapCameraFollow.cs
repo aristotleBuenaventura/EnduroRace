@@ -12,14 +12,12 @@ public class MiniMapCameraFollow : MonoBehaviour
     public void SetTarget(Transform newTarget)
     {
         target = newTarget;
-        Debug.Log($"[MiniMapCameraFollow] SetTarget called — target={newTarget?.name ?? "NULL"}");
     }
 
     private void LateUpdate()
     {
         if (target == null)
         {
-            Debug.LogWarning("[MiniMapCameraFollow] LateUpdate — target is NULL, not moving");
             return;
         }
 

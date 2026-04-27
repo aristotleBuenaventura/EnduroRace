@@ -291,7 +291,6 @@ public class PlayerControllerTutorial : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("CinemachineImpulseSource is not assigned! Add it to the Player GameObject.");
         }
     }
 
@@ -411,7 +410,6 @@ public class PlayerControllerTutorial : MonoBehaviour
 
     private void ReduceStamina(float amount)
     {   
-        Debug.Log("Stamina reduced by: " + amount);
         currentStamina -= amount;
         if (currentStamina < 0f)
             currentStamina = 0f;

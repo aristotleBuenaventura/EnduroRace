@@ -281,7 +281,6 @@ public class CyclingControllerTutorial : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("CinemachineImpulseSource is not assigned! Add it to the Bike/Cyclist GameObject.");
         }
     }
 

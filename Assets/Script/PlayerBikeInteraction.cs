@@ -46,35 +46,28 @@ public class PlayerBikeInteraction : NetworkBehaviour
 
         if (segmentSwitcher?.playerInput == null)
         {
-            Debug.LogWarning("[PlayerBikeInteraction] PlayerInput not found!");
             return;
         }
 
         var currentMap = segmentSwitcher.playerInput.currentActionMap;
-        Debug.Log($"[PlayerBikeInteraction] RebindInteract - currentMap={currentMap?.name ?? "NULL"}");
 
         if (currentMap == null)
         {
-            Debug.LogWarning("[PlayerBikeInteraction] No active action map found!");
             return;
         }
 
         interactAction = currentMap.FindAction("Interact");
-        Debug.Log($"[PlayerBikeInteraction] interactAction={interactAction?.name ?? "NULL"} enabled={interactAction?.enabled}");
 
         if (interactAction == null)
         {
-            Debug.LogWarning($"[PlayerBikeInteraction] Interact not found in map: {currentMap.name}");
             return;
         }
 
         interactAction.performed += OnInteract;
-        Debug.Log($"[PlayerBikeInteraction] Bound Interact from map: {currentMap.name}");
     }
 
     private void OnInteract(InputAction.CallbackContext ctx)
     {
-        Debug.Log($"[PlayerBikeInteraction] OnInteract fired - runnerActive={segmentSwitcher.runnerModel.activeSelf}, cyclistActive={segmentSwitcher.cyclistModel.activeSelf}");
         if (!segmentSwitcher || !IsOwner) return;
 
         // =============================
@@ -84,7 +77,6 @@ public class PlayerBikeInteraction : NetworkBehaviour
         {
             if (raceManager != null && myCurrentSegment != RaceManager.Segment.Swim)
             {
-                Debug.Log("[PlayerBikeInteraction] Mount not allowed - not in Swim segment.");
                 return;
             }
 
@@ -109,26 +101,22 @@ public class PlayerBikeInteraction : NetworkBehaviour
 
             if (closestBike == null)
             {
-                Debug.Log("[PlayerBikeInteraction] No bike found in scene.");
                 return;
             }
 
             if (closestDist > closestBike.triggerRadius)
             {
-                Debug.Log($"[PlayerBikeInteraction] Too far from bike ({closestDist:F1}m)");
                 return;
             }
 
             if (!closestBike.isPlayerNearby)
             {
-                Debug.Log("[PlayerBikeInteraction] Not in bike trigger area.");
                 return;
             }
 
             Vector3 mountPos = closestBike.mountPoint.position;
             Quaternion mountRot = closestBike.mountPoint.rotation;
 
-            Debug.Log("[PlayerBikeInteraction] Mounting bike");
             segmentSwitcher.SwitchToCyclist(closestBike.gameObject, mountPos, mountRot);
 
             if (raceManager != null)
@@ -174,18 +162,15 @@ public class PlayerBikeInteraction : NetworkBehaviour
 
             if (closestDismount == null || closestDist > closestDismount.triggerRadius)
             {
-                Debug.Log("[PlayerBikeInteraction] No dismount trigger nearby!");
                 return;
             }
 
             if (raceManager != null && myCurrentSegment != RaceManager.Segment.Bike)
             {
-                Debug.Log("[PlayerBikeInteraction] Dismount not allowed - not in Bike segment.");
                 return;
             }
 
             closestDismount.GetDismountTransform(out Vector3 pos, out Quaternion rot);
-            Debug.Log("[PlayerBikeInteraction] Dismounting bike");
             segmentSwitcher.SwitchToRunner(pos, rot);
 
             if (raceManager != null)

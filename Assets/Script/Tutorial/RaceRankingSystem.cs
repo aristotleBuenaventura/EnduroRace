@@ -84,7 +84,6 @@ public class RaceRankingSystem : MonoBehaviour
     {
         racers.Clear();
         
-        Debug.Log("=== InitializeRacers called ===");
         
         if (playerTransform != null)
         {
@@ -97,13 +96,11 @@ public class RaceRankingSystem : MonoBehaviour
                 segmentLength = 0f
             };
             racers.Add(playerData);
-            Debug.Log($"✓ Added PLAYER - Transform: {playerTransform.name}");
         }
         
         if (aiManager != null)
         {
             var opponents = aiManager.GetActiveOpponents();
-            Debug.Log($"AI Manager found. Active opponents: {opponents.Count}");
             
             foreach (var ai in opponents)
             {
@@ -118,12 +115,10 @@ public class RaceRankingSystem : MonoBehaviour
                         segmentLength = 0f
                     };
                     racers.Add(aiData);
-                    Debug.Log($"✓ Added AI: {ai.opponentName}");
                 }
             }
         }
         
-        Debug.Log($"=== Total racers initialized: {racers.Count} ===");
     }
     
     private void UpdateRankings()
@@ -347,7 +342,6 @@ public class RaceRankingSystem : MonoBehaviour
         
         if (racer == null)
         {
-            Debug.LogError($"❌ Checkpoint {checkpointIndex} - Racer {racerTransform.name} NOT FOUND!");
             return;
         }
         
@@ -367,7 +361,6 @@ public class RaceRankingSystem : MonoBehaviour
                 );
             }
             
-            Debug.Log($"✅ {racer.name} CP {checkpointIndex} → {racer.checkpointsPassed}/{checkpoints.Length}");
         }
     }
 

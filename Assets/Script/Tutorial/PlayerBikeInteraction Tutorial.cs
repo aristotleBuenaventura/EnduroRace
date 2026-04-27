@@ -41,14 +41,12 @@ public class PlayerBikeInteractionTutorial : MonoBehaviour
 
         if (currentInput == null)
         {
-            Debug.LogError("No active PlayerInput found");
             return;
         }
 
         interactAction = currentInput.actions["Interact"];
         interactAction.performed += OnInteract;
 
-        Debug.Log("Interact rebound to: " + currentInput.gameObject.name);
     }
 
     private void UnbindInput()
@@ -61,33 +59,23 @@ public class PlayerBikeInteractionTutorial : MonoBehaviour
     {   
         if (playerState == null)
         {
-            Debug.LogError("PlayerBikeInteraction: playerState is NULL");
             return;
         }
 
         if (segmentSwitcher == null)
         {
-            Debug.LogError("PlayerBikeInteraction: segmentSwitcher is NULL");
             return;
         }
         
-        Debug.Log(
-            $"E pressed! isCycling={playerState.isCycling}, " +
-            $"currentBikeStand={(playerState.currentBikeStand ? playerState.currentBikeStand.name : "null")}, " +
-            $"canDismountBike={playerState.canDismountBike}"
-        );
-
         if (!segmentSwitcher.runnerInput.enabled &&
         !segmentSwitcher.cyclistInput.enabled)
         {
-            Debug.Log("Interact blocked during tutorial");
             return;
         }
 
         // ---------- DISMOUNT ----------
         if (playerState.isCycling && playerState.canDismountBike && playerState.currentBikeStand != null)
         {
-            Debug.Log("Dismount logic running");
 
             BikeStandTutorial stand = playerState.currentBikeStand;
 
@@ -114,7 +102,6 @@ public class PlayerBikeInteractionTutorial : MonoBehaviour
         // ---------- MOUNT ----------
         if (!playerState.isCycling && playerState.canMountBike && playerState.currentBike != null)
         {
-            Debug.Log("Mount logic running");
 
             playerState.isCycling = true;
 

@@ -91,13 +91,11 @@ public class Obstacle : MonoBehaviour
         {
             if (Time.time < playerCooldowns[playerID])
             {
-                Debug.Log($"[Obstacle] {type} on cooldown for player, ignoring");
                 return;
             }
         }
 
         if (player != null)
-            Debug.Log($"[Obstacle] LOCAL player entered {type} at {player.transform.position}");
 
         switch (type)
         {
@@ -149,7 +147,6 @@ public class Obstacle : MonoBehaviour
         float cooldownTime = customCooldown > 0 ? customCooldown : triggerCooldown;
         playerCooldowns[playerID] = Time.time + cooldownTime;
         
-        Debug.Log($"[Obstacle] {type} cooldown set for {cooldownTime}s");
     }
 
      private void OnTriggerExit(Collider other)
@@ -167,7 +164,6 @@ public class Obstacle : MonoBehaviour
             // and clears isBeingSucked, so the player is never left frozen
             // after physically leaving the trigger volume.
             player.ExitWhirlpool();
-            Debug.Log("[Obstacle] Whirlpool trigger exited — ExitWhirlpool called");
         }
     }
  
@@ -182,14 +178,12 @@ public class Obstacle : MonoBehaviour
             
         if (netPlayer == null)
         {
-            Debug.LogError("[Obstacle] NetworkPlayer not found on player or parent!");
             return;
         }
 
         if (netPlayer.IsInWater.Value) return;
 
         NotifyTracker(player, true);
-        Debug.Log("[Obstacle] Log hit - calling ServerTrip");
         netPlayer.ServerTrip(tripDuration);
     }
 
@@ -201,14 +195,12 @@ public class Obstacle : MonoBehaviour
             
         if (netPlayer == null)
         {
-            Debug.LogError("[Obstacle] NetworkPlayer not found on player or parent!");
             return;
         }
 
         if (netPlayer.IsInWater.Value) return;
 
         NotifyTracker(player, true);
-        Debug.Log($"[Obstacle] Mud entered - multiplier {slowMultiplier}");
         player.EnterMud(slowMultiplier);
         player.mudStaminaDrainRate = mudStaminaDrainRate;
     }
@@ -221,14 +213,12 @@ public class Obstacle : MonoBehaviour
             
         if (netPlayer == null)
         {
-            Debug.LogError("[Obstacle] NetworkPlayer not found on player or parent!");
             return;
         }
 
         // Only affect players in water
         if (!netPlayer.IsInWater.Value) return;
 
-        Debug.Log("[Obstacle] Buoy hit - stunning player");
 
         NotifyTracker(player, true);
         // Deduct stamina
@@ -254,14 +244,12 @@ public class Obstacle : MonoBehaviour
             
         if (netPlayer == null)
         {
-            Debug.LogError("[Obstacle] NetworkPlayer not found on player or parent!");
             return;
         }
 
         // Only affect players in water
         if (!netPlayer.IsInWater.Value) return;
 
-        Debug.Log("[Obstacle] Whirlpool entered");
 
         NotifyTracker(player, true);
         player.EnterWhirlpool(
@@ -277,7 +265,6 @@ public class Obstacle : MonoBehaviour
 
     private void HandleSpeedBump(CyclingController cyclist)
     {
-        Debug.Log("[Obstacle] SpeedBump hit");
         NotifyTrackerCyclist(cyclist, true);
         if (cyclist.animator != null)
             cyclist.animator.SetTrigger("HitSpeedBump");
@@ -291,7 +278,6 @@ public class Obstacle : MonoBehaviour
 
     private void HandlePothole(CyclingController cyclist)
     {
-        Debug.Log("[Obstacle] Pothole hit");
         NotifyTrackerCyclist(cyclist, true);
         cyclist.StartCoroutine(cyclist.PotholeStumble(
             duration: stumbleDuration,

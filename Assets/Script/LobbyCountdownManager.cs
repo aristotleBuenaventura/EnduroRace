@@ -99,11 +99,9 @@ public class LobbyCountdownManager : MonoBehaviour
                 countdownRunning = false;
 
                 LobbyManager lobby = FindFirstObjectByType<LobbyManager>();
-                Debug.Log($"[LobbyCountdown] Countdown finished. IsHost={lobby?.IsHost}");
 
                 if (lobby.IsHost)
                 {
-                    Debug.Log("[LobbyCountdown] Getting player count...");
 
                     var playersTask = db.Collection("lobbies")
                         .Document(lobbyId)
@@ -116,14 +114,12 @@ public class LobbyCountdownManager : MonoBehaviour
                         ? 8
                         : playersTask.Result.Documents.Count();
 
-                    Debug.Log($"[LobbyCountdown] Player count: {playerCount}");
 
                     bool relayCreated = false;
                     bool relayDone = false;
 
                     if (EdgegapRelayManager.Instance != null)
                     {
-                        Debug.Log("[LobbyCountdown] Calling CreateRelaySession...");
 
                         EdgegapRelayManager.Instance.CreateRelaySession(
                             lobbyId,
@@ -132,7 +128,6 @@ public class LobbyCountdownManager : MonoBehaviour
                             {
                                 relayCreated = success;
                                 relayDone = true;
-                                Debug.Log($"[LobbyCountdown] Relay session result: {success}");
                             }
                         );
 
@@ -144,11 +139,9 @@ public class LobbyCountdownManager : MonoBehaviour
                         }
 
                         if (!relayCreated)
-                            Debug.LogWarning("[LobbyCountdown] Relay failed!");
                     }
                     else
                     {
-                        Debug.LogError("[LobbyCountdown] EdgegapRelayManager.Instance is NULL!");
                     }
 
                     // Wait before telling clients to load so host has time to start server
@@ -169,7 +162,6 @@ public class LobbyCountdownManager : MonoBehaviour
 
     private IEnumerator CollectPlayersAndLoadScene()
     {
-        Debug.Log("[LobbyCountdown] Collecting player data...");
 
         // Get lobby document for relay data
         var lobbyTask = db.Collection("lobbies")
@@ -206,7 +198,6 @@ public class LobbyCountdownManager : MonoBehaviour
                 : 0u;
 
             bool isHost = FindFirstObjectByType<LobbyManager>()?.IsHost ?? false;
-            Debug.Log($"[LobbyCountdown] Relay - Host: {relayHost}, ServerPort: {relayServerPort}, ClientPort: {relayClientPort}, SessionToken: {relaySessionToken}, UserToken: {relayUserToken}, IsHost: {isHost}");
         }
 
         // Get all players
@@ -219,7 +210,6 @@ public class LobbyCountdownManager : MonoBehaviour
 
         if (playersTask.IsFaulted)
         {
-            Debug.LogError("[LobbyCountdown] Failed to get players: " + playersTask.Exception);
             yield break;
         }
 
@@ -243,7 +233,6 @@ public class LobbyCountdownManager : MonoBehaviour
             };
 
             playerDataList.Add(playerData);
-            Debug.Log($"[LobbyCountdown] Collected: {playerData.displayName} | Model: {playerData.selectedModel} | Local: {playerData.isLocalPlayer}");
         }
 
         if (LobbyDataTransfer.Instance == null)
@@ -263,13 +252,11 @@ public class LobbyCountdownManager : MonoBehaviour
         bool amHost = FindFirstObjectByType<LobbyManager>()?.IsHost ?? false;
         if (!amHost)
         {
-            Debug.Log("[LobbyCountdown] Client waiting for host to start server...");
             yield return new WaitForSeconds(5f);
         }
 
         lobbyListener?.Stop();
 
-        Debug.Log("[LobbyCountdown] Loading RaceScene...");
         string tier = LobbyDataTransfer.Instance?.GetLocalPlayerData()?.tier ?? "Beginner";
         string sceneName = tier switch
         {

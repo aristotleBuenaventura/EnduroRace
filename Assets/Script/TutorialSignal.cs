@@ -8,7 +8,6 @@ public static class TutorialSignal
 
     public static void Dispatch(int step)
     {
-        Debug.Log($"[TutorialSignal] Dispatched step={step}");
         OnTutorialReady?.Invoke(step);
     }
 

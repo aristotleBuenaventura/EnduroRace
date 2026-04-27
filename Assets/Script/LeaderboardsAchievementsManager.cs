@@ -150,7 +150,6 @@ public class LeaderboardsAchievementsManager : MonoBehaviour
         {
             if (task.IsFaulted)
             {
-                Debug.LogError("[Leaderboard] Failed: " + task.Exception);
                 return;
             }
 

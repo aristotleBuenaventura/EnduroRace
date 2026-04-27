@@ -25,7 +25,6 @@ public class LobbyTierDisplay : MonoBehaviour
 
         string lobbyId = lobby.GetLobbyId();
 
-        Debug.Log($"[LobbyTierDisplay] Fetching tier for lobby: {lobbyId}");
 
         db.Collection("lobbies")
             .Document(lobbyId)
@@ -34,13 +33,11 @@ public class LobbyTierDisplay : MonoBehaviour
             {
                 if (task.IsFaulted)
                 {
-                    Debug.LogError($"[LobbyTierDisplay] Failed to get lobby: {task.Exception}");
                     return;
                 }
 
                 if (!task.Result.Exists)
                 {
-                    Debug.LogWarning("[LobbyTierDisplay] Lobby doesn't exist!");
                     return;
                 }
 
@@ -51,7 +48,6 @@ public class LobbyTierDisplay : MonoBehaviour
                 }
                 else
                 {
-                    Debug.LogWarning("[LobbyTierDisplay] Lobby has no tier field!");
                 }
             });
     }
@@ -60,7 +56,6 @@ public class LobbyTierDisplay : MonoBehaviour
     {
         if (tierBadgeImage == null)
         {
-            Debug.LogWarning("[LobbyTierDisplay] tierBadgeImage is not assigned!");
             return;
         }
 
@@ -77,8 +72,6 @@ public class LobbyTierDisplay : MonoBehaviour
         if (badge != null)
             tierBadgeImage.sprite = badge;
         else
-            Debug.LogWarning($"[LobbyTierDisplay] Badge sprite not found at: Resources/{spritePath}");
 
-        Debug.Log($"[LobbyTierDisplay] Badge set for tier: {tier}");
     }
 }

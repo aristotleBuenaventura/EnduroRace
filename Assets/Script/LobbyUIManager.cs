@@ -51,7 +51,6 @@ public class LobbyUIManager : MonoBehaviour
             {
                 // Use LINQ Count() instead of casting
                 int playerCount = snapshot.Documents.Count();
-                Debug.Log($"Player snapshot update: {playerCount} players found.");
 
                 HashSet<string> currentIds = new HashSet<string>();
 
@@ -90,7 +89,6 @@ public class LobbyUIManager : MonoBehaviour
             slots.Add(doc.Id, newSlot);
             UpdateSlotVisual(newSlot, doc);
 
-            Debug.Log($"Created slot for player {doc.Id}");
         }
     }
 
@@ -100,7 +98,6 @@ public class LobbyUIManager : MonoBehaviour
         {
             if (slot) Destroy(slot);
             slots.Remove(playerId);
-            Debug.Log($"Removed slot for player {playerId}");
         }
     }
 
