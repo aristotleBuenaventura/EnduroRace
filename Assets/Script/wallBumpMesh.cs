@@ -6,102 +6,68 @@ public class wallBumpMesh : MonoBehaviour
     public float tripStaminaCost = 10f;
     public float stunDuration = 1f;
     public float knockbackDistance = 0.5f;
-    
-    [Header("Debug")]
-    public bool enableDebugLogs = true;
-    private bool hasLoggedStay;
-
-    private void Awake()
-    {
-        if (!enableDebugLogs) return;
-
-        Collider ownCollider = GetComponent<Collider>();
-        Rigidbody ownRb = GetComponent<Rigidbody>();
-        ;
-    }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (enableDebugLogs)
-        {
-            ;
-        }
+        HandleWallHit(other);
+    }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision == null) return;
+        HandleWallHit(collision.collider);
+    }
+
+    private void HandleWallHit(Collider other)
+    {
         PlayerController hitPlayer = other.GetComponentInParent<PlayerController>();
         CyclingController hitCyclist = other.GetComponentInParent<CyclingController>();
+        if (hitPlayer == null && hitCyclist == null) return;
 
-        if (hitPlayer == null && hitCyclist == null)
-        {
-            if (enableDebugLogs)
-                ;
-            return;
-        }
-
-        NetworkPlayer netPlayer = other.GetComponentInParent<NetworkPlayer>();
-
-        if (netPlayer == null)
-        {
-            if (hitPlayer != null)
-                netPlayer = hitPlayer.GetComponentInParent<NetworkPlayer>();
-            else if (hitCyclist != null)
-                netPlayer = hitCyclist.GetComponentInParent<NetworkPlayer>();
-        }
-
-        if (netPlayer == null)
-        {
-            ;
-            return;
-        }
-
-        if (!netPlayer.IsOwner || netPlayer.IsStunned.Value)
-        {
-            if (enableDebugLogs)
-                ;
-            return;
-        }
+        NetworkPlayer netPlayer = ResolveNetworkPlayer(other, hitPlayer, hitCyclist);
+        if (netPlayer == null || !netPlayer.IsOwner || netPlayer.IsStunned.Value) return;
 
         bool cyclistActive = hitCyclist != null && hitCyclist.isActiveModel;
         bool playerActive = hitPlayer != null && hitPlayer.isActiveModel;
-
         bool useCyclist = cyclistActive || (hitCyclist != null && !playerActive);
         bool usePlayer = !useCyclist && hitPlayer != null;
 
-        ;
-
-        if (usePlayer && hitPlayer != null)
+        if (usePlayer)
             hitPlayer.currentStamina = Mathf.Max(0f, hitPlayer.currentStamina - tripStaminaCost);
 
-        if (useCyclist && hitCyclist != null)
+        if (useCyclist)
             hitCyclist.currentStamina = Mathf.Max(0f, hitCyclist.currentStamina - tripStaminaCost);
 
         if (knockbackDistance > 0f)
         {
-            Transform hitRoot = netPlayer.transform;
-            Vector3 dir = hitRoot.position - transform.position;
+            Vector3 dir = netPlayer.transform.position - transform.position;
             dir.y = 0f;
-            dir.Normalize();
+            dir = dir.sqrMagnitude > 0.0001f ? dir.normalized : netPlayer.transform.forward;
 
-            if (usePlayer && hitPlayer != null && hitPlayer.characterController != null)
+            if (usePlayer && hitPlayer.characterController != null)
                 hitPlayer.characterController.Move(dir * knockbackDistance);
 
-            CharacterController cyclistController = (useCyclist && hitCyclist != null)
-                ? hitCyclist.GetComponent<CharacterController>()
-                : null;
-
+            CharacterController cyclistController = useCyclist ? hitCyclist.GetComponent<CharacterController>() : null;
             if (cyclistController != null)
                 cyclistController.Move(dir * knockbackDistance);
         }
 
-        if (usePlayer && hitPlayer != null)
+        if (usePlayer)
             hitPlayer.StartCoroutine(hitPlayer.StunPlayer(stunDuration));
-        else if (useCyclist && hitCyclist != null)
+        else if (useCyclist)
             hitCyclist.StartCoroutine(hitCyclist.StunCyclist(stunDuration));
     }
 
-    private void OnTriggerStay(Collider other)
+    private NetworkPlayer ResolveNetworkPlayer(Collider other, PlayerController hitPlayer, CyclingController hitCyclist)
     {
-        if (!enableDebugLogs || hasLoggedStay) return;
-        hasLoggedStay = true;
-        ;
+        NetworkPlayer netPlayer = other.GetComponentInParent<NetworkPlayer>();
+        if (netPlayer != null) return netPlayer;
+
+        if (hitPlayer != null)
+            netPlayer = hitPlayer.GetComponentInParent<NetworkPlayer>();
+        else if (hitCyclist != null)
+            netPlayer = hitCyclist.GetComponentInParent<NetworkPlayer>();
+
+        return netPlayer;
     }
 }

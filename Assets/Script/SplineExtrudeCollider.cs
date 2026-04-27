@@ -18,17 +18,26 @@ public class SplineExtrudeCollider : MonoBehaviour
     public float stunDuration = 1f;
     public float knockbackDistance = 0.5f;
 
-    [Header("Debug")]
-    public bool enableDebugLogs = true;
+    [Header("Runtime")]
+    public bool generateOnStart = true;
+    public bool useTrigger = true;
+    public bool useParentLayer = false;
+    public int wallColliderLayer = 0;
+
+    private bool generatedAtRuntime;
+
+    private void Start()
+    {
+        if (!Application.isPlaying || !generateOnStart || generatedAtRuntime) return;
+        GenerateColliders();
+        generatedAtRuntime = true;
+    }
 
     [ContextMenu("Generate Colliders")]
     public void GenerateColliders()
     {
         if (splineContainer == null)
             splineContainer = GetComponent<SplineContainer>();
-
-        if (enableDebugLogs)
-            ;
 
         // Clear old colliders
         for (int i = transform.childCount - 1; i >= 0; i--)
@@ -55,14 +64,14 @@ public class SplineExtrudeCollider : MonoBehaviour
             colObj.transform.SetParent(transform);
             colObj.transform.position = pos + rot * centerOffset;
             colObj.transform.rotation = rot;
-            colObj.layer = gameObject.layer;
+            colObj.layer = useParentLayer ? gameObject.layer : wallColliderLayer;
 
             // Box Collider
             BoxCollider col = colObj.AddComponent<BoxCollider>();
             col.size = colliderSize;
-            col.isTrigger = true;
+            col.isTrigger = useTrigger;
 
-            // Trigger callbacks are more reliable when one side has a Rigidbody.
+            // Keep generated wall colliders stable for trigger/collision events.
             Rigidbody rb = colObj.AddComponent<Rigidbody>();
             rb.isKinematic = true;
             rb.useGravity = false;
@@ -72,16 +81,7 @@ public class SplineExtrudeCollider : MonoBehaviour
             wallBump.tripStaminaCost = tripStaminaCost;
             wallBump.stunDuration = stunDuration;
             wallBump.knockbackDistance = knockbackDistance;
-            wallBump.enableDebugLogs = enableDebugLogs;
-
-            if (enableDebugLogs)
-            {
-                ;
-            }
         }
-
-        if (enableDebugLogs)
-            ;
     }
 
     private void OnDrawGizmos()
