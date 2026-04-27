@@ -100,6 +100,7 @@ public class CoinPickup : NetworkBehaviour
     private void GiveCoinRpc(FishNet.Connection.NetworkConnection conn, int amount)
     {
         CoinManager.Instance?.AddCoins(amount);
+        Debug.Log($"[CoinPickup] Picked up {amount} coin(s)");
     }
 
     [ObserversRpc]

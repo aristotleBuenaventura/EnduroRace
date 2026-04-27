@@ -37,10 +37,12 @@ public class SegmentNPCGuide : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        Debug.Log($"[NPC] Trigger entered by: {other.gameObject.name}");
         
         if (hasTriggered) return;
 
         NetworkPlayer np = other.GetComponentInParent<NetworkPlayer>();
+        Debug.Log($"[NPC] NetworkPlayer found: {np != null}, IsOwner: {np?.IsOwner}");
         
         if (np == null || !np.IsOwner) return;
 

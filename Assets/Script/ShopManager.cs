@@ -74,6 +74,8 @@ public class ShopManager : MonoBehaviour
                     ? snap.GetValue<string>("equippedItem") : "";
 
                 RefreshUI(equippedId);
+                Debug.Log($"[ShopManager] Loaded — Coins: {currentCoins}, " +
+                          $"Owned: {string.Join(", ", ownedItems)}");
             });
     }
 
@@ -144,6 +146,8 @@ public class ShopManager : MonoBehaviour
 
                 ShowFeedback($"Purchased {item.displayName}!");
                 RefreshUI(equipmentManager.EquippedItem?.itemId ?? "");
+                Debug.Log($"[ShopManager] Bought '{item.itemId}'. " +
+                          $"Remaining coins: {currentCoins}");
             });
     }
 

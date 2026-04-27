@@ -84,6 +84,7 @@ public class SceneWrongWayDetector : MonoBehaviour
             if (startupTimer >= startupDelay)
             {
                 hasStarted = true;
+                Debug.Log("[WrongWayDetector] Started monitoring");
             }
             return;
         }
@@ -126,14 +127,17 @@ public class SceneWrongWayDetector : MonoBehaviour
             if (ranking != null)
             {
                 checkpoints = ranking.checkpoints;
+                Debug.Log($"[WrongWayDetector] Found {checkpoints.Length} checkpoints");
                 break;
             }
             retries++;
+            Debug.LogWarning($"[WrongWayDetector] MultiplayerRaceRanking not found, retrying... ({retries}/10)");
             yield return new WaitForSeconds(0.5f);
         }
 
         if (checkpoints == null)
         {
+            Debug.LogError("[WrongWayDetector] Could not find MultiplayerRaceRanking! Disabled.");
             enabled = false;
             yield break;
         }
@@ -154,6 +158,7 @@ public class SceneWrongWayDetector : MonoBehaviour
                     playerTransform        = player.transform;
                     lastPosition           = GetPlayerPosition();
                     lastCheckpointPosition = GetPlayerPosition();
+                    Debug.Log("[WrongWayDetector] Found local player!");
                     yield break;
                 }
             }
@@ -260,6 +265,7 @@ public class SceneWrongWayDetector : MonoBehaviour
         if (audioSource != null && wrongWaySound != null && !audioSource.isPlaying)
             audioSource.PlayOneShot(wrongWaySound);
 
+        Debug.Log("[WrongWayDetector] ⚠️ WRONG WAY!");
     }
 
     private void HideWrongWayWarning()
@@ -297,6 +303,7 @@ public class SceneWrongWayDetector : MonoBehaviour
 
     private IEnumerator TeleportPlayer()
     {
+        Debug.Log("[WrongWayDetector] 🔄 Teleporting player back to checkpoint");
 
         isTeleporting = true;
 
@@ -359,6 +366,7 @@ public class SceneWrongWayDetector : MonoBehaviour
 
         isTeleporting = false;
 
+        Debug.Log("[WrongWayDetector] ✅ Teleport complete");
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -401,6 +409,7 @@ public class SceneWrongWayDetector : MonoBehaviour
             if (checkpointIndex < checkpoints.Length)
                 lastCheckpointPosition = checkpoints[checkpointIndex].position;
 
+            Debug.Log($"[WrongWayDetector] Now targeting checkpoint {currentTargetCheckpoint}");
 
             if (isGoingWrongWay)
                 HideWrongWayWarning();

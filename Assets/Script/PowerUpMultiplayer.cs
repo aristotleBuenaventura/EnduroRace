@@ -157,6 +157,7 @@ public class PowerUpMultiplayer : NetworkBehaviour
                 break;
         }
 
+        Debug.Log($"[PowerUp] Applied {type} to local player");
     }
 
     [ObserversRpc]
@@ -173,6 +174,7 @@ public class PowerUpMultiplayer : NetworkBehaviour
     {
         // Access moveSpeed via reflection since it's private
         // Instead add a public method to PlayerController
+        Debug.Log($"[PowerUp] Speed boost applied to runner for {duration}s");
 
         // You need to add ApplySpeedBoost to PlayerController
         runner.ApplySpeedBoost(multiplier, duration);
@@ -181,6 +183,7 @@ public class PowerUpMultiplayer : NetworkBehaviour
 
     private IEnumerator SpeedBoostCyclist(CyclingController cyclist, float multiplier, float duration)
     {
+        Debug.Log($"[PowerUp] Speed boost applied to cyclist for {duration}s");
 
         // You need to add ApplySpeedBoost to CyclingController
         cyclist.ApplySpeedBoost(multiplier, duration);
@@ -194,6 +197,7 @@ public class PowerUpMultiplayer : NetworkBehaviour
 
         isActive.Value = true;
         powerupCollider.enabled = true;
+        Debug.Log("[PowerUp] Respawned");
     }
 
     private void SetVisualState(bool state)

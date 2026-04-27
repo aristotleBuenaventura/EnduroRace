@@ -33,15 +33,18 @@ public class MultiplayerCheckpoint : MonoBehaviour
         
         if (rankingSystem == null)
         {
+            Debug.LogError($"Checkpoint {checkpointIndex}: MultiplayerRaceRanking not found in scene!");
         }
         else
         {
+            Debug.Log($"Checkpoint {checkpointIndex}: Connected to ranking system");
         }
         
         // ✅ NEW: Find scene-based wrong way detector
         wrongWayDetector = FindFirstObjectByType<SceneWrongWayDetector>();
         if (wrongWayDetector != null)
         {
+            Debug.Log($"Checkpoint {checkpointIndex}: Connected to wrong way detector");
         }
     }
     
@@ -58,6 +61,7 @@ public class MultiplayerCheckpoint : MonoBehaviour
             if (networkPlayer.IsOwner)
             {
                 rankingSystem.ReportCheckpointPassed(networkPlayer, checkpointIndex);
+                Debug.Log($"✓ Player {networkPlayer.OwnerId} passed checkpoint {checkpointIndex}");
                 
                 // ✅ FIXED: Notify scene-based wrong way detector
                 if (wrongWayDetector != null)
@@ -76,6 +80,7 @@ public class MultiplayerCheckpoint : MonoBehaviour
             if (aiOpponent.IsServerInitialized)
             {
                 rankingSystem.OnAICheckpointPassed(aiOpponent.transform, checkpointIndex);
+                Debug.Log($"✓ AI {aiOpponent.opponentName} passed checkpoint {checkpointIndex}");
             }
             return;
         }

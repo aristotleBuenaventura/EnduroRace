@@ -67,6 +67,7 @@ public class CharacterPreviewManager : MonoBehaviour
             male2FootModel == null || male2BikeModel == null ||
             femaleFootModel == null || femaleBikeModel == null)
         {
+            Debug.LogError("[CharacterPreview] One or more model references are missing! Check the Inspector.");
             return;
         }
 

@@ -62,6 +62,7 @@ public class CoinManager : MonoBehaviour
         yield return new WaitUntil(() => done);
 
         initialized = true;
+        Debug.Log($"[CoinManager] Initialized with {totalCoins} coins");
     }
 
     /// <summary>
@@ -72,6 +73,7 @@ public class CoinManager : MonoBehaviour
     {
         if (string.IsNullOrEmpty(playerId))
         {
+            Debug.LogWarning("[CoinManager] RefreshFromFirebase: playerId not set yet.");
             return;
         }
 
@@ -84,6 +86,7 @@ public class CoinManager : MonoBehaviour
                     totalCoins = task.Result.ContainsField("coins")
                         ? (int)task.Result.GetValue<long>("coins") : 0;
 
+                    Debug.Log($"[CoinManager] Refreshed from Firebase: {totalCoins} coins");
                 }
             });
     }
@@ -91,6 +94,7 @@ public class CoinManager : MonoBehaviour
     public void AddCoins(int amount)
     {
         sessionCoins += amount;
+        Debug.Log($"[CoinManager] +{amount} coins this session. Session total: {sessionCoins}");
     }
 
     /// <summary>
@@ -101,11 +105,13 @@ public class CoinManager : MonoBehaviour
     {
         if (!initialized || string.IsNullOrEmpty(playerId))
         {
+            Debug.LogWarning("[CoinManager] Not initialized — skipping save");
             return;
         }
 
         if (sessionCoins == 0)
         {
+            Debug.Log("[CoinManager] No session coins to save");
             return;
         }
 
@@ -117,11 +123,13 @@ public class CoinManager : MonoBehaviour
             {
                 if (task.IsFaulted)
                 {
+                    Debug.LogError("[CoinManager] Save failed: " + task.Exception);
                 }
                 else
                 {
                     totalCoins   = newTotal;
                     sessionCoins = 0;
+                    Debug.Log($"[CoinManager] Saved. Total coins: {totalCoins}");
                 }
             });
     }
@@ -132,5 +140,6 @@ public class CoinManager : MonoBehaviour
     public void ResetSessionCoins()
     {
         sessionCoins = 0;
+        Debug.Log("[CoinManager] Session coins reset");
     }
 }

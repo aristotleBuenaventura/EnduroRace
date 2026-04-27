@@ -42,6 +42,7 @@ public class BikeDismountTrigger : NetworkBehaviour
             {
                 isPlayerNearby = false;
                 dismountPromptUI.SetActive(false);
+                Debug.Log("[BikeDismountTrigger] Player not on bike, hiding UI.");
             }
             return;
         }
@@ -55,6 +56,7 @@ public class BikeDismountTrigger : NetworkBehaviour
             {
                 isPlayerNearby = true;
                 dismountPromptUI.SetActive(true);
+                Debug.Log("[BikeDismountTrigger] Player near dismount, showing UI.");
             }
         }
         else
@@ -63,6 +65,7 @@ public class BikeDismountTrigger : NetworkBehaviour
             {
                 isPlayerNearby = false;
                 dismountPromptUI.SetActive(false);
+                Debug.Log("[BikeDismountTrigger] Player left dismount area, hiding UI.");
             }
         }
     }
@@ -86,6 +89,7 @@ public class BikeDismountTrigger : NetworkBehaviour
             // Tell the SegmentSwitcher to switch back to runner
             localSegmentSwitcher.SwitchToRunner(dismountPos, dismountRot);
 
+            Debug.Log("[BikeDismountTrigger] Player dismounting to this trigger point.");
         }
     }
 }

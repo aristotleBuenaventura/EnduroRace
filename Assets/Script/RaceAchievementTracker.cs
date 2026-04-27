@@ -25,6 +25,7 @@ public class RaceAchievementTracker : NetworkBehaviour
     {
         if (!IsOwner || raceFinished) return;
         hadCollision = true;
+        Debug.Log("[AchievementTracker] Collision registered");
     }
 
     // Call this from Obstacle.cs when local player loses speed
@@ -32,6 +33,7 @@ public class RaceAchievementTracker : NetworkBehaviour
     {
         if (!IsOwner || raceFinished) return;
         hadSpeedLoss = true;
+        Debug.Log("[AchievementTracker] Speed loss registered");
     }
 
     // Call this when race finishes
@@ -86,12 +88,21 @@ public class RaceAchievementTracker : NetworkBehaviour
                     if (!existing.Contains(idStr))
                     {
                         existing.Add(idStr);
+                        Debug.Log($"[AchievementTracker] Earned: {idStr}");
                     }
                 }
 
                 // Save back
                 db.Collection("players").Document(playerId)
-                    .UpdateAsync("achievements", existing);
+                    .UpdateAsync("achievements", existing)
+                    .ContinueWithOnMainThread(saveTask =>
+                    {
+                        if (saveTask.IsFaulted)
+                            Debug.LogError("[AchievementTracker] Save failed: "
+                                + saveTask.Exception);
+                        else
+                            Debug.Log("[AchievementTracker] Achievements saved");
+                    });
             });
     }
 }

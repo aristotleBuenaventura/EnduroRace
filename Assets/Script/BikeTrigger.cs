@@ -57,6 +57,7 @@ public class BikeTrigger : NetworkBehaviour
             {
                 isPlayerNearby = true;
                 mountPromptUI.SetActive(true);
+                Debug.Log("[BikeTrigger] Player entered mount area!");
             }
         }
         else
@@ -65,6 +66,7 @@ public class BikeTrigger : NetworkBehaviour
             {
                 isPlayerNearby = false;
                 mountPromptUI.SetActive(false);
+                Debug.Log("[BikeTrigger] Player left mount area!");
             }
         }
     }
@@ -81,6 +83,7 @@ public class BikeTrigger : NetworkBehaviour
         {
             GetMountTransform(out Vector3 pos, out Quaternion rot);
             localSegmentSwitcher.SwitchToCyclist(this.gameObject, pos, rot);
+            Debug.Log("[BikeTrigger] Player mounting this bike!");
         }
     }
 }

@@ -29,6 +29,7 @@ public class WallProximityShake : MonoBehaviour
         
         if (impulseSource == null)
         {
+            Debug.LogError("CinemachineImpulseSource not found! Please add it to " + gameObject.name);
         }
     }
 
@@ -77,10 +78,12 @@ public class WallProximityShake : MonoBehaviour
                 // Debug visualization
                 if (debugRays)
                 {
+                    Debug.DrawRay(origin, direction * hit.distance, Color.red);
                 }
             }
             else if (debugRays)
             {
+                Debug.DrawRay(origin, direction * detectionDistance, Color.green);
             }
         }
 

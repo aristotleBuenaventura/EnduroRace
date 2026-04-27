@@ -20,6 +20,7 @@ public class MultiplayerAISpawner : NetworkBehaviour
     public override void OnStartServer()
     {
         base.OnStartServer();
+        Debug.Log("[MultiplayerAISpawner] Server started - scheduling AI spawn");
         Invoke(nameof(SpawnAIDynamically), spawnDelay);
     }
 
@@ -28,23 +29,27 @@ public class MultiplayerAISpawner : NetworkBehaviour
     {
         if (hasSpawned)
         {
+            Debug.LogWarning("[MultiplayerAISpawner] AI already spawned!");
             return;
         }
 
         if (aiManager == null)
         {
+            Debug.LogError("[MultiplayerAISpawner] AI Manager not assigned!");
             return;
         }
 
         NetworkPlayer[] players = FindObjectsByType<NetworkPlayer>(FindObjectsSortMode.None);
         int playerCount = players.Length;
 
+        Debug.Log($"[MultiplayerAISpawner] Found {playerCount} players");
 
         int aiToSpawn = Mathf.Max(minAI, maxTotalRacers - playerCount);
         aiToSpawn = Mathf.Clamp(aiToSpawn, minAI, maxAI);
 
         if (aiToSpawn > 0)
         {
+            Debug.Log($"[MultiplayerAISpawner] Spawning {aiToSpawn} AI opponents (Players: {playerCount})");
             aiManager.numberOfOpponents = aiToSpawn;
             aiManager.SpawnOpponents();
 
@@ -54,6 +59,7 @@ public class MultiplayerAISpawner : NetworkBehaviour
         }
         else
         {
+            Debug.Log($"[MultiplayerAISpawner] No AI needed (Players: {playerCount})");
         }
 
         hasSpawned = true;
@@ -75,9 +81,11 @@ public class MultiplayerAISpawner : NetworkBehaviour
         if (ranking != null)
         {
             ranking.RefreshRacers();
+            Debug.Log("[MultiplayerAISpawner] Rankings refreshed on client");
         }
         else
         {
+            Debug.LogWarning("[MultiplayerAISpawner] Ranking system not found!");
         }
     }
 

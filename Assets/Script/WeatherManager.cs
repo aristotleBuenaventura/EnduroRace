@@ -139,6 +139,7 @@ public class WeatherManager : MonoBehaviour
             sunLight.intensity = stormyLightIntensity;
         RenderSettings.ambientLight = stormyAmbientColor;
 
+        Debug.Log("[WeatherManager] Storm fully active");
     }
 
     private void OnDestroy()

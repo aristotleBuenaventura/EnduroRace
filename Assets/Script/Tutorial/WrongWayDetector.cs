@@ -177,6 +177,7 @@ public class WrongWayDetector : MonoBehaviour
             audioSource.PlayOneShot(wrongWaySound);
         }
         
+        Debug.Log("⚠️ WRONG WAY!");
     }
     
     private void HideWrongWayWarning()
@@ -211,6 +212,7 @@ public class WrongWayDetector : MonoBehaviour
     
     private IEnumerator TeleportPlayerBack()
     {
+        Debug.Log("🔄 Teleporting player back to last checkpoint!");
         
         isTeleporting = true;
         
@@ -301,6 +303,7 @@ public class WrongWayDetector : MonoBehaviour
         lastPosition = GetPlayerPosition();
         isTeleporting = false;
         
+        Debug.Log("✅ Teleport complete!");
     }
     
     private Transform GetActivePlayerChild()
@@ -357,6 +360,7 @@ public class WrongWayDetector : MonoBehaviour
                 lastCheckpointPosition = checkpoints[checkpointIndex].position;
             }
             
+            Debug.Log($"Player now targeting checkpoint {currentTargetCheckpoint}");
             
             if (isGoingWrongWay)
             {

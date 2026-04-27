@@ -38,6 +38,7 @@ public class FirebaseManager : MonoBehaviour
         {
             if (task.Result != DependencyStatus.Available)
             {
+                Debug.LogError("Firebase dependencies not available: " + task.Result);
                 return;
             }
 
@@ -61,6 +62,7 @@ public class FirebaseManager : MonoBehaviour
         {
             if (task.IsFaulted || task.IsCanceled)
             {
+                Debug.LogError("Anonymous sign-in failed");
                 return;
             }
 
@@ -73,5 +75,6 @@ public class FirebaseManager : MonoBehaviour
     {
         IsFirebaseReady = true;
         OnFirebaseReady?.Invoke();
+        Debug.Log("Firebase is ready! PlayerId: " + PlayerId);
     }
 }

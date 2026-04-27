@@ -49,6 +49,11 @@ public class LobbyManager : MonoBehaviour
         db = FirebaseManager.Instance.Db;
         playerId = FirebaseManager.Instance.PlayerId;
 
+        Debug.Log($"[LobbyManager] ═══════════════════════════════════════");
+        Debug.Log($"[LobbyManager] Initializing");
+        Debug.Log($"[LobbyManager] PlayerId: {playerId}");
+        Debug.Log($"[LobbyManager] Platform: {Application.platform}");
+        Debug.Log($"[LobbyManager] ═══════════════════════════════════════");
 
         db.Collection("players").Document(playerId)
             .GetSnapshotAsync()
@@ -59,12 +64,14 @@ public class LobbyManager : MonoBehaviour
                 if (!task.IsFaulted && task.Result.Exists && task.Result.ContainsField("tier"))
                     playerTier = task.Result.GetValue<string>("tier");
 
+                Debug.Log($"[LobbyManager] Player tier: {playerTier}");
                 JoinOrCreateLobby(playerTier);
             });
     }
 
     private void JoinOrCreateLobby(string tier)
     {
+        Debug.Log($"[LobbyManager] Searching for lobby with tier='{tier}', state='waiting', currentPlayers < {MAX_PLAYERS}");
         
         db.Collection("lobbies")
             .WhereEqualTo("tier", tier)
@@ -75,14 +82,17 @@ public class LobbyManager : MonoBehaviour
             {
                 if (task.IsFaulted)
                 {
+                    Debug.LogError($"[LobbyManager] Query failed: {task.Exception}");
                     CreateLobby(tier);
                     return;
                 }
 
                 var lobbies = task.Result.Documents.ToList();
+                Debug.Log($"[LobbyManager] Found {lobbies.Count} matching lobbies");
 
                 if (lobbies.Count == 0)
                 {
+                    Debug.Log("[LobbyManager] No available lobbies - Creating new one");
                     CreateLobby(tier);
                     return;
                 }
@@ -91,6 +101,9 @@ public class LobbyManager : MonoBehaviour
                 var bestLobby = lobbies.OrderByDescending(l => l.GetValue<long>("currentPlayers")).First();
                 lobbyId = bestLobby.Id;
                 
+                Debug.Log($"[LobbyManager] ✅ Joining lobby: {lobbyId}");
+                Debug.Log($"[LobbyManager]    Current players: {bestLobby.GetValue<long>("currentPlayers")}");
+                Debug.Log($"[LobbyManager]    Host: {bestLobby.GetValue<string>("hostId")}");
                 
                 AddPlayerToLobby();
             });
@@ -99,6 +112,7 @@ public class LobbyManager : MonoBehaviour
     private void CreateLobby(string tier)
     {
         lobbyId = Guid.NewGuid().ToString();
+        Debug.Log($"[LobbyManager] Creating NEW lobby: {lobbyId}");
 
         var data = new Dictionary<string, object>
         {
@@ -114,12 +128,14 @@ public class LobbyManager : MonoBehaviour
             .SetAsync(data)
             .ContinueWithOnMainThread(_ =>
             {
+                Debug.Log($"[LobbyManager] Lobby created successfully");
                 AddPlayerToLobby();
             });
     }
 
     private void AddPlayerToLobby()
     {
+        Debug.Log($"[LobbyManager] Adding player {playerId} to lobby {lobbyId}");
 
         db.Collection("players")
         .Document(playerId)
@@ -128,6 +144,7 @@ public class LobbyManager : MonoBehaviour
         {
             if (profileTask.IsFaulted || !profileTask.Result.Exists)
             {
+                Debug.LogError("[LobbyManager] Player profile not found!");
                 return;
             }
 
@@ -149,6 +166,7 @@ public class LobbyManager : MonoBehaviour
                 ? profile.GetValue<string>("selectedModel") 
                 : "Male";
 
+            Debug.Log($"[LobbyManager] Player info - Name: {displayName}, Avatar: {avatar}, Tier: {tier}");
 
             var playerRef = db.Collection("lobbies")
                 .Document(lobbyId)
@@ -172,9 +190,11 @@ public class LobbyManager : MonoBehaviour
                 {
                     if (task.IsFaulted)
                     {
+                        Debug.LogError("[LobbyManager] Failed to add player: " + task.Exception);
                         return;
                     }
 
+                    Debug.Log("[LobbyManager] ✅ Successfully added to lobby");
 
                     var lobbyRef = db.Collection("lobbies").Document(lobbyId);
                     lobbyRef.UpdateAsync("currentPlayers", FieldValue.Increment(1));
@@ -202,6 +222,7 @@ public class LobbyManager : MonoBehaviour
                 {
                     if (task.IsFaulted)
                     {
+                        Debug.LogWarning("[LobbyManager] Heartbeat failed");
                     }
                 });
         }
@@ -215,26 +236,31 @@ public class LobbyManager : MonoBehaviour
             {
                 if (task.IsFaulted || !task.Result.Exists)
                 {
+                    Debug.LogError("[LobbyManager] Failed to determine host");
                     return;
                 }
 
                 string hostId = task.Result.GetValue<string>("hostId");
                 IsHost = hostId == playerId;
 
+                Debug.Log($"[LobbyManager] Host check - HostId: {hostId}, IsHost: {IsHost}");
 
                 if (IsHost)
                 {
+                    Debug.Log("[LobbyManager] 👑 I AM THE HOST");
                     StartReadyListener();
                     StartCoroutine(CleanupGhostPlayers());
                 }
                 else
                 {
+                    Debug.Log("[LobbyManager] I am NOT the host - checking if host exists...");
                     CheckAndClaimHostIfNeeded();  // ← Add this!
                 }
 
                 IsLobbyReady = true;
                 OnLobbyReady?.Invoke();
                 
+                Debug.Log($"[LobbyManager] ✅ Lobby ready! LobbyId: {lobbyId}");
             });
     }
 
@@ -265,6 +291,7 @@ public class LobbyManager : MonoBehaviour
                         
                         if (!doc.ContainsField("lastHeartbeat"))
                         {
+                            Debug.LogWarning($"[LobbyManager] Player {playerName} has no heartbeat - OLD PLAYER");
                             continue;
                         }
                         
@@ -272,9 +299,11 @@ public class LobbyManager : MonoBehaviour
                         DateTime heartbeatTime = lastHeartbeat.ToDateTime();
                         double secondsSinceHeartbeat = (now - heartbeatTime).TotalSeconds;
                         
+                        Debug.Log($"[LobbyManager] Player {playerName} - Last heartbeat: {secondsSinceHeartbeat:F1}s ago");
                         
                         if (secondsSinceHeartbeat > 15)
                         {
+                            Debug.Log($"[LobbyManager] 🗑️ Removing ghost: {playerName}");
                             
                             doc.Reference.DeleteAsync()
                                 .ContinueWithOnMainThread(_ =>
@@ -297,6 +326,7 @@ public class LobbyManager : MonoBehaviour
     {
         if (!IsHost) return;
 
+        Debug.Log("[LobbyManager] Starting ready listener");
 
         readyListener?.Stop();
 
@@ -305,6 +335,8 @@ public class LobbyManager : MonoBehaviour
             .Collection("players")
             .Listen(async snapshot =>
             {
+                Debug.Log("[LobbyManager] ═════════════════════════════════════════");
+                Debug.Log("[LobbyManager] Ready check triggered");
 
                 int humans = 0;
                 int readyHumans = 0;
@@ -315,6 +347,7 @@ public class LobbyManager : MonoBehaviour
                     bool isBot = doc.ContainsField("isBot") && doc.GetValue<bool>("isBot");
                     bool isReady = doc.ContainsField("isReady") && doc.GetValue<bool>("isReady");
 
+                    Debug.Log($"[LobbyManager]   {name}: Bot={isBot}, Ready={isReady}");
 
                     if (!isBot)
                     {
@@ -323,16 +356,19 @@ public class LobbyManager : MonoBehaviour
                     }
                 }
 
+                Debug.Log($"[LobbyManager] Humans: {humans}, Ready: {readyHumans}");
 
                 var lobbyRef = db.Collection("lobbies").Document(lobbyId);
                 var lobbySnap = await lobbyRef.GetSnapshotAsync(Source.Server);  // Force server read
 
                 string state = lobbySnap.GetValue<string>("state");
+                Debug.Log($"[LobbyManager] Current state: {state}");
 
                 if (humans >= MIN_PLAYERS && humans == readyHumans && readyHumans > 0)
                 {
                     if (state == "waiting")
                     {
+                        Debug.Log("[LobbyManager] 🚀 STARTING COUNTDOWN!");
                         
                         await lobbyRef.UpdateAsync(new Dictionary<string, object>
                         {
@@ -346,6 +382,7 @@ public class LobbyManager : MonoBehaviour
                 {
                     if (state == "countdown")
                     {
+                        Debug.Log("[LobbyManager] ❌ Canceling countdown");
                         
                         await lobbyRef.UpdateAsync(new Dictionary<string, object>
                         {
@@ -354,6 +391,7 @@ public class LobbyManager : MonoBehaviour
                         });
                     }
                 }
+                Debug.Log("[LobbyManager] ═════════════════════════════════════════");
             });
     }
 
@@ -361,6 +399,7 @@ public class LobbyManager : MonoBehaviour
     {
         if (string.IsNullOrEmpty(lobbyId)) return;
 
+        Debug.Log($"[LobbyManager] Leaving lobby");
 
         StopAllCoroutines();
 
@@ -405,6 +444,7 @@ public class LobbyManager : MonoBehaviour
                         // If host doesn't exist, claim host role
                         if (hostCheckTask.IsFaulted || !hostCheckTask.Result.Exists)
                         {
+                            Debug.Log("[LobbyManager] 👑 Host is gone! Claiming host role...");
                             
                             db.Collection("lobbies")
                                 .Document(lobbyId)
@@ -412,6 +452,7 @@ public class LobbyManager : MonoBehaviour
                                 .ContinueWithOnMainThread(_ =>
                                 {
                                     IsHost = true;
+                                    Debug.Log("[LobbyManager] ✅ Successfully claimed host!");
                                     StartReadyListener();
                                     StartCoroutine(CleanupGhostPlayers());
                                 });

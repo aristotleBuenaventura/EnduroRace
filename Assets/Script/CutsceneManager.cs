@@ -24,6 +24,7 @@ public class CutsceneManager : MonoBehaviour
     {
         if (cutsceneCamera == null || mainCamera == null || waypoints.Length == 0)
         {
+            Debug.LogError("CutsceneManager missing references!");
             return;
         }
 

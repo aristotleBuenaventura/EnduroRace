@@ -36,11 +36,13 @@ public class MudSplatterEffect : MonoBehaviour
     {
         if (dropletPrefab == null)
         {
+            Debug.LogError("MudSplatterEffect: Droplet Prefab is not assigned!");
             return;
         }
 
         if (spawnPoint == null)
         {
+            Debug.LogWarning("MudSplatterEffect: Spawn Point is not assigned! Using transform.position instead.");
         }
 
         // Pre-instantiate pool of droplets for performance
@@ -78,9 +80,11 @@ public class MudSplatterEffect : MonoBehaviour
 
     public void StartEffect()
     {
+        Debug.Log("MudSplatterEffect: StartEffect() called!");
         
         if (dropletPrefab == null)
         {
+            Debug.LogError("Cannot start effect - Droplet Prefab is null!");
             return;
         }
         
@@ -90,6 +94,7 @@ public class MudSplatterEffect : MonoBehaviour
 
     public void StopEffect()
     {
+        Debug.Log("MudSplatterEffect: StopEffect() called!");
         isActive = false;
     }
 
@@ -105,9 +110,12 @@ public class MudSplatterEffect : MonoBehaviour
     {
         if (dropletPool.Count == 0)
         {
+            Debug.LogWarning("Droplet pool is empty!");
             return;
         }
 
+        Debug.Log("Spawning droplet!"); // ADD THIS
+        
         GameObject droplet = dropletPool.Dequeue();
         
         // Random position around spawn point (near head)

@@ -132,6 +132,7 @@ public class NetworkPlayer : NetworkBehaviour
         lastPosition = transform.position;
         _wasInWater  = IsInWater.Value;
 
+        Debug.Log($"[NetworkPlayer] Started | IsOwner={IsOwner} IsServer={IsServerInitialized}");
 
         if (IsOwner)
         {
@@ -177,10 +178,12 @@ public class NetworkPlayer : NetworkBehaviour
 
         if (!string.IsNullOrEmpty(firebaseId))
         {
+            Debug.Log($"[NetworkPlayer] Sending FirebaseId '{firebaseId}' to server");
             CmdSetFirebaseId(firebaseId);
         }
         else
         {
+            Debug.LogWarning("[NetworkPlayer] FirebaseManager.PlayerId is empty — name resolution will use fallback.");
         }
     }
 
@@ -188,6 +191,7 @@ public class NetworkPlayer : NetworkBehaviour
     private void CmdSetFirebaseId(string id)
     {
         FirebasePlayerId.Value = id;
+        Debug.Log($"[NetworkPlayer] Server stored FirebaseId='{id}' for OwnerId={OwnerId}");
     }
 
     /// <summary>
@@ -202,6 +206,7 @@ public class NetworkPlayer : NetworkBehaviour
         var tracker = FindFirstObjectByType<RacePlayerTracker>();
         tracker?.TryLinkByFirebaseId(this, next);
 
+        Debug.Log($"[NetworkPlayer] FirebasePlayerId changed → '{next}' (OwnerId={OwnerId}, asServer={asServer})");
     }
 
     // ── Model sync ───────────────────────────────────────────────────────────────
@@ -209,11 +214,13 @@ public class NetworkPlayer : NetworkBehaviour
     [ServerRpc(RequireOwnership = true)]
     public void ServerSendModel(string modelName)
     {
+        Debug.Log($"[NetworkPlayer] Server received model '{modelName}' from conn {Owner.ClientId}");
 
         NetworkStarter starter = FindFirstObjectByType<NetworkStarter>();
         if (starter != null)
             starter.RegisterClientModel(Owner, modelName);
         else
+            Debug.LogWarning("[NetworkPlayer] NetworkStarter not found on server!");
     }
 
     private IEnumerator FetchModelAndSendToServer()
@@ -227,6 +234,7 @@ public class NetworkPlayer : NetworkBehaviour
         string model = PlayerPrefs.GetString("SelectedModel", "Male");
         bool done    = false;
 
+        Debug.Log($"[NetworkPlayer] Sending fast-path model '{model}' from PlayerPrefs");
         ServerSendModel(model);
 
         db.Collection("players").Document(playerId).GetSnapshotAsync()
@@ -242,6 +250,7 @@ public class NetworkPlayer : NetworkBehaviour
 
                     if (firebaseModel != model)
                     {
+                        Debug.Log($"[NetworkPlayer] Firebase corrected model: '{model}' → '{firebaseModel}'");
                         ServerSendModel(firebaseModel);
                     }
                 }
@@ -263,6 +272,7 @@ public class NetworkPlayer : NetworkBehaviour
         if (!IsOwner && playerController != null)
         {
             playerController.waterSurfaceY = next;
+            Debug.Log($"[NetworkPlayer] Water surface Y updated to {next}");
         }
     }
 
@@ -299,6 +309,7 @@ public class NetworkPlayer : NetworkBehaviour
         if (IsServerInitialized && IsTripping.Value && Time.time >= TripEndTime.Value)
         {
             IsTripping.Value = false;
+            Debug.Log("[NetworkPlayer] Trip ended");
         }
 
         if (IsOwner)
@@ -460,6 +471,7 @@ public class NetworkPlayer : NetworkBehaviour
     {
         IsTripping.Value  = true;
         TripEndTime.Value = Time.time + duration;
+        Debug.Log($"[ServerTrip] Player will trip for {duration}s");
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -467,6 +479,7 @@ public class NetworkPlayer : NetworkBehaviour
     {
         IsInMud.Value       = true;
         MudMultiplier.Value = multiplier;
+        Debug.Log($"[ServerEnterMud] Multiplier: {multiplier}");
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -474,6 +487,7 @@ public class NetworkPlayer : NetworkBehaviour
     {
         IsInMud.Value       = false;
         MudMultiplier.Value = 1f;
+        Debug.Log("[ServerExitMud] Exited mud");
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -504,6 +518,7 @@ public class NetworkPlayer : NetworkBehaviour
         targetPosition     = pos;
         targetRotation     = rot;
         currentVelocity    = Vector3.zero;
+        Debug.Log($"[NetworkPlayer] Spawn position confirmed via RPC: {pos}");
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────────────

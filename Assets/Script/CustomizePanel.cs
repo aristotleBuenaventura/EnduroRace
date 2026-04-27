@@ -48,6 +48,7 @@ public class CustomizePanel : MonoBehaviour
         {
             if (!FirebaseManager.Instance.IsFirebaseReady)
             {
+                Debug.LogWarning("[CustomizePanel] Firebase not ready yet.");
                 return;
             }
             db       = FirebaseManager.Instance.Db;
@@ -134,6 +135,7 @@ public class CustomizePanel : MonoBehaviour
         EquipmentManager.Instance?.EquipItem(itemId);
 
         RefreshUI();
+        Debug.Log($"[CustomizePanel] Equipped: {itemId}");
     }
 
     private void OnUnequip()
@@ -144,5 +146,6 @@ public class CustomizePanel : MonoBehaviour
         EquipmentManager.Instance?.UnequipItem();
 
         RefreshUI();
+        Debug.Log("[CustomizePanel] Unequipped (default)");
     }
 }

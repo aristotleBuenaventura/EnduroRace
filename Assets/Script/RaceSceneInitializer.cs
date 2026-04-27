@@ -28,6 +28,7 @@ public class RaceSceneInitializer : MonoBehaviour
     {
         if (LobbyDataTransfer.Instance == null)
         {
+            Debug.LogError("[RaceSceneInitializer] No LobbyDataTransfer found! Did you come from the lobby?");
             return;
         }
 
@@ -35,10 +36,14 @@ public class RaceSceneInitializer : MonoBehaviour
         string localPlayerId = LobbyDataTransfer.Instance.localPlayerId;
         List<LobbyDataTransfer.PlayerData> players = LobbyDataTransfer.Instance.GetAllPlayers();
 
+        Debug.Log($"[RaceSceneInitializer] Initializing race for lobby: {lobbyId}");
+        Debug.Log($"[RaceSceneInitializer] Local player: {localPlayerId}");
+        Debug.Log($"[RaceSceneInitializer] Total players: {players.Count}");
 
         // Display player info
         foreach (var player in players)
         {
+            Debug.Log($"  - {player.displayName} ({player.tier}) [Local: {player.isLocalPlayer}, Bot: {player.isBot}]");
         }
 
         // ✅ TODO: Here you can:

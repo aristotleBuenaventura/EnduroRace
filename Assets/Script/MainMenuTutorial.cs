@@ -47,6 +47,7 @@ public class MainMenuTutorial : MonoBehaviour
         {
             currentStep = TutorialSignal.PendingStep;
             TutorialSignal.Clear();
+            Debug.Log($"[Tutorial] PendingStep handoff → step {currentStep}");
             AdvancePastSceneStepIfNeeded();
             if (currentStep < steps.Length)
                 ShowStep(currentStep);
@@ -59,6 +60,7 @@ public class MainMenuTutorial : MonoBehaviour
         bool tutorialActive = PlayerPrefs.GetInt(TUTORIAL_ACTIVE_KEY, 0) == 1;
         int savedStep = PlayerPrefs.GetInt(MAIN_MENU_STEP_KEY, 0);
 
+        Debug.Log($"[Tutorial] Start — active={tutorialActive}, savedStep={savedStep}, totalSteps={steps.Length}");
 
         if (tutorialActive && savedStep > 0)
         {
@@ -101,12 +103,14 @@ public class MainMenuTutorial : MonoBehaviour
         var db = FirebaseManager.Instance.Db;
         var playerId = FirebaseManager.Instance.PlayerId;
 
+        Debug.Log($"[Tutorial] Checking Firestore for hasSeenTutorial — playerId={playerId}");
 
         db.Collection("players").Document(playerId).GetSnapshotAsync()
           .ContinueWithOnMainThread(task =>
           {
               if (task.IsFaulted || task.IsCanceled)
               {
+                  Debug.LogWarning("[Tutorial] Firestore check failed — skipping tutorial.");
                   return;
               }
 
@@ -117,12 +121,14 @@ public class MainMenuTutorial : MonoBehaviour
                   // Brand new player — ProfileManager will handle creation + dispatch.
                   // Subscribe and wait.
                   TutorialSignal.OnTutorialReady += OnTutorialReadySignal;
+                  Debug.Log("[Tutorial] Player doc not found — waiting for TutorialSignal.");
                   return;
               }
 
               bool hasSeenTutorial = snap.ContainsField("hasSeenTutorial")
                                      && snap.GetValue<bool>("hasSeenTutorial");
 
+              Debug.Log($"[Tutorial] Firestore hasSeenTutorial={hasSeenTutorial}");
 
               if (!hasSeenTutorial)
               {
@@ -140,6 +146,7 @@ public class MainMenuTutorial : MonoBehaviour
     {
         TutorialSignal.OnTutorialReady -= OnTutorialReadySignal;
         currentStep = step;
+        Debug.Log($"[Tutorial] Signal received → step {currentStep}");
         ShowStep(currentStep);
     }
 
@@ -150,6 +157,7 @@ public class MainMenuTutorial : MonoBehaviour
             currentStep++;
             PlayerPrefs.SetInt(MAIN_MENU_STEP_KEY, currentStep);
             PlayerPrefs.Save();
+            Debug.Log($"[Tutorial] Advanced past scene step → now on step {currentStep}");
         }
     }
 
@@ -195,6 +203,7 @@ public class MainMenuTutorial : MonoBehaviour
     private IEnumerator RevealStep(TutorialStep step)
     {
         yield return new WaitForSeconds(0.1f);
+        Debug.Log($"[Tutorial] RevealStep — '{step.tooltipText}', sceneToLoad='{step.sceneToLoad}'");
 
         foreach (var s in steps)
             if (s.spotlightRect != null)
@@ -236,6 +245,7 @@ public class MainMenuTutorial : MonoBehaviour
     private void AdvanceStep()
     {
         TutorialStep step = steps[currentStep];
+        Debug.Log($"[Tutorial] AdvanceStep — currentStep={currentStep}, sceneToLoad='{step.sceneToLoad}'");
 
         if (!string.IsNullOrEmpty(step.sceneToLoad))
         {

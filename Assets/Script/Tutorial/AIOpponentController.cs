@@ -79,18 +79,24 @@ public class AIOpponentController : MonoBehaviour
 
     private void Start()
     {
+        Debug.Log($"=== AI {opponentName} Starting ===");
 
         characterController = GetComponent<CharacterController>();
         if (characterController == null)
         {
+            Debug.LogError($"{opponentName}: No CharacterController found!");
         }
         else
         {
+            Debug.Log($"{opponentName}: CharacterController found");
+            Debug.Log($"{opponentName}: CC Height={characterController.height}, Radius={characterController.radius}, Center={characterController.center}");
         }
 
         var colliders = GetComponents<Collider>();
+        Debug.Log($"{opponentName}: Has {colliders.Length} colliders");
         foreach (var col in colliders)
         {
+            Debug.Log($"{opponentName}: - {col.GetType().Name}, IsTrigger={col.isTrigger}");
         }
 
         currentStamina = maxStamina;
@@ -98,26 +104,36 @@ public class AIOpponentController : MonoBehaviour
         velocity = Vector3.zero;
         lastPosition = transform.position;
 
+        Debug.Log($"{opponentName}: Base speed = {currentSpeed}");
 
         if (runnerModel == null)
         {
+            Debug.LogError($"{opponentName}: RunnerModel is NULL! Assign in prefab.");
         }
         else
         {
+            Debug.Log($"{opponentName}: RunnerModel = {runnerModel.name}");
             var renderers = runnerModel.GetComponentsInChildren<Renderer>();
+            Debug.Log($"{opponentName}: RunnerModel has {renderers.Length} renderers");
             if (renderers.Length == 0)
+                Debug.LogWarning($"{opponentName}: RunnerModel has no renderers - will be invisible!");
         }
 
         if (cyclistModel == null)
+            Debug.LogError($"{opponentName}: CyclistModel is NULL! Assign in prefab.");
         else
+            Debug.Log($"{opponentName}: CyclistModel = {cyclistModel.name}");
 
         if (nameTagText != null)
             nameTagText.text = opponentName;
 
         SetSegment(AISegment.Swim);
+        Debug.Log($"{opponentName}: Set to Swim segment");
 
         if (waypointPath == null || waypointPath.Length == 0)
+            Debug.LogWarning($"{opponentName}: No waypoint path assigned yet");
         else
+            Debug.Log($"{opponentName}: Has {waypointPath.Length} waypoints");
     }
 
     private void Update()
@@ -216,11 +232,13 @@ public class AIOpponentController : MonoBehaviour
     {
         if (waypointPath == null || waypointPath.Length == 0)
         {
+            Debug.LogWarning($"{opponentName}: No waypoint path!");
             return;
         }
 
         if (currentWaypointIndex >= waypointPath.Length)
         {
+            Debug.Log($"{opponentName}: Reached end of waypoint path");
             return;
         }
 
@@ -228,6 +246,7 @@ public class AIOpponentController : MonoBehaviour
 
         if (targetWaypoint == null)
         {
+            Debug.LogError($"{opponentName}: Waypoint {currentWaypointIndex} is NULL!");
             currentWaypointIndex++;
             return;
         }
@@ -259,6 +278,7 @@ public class AIOpponentController : MonoBehaviour
         // Safety net — currentSpeed should never be 0 outside of a transition
         if (currentSpeed <= 0f)
         {
+            Debug.LogWarning($"{opponentName}: currentSpeed is 0, resetting to baseSpeed ({baseSpeed})");
             currentSpeed = baseSpeed;
             moveSpeed = currentSpeed;
         }
@@ -273,6 +293,7 @@ public class AIOpponentController : MonoBehaviour
 
         if (distance < waypointReachDistance)
         {
+            Debug.Log($"{opponentName}: Reached waypoint {currentWaypointIndex} (distance: {distance})");
             currentWaypointIndex++;
         }
     }
@@ -377,6 +398,7 @@ public class AIOpponentController : MonoBehaviour
         float originalSpeed = currentSpeed;
         currentSpeed = 0f;
 
+        Debug.Log($"{opponentName}: TransitionRoutine START — originalSpeed={originalSpeed}, isPaused={isPaused}");
 
         // WaitForSecondsRealtime is unaffected by Time.timeScale
         // Component stays enabled so this coroutine is never killed by pausing
@@ -389,6 +411,7 @@ public class AIOpponentController : MonoBehaviour
 
         // If originalSpeed is 0 for any reason, fall back to baseSpeed
         currentSpeed = originalSpeed > 0f ? originalSpeed : baseSpeed;
+        Debug.Log($"{opponentName}: TransitionRoutine END — speed restored to {currentSpeed}, isPaused={isPaused}");
     }
 
     public void SetWaypointPath(Transform[] newPath)
@@ -418,6 +441,7 @@ public class AIOpponentController : MonoBehaviour
         isFullyInWater = true;
         waterSurfaceY = surfaceY;
         velocity.y = 0f;
+        Debug.Log($"{opponentName}: ✓ Entered water at Y={waterSurfaceY}");
     }
 
     private void OnTriggerExit(Collider other)
@@ -439,6 +463,7 @@ public class AIOpponentController : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         isInWater = false;
         isFullyInWater = false;
+        Debug.Log($"{opponentName}: ✓ Exited water");
     }
 
     private void OnTriggerStay(Collider other)

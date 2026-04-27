@@ -33,6 +33,7 @@ public class HeatExhaustionEffect : MonoBehaviour
         isIntermediateTier = (tier == "Intermediate");
         effectEnabled = true;
 
+        Debug.Log($"[HeatExhaustionEffect] Tier='{tier}' | IntermediateHeatEffect={isIntermediateTier}");
 
         // ✅ Only look up the HeatOverlay on the Intermediate map — it doesn't exist on other maps
         if (isIntermediateTier)
@@ -47,6 +48,7 @@ public class HeatExhaustionEffect : MonoBehaviour
                 if (overlayObj != null)
                     heatOverlay = overlayObj.GetComponent<Image>();
                 else
+                    Debug.LogWarning("[HeatExhaustionEffect] HeatOverlay not found — make sure it's assigned in SceneReference on the Intermediate scene.");
             }
         }
 
@@ -69,6 +71,7 @@ public class HeatExhaustionEffect : MonoBehaviour
         if (cyclingController == null)
             cyclingController = FindFirstObjectByType<CyclingController>();
 
+        Debug.Log($"[HeatExhaustionEffect] Runner: {playerController}, Cyclist: {cyclingController}, Overlay: {heatOverlay}");
 
         if (heatOverlay == null) return;
 
