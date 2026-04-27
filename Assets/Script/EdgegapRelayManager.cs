@@ -50,7 +50,7 @@ public class EdgegapRelayManager : MonoBehaviour
 
     private IEnumerator CreateSessionCoroutine(string lobbyId, int playerCount, System.Action<bool> onComplete)
     {
-        Debug.Log("[EdgegapRelay] Creating relay session...");
+        ;
 
         // Get public IP
         string publicIP = "";
@@ -60,10 +60,10 @@ public class EdgegapRelayManager : MonoBehaviour
             if (ipRequest.result == UnityWebRequest.Result.Success)
                 publicIP = ipRequest.downloadHandler.text.Trim();
             else
-                Debug.LogWarning("[EdgegapRelay] Could not get public IP: " + ipRequest.error);
+                ;
         }
 
-        Debug.Log($"[EdgegapRelay] Public IP: {publicIP}");
+        ;
 
         // Build users array
         var usersSb = new StringBuilder("[");
@@ -77,7 +77,7 @@ public class EdgegapRelayManager : MonoBehaviour
 
         string jsonBody = $"{{\"relay_profile_id\":\"{relayProfileName}\",\"session_identifier\":\"{lobbyId}\",\"users\":{usersSb}}}";
 
-        Debug.Log($"[EdgegapRelay] Request body: {jsonBody}");
+        ;
 
         // Create session
         using (UnityWebRequest request = new UnityWebRequest(BASE_URL + "/sessions", "POST"))
@@ -92,29 +92,29 @@ public class EdgegapRelayManager : MonoBehaviour
 
             if (request.result != UnityWebRequest.Result.Success)
             {
-                Debug.LogError($"[EdgegapRelay] Failed: {request.error}");
-                Debug.LogError($"[EdgegapRelay] Response code: {request.responseCode}");
-                Debug.LogError($"[EdgegapRelay] Response body: {request.downloadHandler.text}");
+                ;
+                ;
+                ;
                 onComplete?.Invoke(false);
                 yield break;
             }
 
             string responseText = request.downloadHandler.text;
-            Debug.Log($"[EdgegapRelay] Session created: {responseText}");
+            ;
 
             sessionId = ExtractJsonField(responseText, "session_id");
-            Debug.Log($"[EdgegapRelay] Session ID: {sessionId}");
+            ;
 
             if (string.IsNullOrEmpty(sessionId))
             {
-                Debug.LogError("[EdgegapRelay] Could not parse session_id!");
+                ;
                 onComplete?.Invoke(false);
                 yield break;
             }
         }
 
         // Poll until relay is ready
-        Debug.Log("[EdgegapRelay] Waiting for relay to become ready...");
+        ;
         float timeout = 30f;
         float elapsed = 0f;
         bool relayReady = false;
@@ -131,17 +131,17 @@ public class EdgegapRelayManager : MonoBehaviour
 
                 if (pollRequest.result != UnityWebRequest.Result.Success)
                 {
-                    Debug.LogWarning($"[EdgegapRelay] Poll failed: {pollRequest.error}");
+                    ;
                     continue;
                 }
 
                 string pollResponse = pollRequest.downloadHandler.text;
-                Debug.Log($"[EdgegapRelay] Poll response: {pollResponse}");
+                ;
 
                 string status = ExtractJsonField(pollResponse, "status");
                 string readyStr = ExtractJsonField(pollResponse, "ready");
 
-                Debug.Log($"[EdgegapRelay] Status: {status}, Ready: {readyStr}");
+                ;
 
                 if (readyStr == "true" || status == "Linked" || status == "Ready")
                 {
@@ -158,7 +158,7 @@ public class EdgegapRelayManager : MonoBehaviour
                         uint.TryParse(userTokenStr, out userAuthToken);
                     }
 
-                    Debug.Log($"[EdgegapRelay] Auth tokens - Session: {sessionAuthToken}, User: {userAuthToken}");
+                    ;
 
                     // Find relay object
                     int relayObjStart = pollResponse.IndexOf("\"relay\": {");
@@ -200,13 +200,13 @@ public class EdgegapRelayManager : MonoBehaviour
                                 relayServerPort = 7770;
                         }
 
-                        Debug.Log($"[EdgegapRelay] Relay ready! Host: {relayHost}, ServerPort: {relayServerPort}, ClientPort: {relayClientPort}");
+                        ;
                         relayReady = true;
                         break;
                     }
                     else
                     {
-                        Debug.LogWarning($"[EdgegapRelay] Ready but relay object not found");
+                        ;
                     }
                 }
             }
@@ -214,7 +214,7 @@ public class EdgegapRelayManager : MonoBehaviour
 
         if (!relayReady || string.IsNullOrEmpty(relayHost))
         {
-            Debug.LogError("[EdgegapRelay] Relay never became ready!");
+            ;
             onComplete?.Invoke(false);
             yield break;
         }
@@ -240,9 +240,9 @@ public class EdgegapRelayManager : MonoBehaviour
             .ContinueWithOnMainThread(task =>
             {
                 if (task.IsFaulted)
-                    Debug.LogError("[EdgegapRelay] Failed to write to Firebase: " + task.Exception);
+                    ;
                 else
-                    Debug.Log($"[EdgegapRelay] Written to Firebase: {relayHost} server:{relayServerPort} client:{relayClientPort} sessionToken:{sessionAuthToken} userToken:{userAuthToken}");
+                    ;
                 done = true;
             });
 
@@ -263,9 +263,9 @@ public class EdgegapRelayManager : MonoBehaviour
             yield return request.SendWebRequest();
 
             if (request.result == UnityWebRequest.Result.Success)
-                Debug.Log("[EdgegapRelay] Session deleted");
+                ;
             else
-                Debug.LogWarning("[EdgegapRelay] Failed to delete session: " + request.error);
+                ;
         }
 
         sessionId = null;

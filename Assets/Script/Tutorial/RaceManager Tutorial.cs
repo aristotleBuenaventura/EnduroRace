@@ -567,7 +567,7 @@ public class RaceManagerTutorial : MonoBehaviour
     {
         if (swimTutorialCamera == null || swimTutorialCamera2 == null)
         {
-            Debug.LogWarning("Swim obstacle cutscene skipped: missing cameras.");
+            ;
             cutsceneSubtitlePanel?.SetActive(false);
             ResumeCutscene();
             ShowGameplayUI();
@@ -646,7 +646,7 @@ public class RaceManagerTutorial : MonoBehaviour
             ShowGameplayUI();
             segmentSwitcher.LockPlayerInput(false);
 
-            Debug.Log("Swim obstacle cutscene ended.");
+            ;
         }
     }
 
@@ -654,7 +654,7 @@ public class RaceManagerTutorial : MonoBehaviour
     {
         if (powerupCamera == null)
         {
-            Debug.LogWarning("Powerup cutscene skipped: no camera assigned.");
+            ;
             yield break;
         }
 
@@ -728,7 +728,7 @@ public class RaceManagerTutorial : MonoBehaviour
             ShowGameplayUI();
             segmentSwitcher.LockPlayerInput(false);
 
-            Debug.Log("Powerup cutscene ended.");
+            ;
         }
     }
 
@@ -779,7 +779,7 @@ public class RaceManagerTutorial : MonoBehaviour
     {
         if (bikeMountCamera1 == null)
         {
-            Debug.LogWarning("Bike mount cutscene skipped: no cameras assigned.");
+            ;
             yield break;
         }
 
@@ -852,7 +852,7 @@ public class RaceManagerTutorial : MonoBehaviour
             ShowGameplayUI();
             segmentSwitcher.LockPlayerInput(false);
 
-            Debug.Log("Bike mount cutscene ended.");
+            ;
         }
     }
 
@@ -860,7 +860,7 @@ public class RaceManagerTutorial : MonoBehaviour
     {
         if (bikeObstacleCamera1 == null)
         {
-            Debug.LogWarning("Bike obstacle cutscene skipped: no cameras assigned.");
+            ;
             yield break;
         }
 
@@ -934,7 +934,7 @@ public class RaceManagerTutorial : MonoBehaviour
             ShowGameplayUI();
             segmentSwitcher.LockPlayerInput(false);
 
-            Debug.Log("Bike obstacle cutscene ended.");
+            ;
         }
     }
 
@@ -1008,7 +1008,7 @@ public class RaceManagerTutorial : MonoBehaviour
     {
         if (runSegmentCamera1 == null)
         {
-            Debug.LogWarning("Run segment cutscene skipped: no cameras assigned.");
+            ;
             yield break;
         }
 
@@ -1082,7 +1082,7 @@ public class RaceManagerTutorial : MonoBehaviour
             ShowGameplayUI();
             segmentSwitcher.LockPlayerInput(false);
 
-            Debug.Log("Run segment cutscene ended.");
+            ;
         }
     }
 
@@ -1150,7 +1150,7 @@ public class RaceManagerTutorial : MonoBehaviour
 
     private IEnumerator ShowPodiumCutscene()
     {
-        Debug.Log("=== PODIUM CUTSCENE STARTED ===");
+        ;
 
         yield return new WaitForSeconds(1f);
 
@@ -1161,7 +1161,7 @@ public class RaceManagerTutorial : MonoBehaviour
         if (segmentSwitcher != null)
             segmentSwitcher.LockPlayerInput(true);
         else
-            Debug.LogError("❌ segmentSwitcher is NULL!");
+            ;
 
         Camera mainCam = Camera.main;
 
@@ -1171,17 +1171,17 @@ public class RaceManagerTutorial : MonoBehaviour
             if (mainCam != null)
                 mainCam.enabled = false;
             else
-                Debug.LogError("❌ Camera.main is NULL!");
+                ;
         }
         else
         {
-            Debug.LogError("❌ podiumCamera is NULL!");
+            ;
         }
 
         if (podiumCutsceneObject != null)
             podiumCutsceneObject.SetActive(true);
         else
-            Debug.LogError("❌ podiumCutsceneObject is NULL!");
+            ;
 
         if (rankingSystem != null && podiumPositions != null && podiumPositions.Length >= 3)
         {
@@ -1198,13 +1198,13 @@ public class RaceManagerTutorial : MonoBehaviour
         }
         else
         {
-            Debug.LogError("❌ rankingSystem or podiumPositions not set up correctly!");
+            ;
         }
 
         if (podiumUI != null)
             podiumUI.SetActive(true);
         else
-            Debug.LogError("❌ podiumUI is NULL!");
+            ;
 
         if (podiumRankText != null && rankingSystem != null)
         {
@@ -1246,7 +1246,7 @@ public class RaceManagerTutorial : MonoBehaviour
 
         yield return new WaitForSeconds(0.1f);
 
-        Debug.Log("=== PODIUM CUTSCENE FINISHED ===");
+        ;
 
         LoadMainMenu();
     }
@@ -1280,7 +1280,7 @@ public class RaceManagerTutorial : MonoBehaviour
         if (racerTransform == null || podiumPosition == null)
             return;
 
-        Debug.Log($"Positioning {racerTransform.name} on podium at rank {rank}");
+        ;
 
         racerTransform.position = podiumPosition.position;
         racerTransform.rotation = podiumPosition.rotation;
@@ -1355,13 +1355,13 @@ public class RaceManagerTutorial : MonoBehaviour
             {
                 animator.SetBool("Victory", true);
                 animator.SetBool("Clap", false);
-                Debug.Log($"✓ {racerTransform.name} playing Victory animation (1st place)");
+                ;
             }
             else
             {
                 animator.SetBool("Clap", true);
                 animator.SetBool("Victory", false);
-                Debug.Log($"✓ {racerTransform.name} playing Clap animation ({GetOrdinal(rank)} place)");
+                ;
             }
         }
 
@@ -1390,7 +1390,7 @@ public class RaceManagerTutorial : MonoBehaviour
 
     private void LoadMainMenu()
     {
-        Debug.Log($"Loading Main Menu scene: '{mainMenuSceneName}'");
+        ;
         SceneManager.LoadScene(mainMenuSceneName);
     }
 

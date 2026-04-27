@@ -62,7 +62,7 @@ public class EquipmentManager : MonoBehaviour
                 EquippedItem = FindItem(itemId);
                 OnItemEquipped?.Invoke(EquippedItem);
 
-                Debug.Log($"[EquipmentManager] Loaded equipped item: '{itemId}'");
+                ;
             });
     }
 
@@ -81,7 +81,7 @@ public class EquipmentManager : MonoBehaviour
         PlayerPrefs.Save();
 
         OnItemEquipped?.Invoke(EquippedItem);
-        Debug.Log($"[EquipmentManager] Equipped: '{itemId}'");
+        ;
     }
 
     public void UnequipItem()

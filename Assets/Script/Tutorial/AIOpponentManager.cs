@@ -55,7 +55,7 @@ public class AIOpponentManager : MonoBehaviour
 
         if (validPaths.Count == 0)
         {
-            Debug.LogWarning("No valid paths found! Make sure you assigned waypoints in the Inspector.");
+            ;
             return null;
         }
 
@@ -81,21 +81,21 @@ public class AIOpponentManager : MonoBehaviour
     {
         if (this == null)
         {
-            Debug.LogError("AIOpponentManager instance is NULL!");
+            ;
             return;
         }
 
-        Debug.Log("=== SpawnOpponents called ===");
+        ;
 
         if (aiOpponentPrefab == null && aiOpponentPrefab1 == null)
         {
-            Debug.LogError("Cannot spawn AI: both prefabs are NULL!");
+            ;
             return;
         }
 
         if (spawnPoints == null || spawnPoints.Length == 0)
         {
-            Debug.LogError("Cannot spawn AI: No spawn points assigned!");
+            ;
             return;
         }
 
@@ -104,7 +104,7 @@ public class AIOpponentManager : MonoBehaviour
             SpawnOpponent(i);
         }
 
-        Debug.Log($"=== Spawn complete. Active opponents: {activeOpponents.Count} ===");
+        ;
     }
 
     private void SpawnOpponent(int index)
@@ -127,7 +127,7 @@ public class AIOpponentManager : MonoBehaviour
 
         if (selectedPrefab == null)
         {
-            Debug.LogError("Selected AI prefab is NULL!");
+            ;
             return;
         }
 
@@ -145,7 +145,7 @@ public class AIOpponentManager : MonoBehaviour
             if (ai.nameTagText != null)
                 ai.nameTagText.text = ai.opponentName;
             else
-                Debug.LogWarning($"  ⚠ {ai.opponentName} has no nameTagText assigned on AIOpponentController.");
+                ;
 
             if (ai.runnerModel != null) ai.runnerModel.SetActive(true);
             if (ai.cyclistModel != null) ai.cyclistModel.SetActive(false);
@@ -154,24 +154,24 @@ public class AIOpponentManager : MonoBehaviour
             if (chosenSwimPath != null)
             {
                 ai.SetWaypointPath(chosenSwimPath);
-                Debug.Log($"  ✓ {ai.opponentName} randomly assigned swim path with {chosenSwimPath.Length} waypoints");
+                ;
             }
             else
             {
-                Debug.LogError($"  ✗ Could not assign swim path to {ai.opponentName}!");
+                ;
             }
 
             activeOpponents.Add(ai);
         }
         else
         {
-            Debug.LogError("AIOpponentController not found on spawned prefab!");
+            ;
         }
     }
 
     public void TransitionOpponentsToSegment(AIOpponentController.AISegment segment)
     {
-        Debug.Log($"=== TransitionOpponentsToSegment called for {segment} ===");
+        ;
         foreach (var opponent in activeOpponents)
         {
             if (opponent == null) continue;
@@ -196,7 +196,7 @@ public class AIOpponentManager : MonoBehaviour
 
             if (newPath != null)
             {
-                Debug.Log($"  ✓ {opponent.opponentName} randomly assigned {segment} path with {newPath.Length} waypoints");
+                ;
                 opponent.SetWaypointPath(newPath);
                 opponent.TransitionToSegment(segment, transitionPos);
             }

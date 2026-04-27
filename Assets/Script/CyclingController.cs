@@ -54,6 +54,12 @@ public class CyclingController : NetworkBehaviour
     [SerializeField] private CinemachineImpulseSource impulseSource;
     [SerializeField] private float speedBumpShakeIntensity = 1.2f;
     [SerializeField] private float potholeShakeIntensity = 1f;
+    [SerializeField] private float stunShakeIntensity = 1.5f;
+
+    [Header("Stun Effects")]
+    [SerializeField] private GameObject stunStarPrefab;
+    [SerializeField] private Transform stunStarSpawnPoint;
+    private GameObject activeStunStar;
 
     private CharacterController characterController;
     private AudioSource cyclingSource;
@@ -70,6 +76,7 @@ public class CyclingController : NetworkBehaviour
     public bool isActiveModel = false;
     private Transform rootTransform;
     private float targetYRotation;
+    private NetworkPlayer netPlayer;
 
     public override void OnStartClient()
     {
@@ -100,6 +107,7 @@ public class CyclingController : NetworkBehaviour
         exhaustionAudioSource.loop       = true;
 
         rootTransform   = GetComponentInParent<NetworkPlayer>()?.transform ?? transform;
+        netPlayer       = GetComponentInParent<NetworkPlayer>();
         targetYRotation = rootTransform.eulerAngles.y;
 
         ApplyTierStaminaSettings();
@@ -137,14 +145,21 @@ public class CyclingController : NetworkBehaviour
         float equipReduction = EquipmentManager.Instance?.GetStaminaDecreaseReduction() ?? 0f;
         tierStaminaDecreaseRate = Mathf.Max(0f, tierStaminaDecreaseRate - equipReduction);
 
-        Debug.Log($"[CyclingController] Tier '{tier}' — DrainRate: {tierStaminaDecreaseRate} " +
-                  $"(equip reduction: {equipReduction}), RegenRate: {tierStaminaRegenRate}, RegenEnabled: {tierRegenEnabled}");
+        ;
     }
 
     private void Update()
     {
         if (!IsOwner || !isActiveModel || characterController == null)
             return;
+
+        if (netPlayer != null && netPlayer.IsStunned.Value)
+        {
+            moveInput = Vector2.zero;
+            isAccelerating = false;
+            HandleAnimations();
+            return;
+        }
 
         HandleStamina();
         UpdateExhaustionState();
@@ -191,13 +206,13 @@ public class CyclingController : NetworkBehaviour
         if (!isExhausted && currentStamina <= 0f)
         {
             isExhausted = true;
-            Debug.Log("[CyclingController] Exhaustion state ENTERED");
+            ;
             PlayHeavyBreathing(true);
         }
         else if (isExhausted && currentStamina > maxStamina * 0.1f)
         {
             isExhausted = false;
-            Debug.Log("[CyclingController] Exhaustion state EXITED");
+            ;
             PlayHeavyBreathing(false);
         }
     }
@@ -321,7 +336,7 @@ public class CyclingController : NetworkBehaviour
 
     private void ApplyAnimationState(byte state)
     {
-        if (animator == null) { Debug.LogError("[CyclingController] Animator is NULL!"); return; }
+        if (animator == null) { ; return; }
         animator.SetBool("isIdle",  state == 0);
         animator.SetBool("isMove",  state == 1);
         animator.SetBool("isAccel", state == 2);
@@ -349,7 +364,7 @@ public class CyclingController : NetworkBehaviour
     private void TriggerCameraShake(float intensity)
     {
         if (impulseSource != null) impulseSource.GenerateImpulse(intensity);
-        else Debug.LogWarning("[CyclingController] CinemachineImpulseSource not assigned!");
+        else ;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -404,6 +419,46 @@ public class CyclingController : NetworkBehaviour
         isOnPothole = false;
     }
 
+    public IEnumerator StunCyclist(float duration)
+    {
+        if (netPlayer == null || netPlayer.IsStunned.Value) yield break;
+
+        netPlayer.ServerSetStunned(true);
+        ShowStunStars(true);
+        animator?.SetTrigger("Bump");
+        TriggerCameraShake(stunShakeIntensity);
+
+        yield return new WaitForSeconds(duration);
+
+        ShowStunStars(false);
+        netPlayer.ServerSetStunned(false);
+    }
+
+    private void ShowStunStars(bool show)
+    {
+        if (stunStarPrefab == null) return;
+
+        if (show)
+        {
+            if (activeStunStar == null)
+            {
+                Vector3 spawnPos = stunStarSpawnPoint != null
+                    ? stunStarSpawnPoint.position
+                    : transform.position + Vector3.up * 2f;
+                activeStunStar = Instantiate(stunStarPrefab, spawnPos, Quaternion.identity, transform);
+            }
+            else
+            {
+                activeStunStar.SetActive(true);
+            }
+        }
+        else
+        {
+            if (activeStunStar != null)
+                activeStunStar.SetActive(false);
+        }
+    }
+
     public void ApplySpeedBoost(float multiplier, float duration)
         => StartCoroutine(SpeedBoostRoutine(multiplier, duration));
 
@@ -418,6 +473,6 @@ public class CyclingController : NetworkBehaviour
     {
         currentStamina = Mathf.Clamp(currentStamina + amount, 0f, maxStamina);
         staminaUI?.SetStamina(currentStamina, maxStamina);
-        Debug.Log($"[CyclingController] Stamina restored by {amount}. Current: {currentStamina}");
+        ;
     }
 }

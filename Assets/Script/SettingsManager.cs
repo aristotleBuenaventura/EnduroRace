@@ -56,7 +56,7 @@ public class SettingsManager : MonoBehaviour
         var r = resolutions[index];
         Screen.SetResolution(r.w, r.h, Screen.fullScreenMode);
         PlayerPrefs.SetInt("ResolutionScale", index);
-        Debug.Log($"Resolution set to {r.w}x{r.h}");
+        ;
     }
 
     // ── VOLUME ──────────────────────────────────────────

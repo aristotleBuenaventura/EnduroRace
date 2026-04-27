@@ -26,7 +26,7 @@ public class SpawnPoint : MonoBehaviour
     public void Release()
     {
         isOccupied = false;
-        Debug.Log($"[SpawnPoint] {name} released");
+        ;
     }
 
     public static SpawnPoint GetRandomSpawnPoint()
@@ -35,19 +35,19 @@ public class SpawnPoint : MonoBehaviour
 
         if (available.Count == 0)
         {
-            Debug.LogWarning("[SpawnPoint] No unoccupied spawn points! Falling back to any active point.");
+            ;
             available = allSpawnPoints.FindAll(sp => sp.isActive);
         }
 
         if (available.Count == 0)
         {
-            Debug.LogError("[SpawnPoint] No active spawn points at all!");
+            ;
             return null;
         }
 
         SpawnPoint chosen = available[Random.Range(0, available.Count)];
         chosen.isOccupied = true;
-        Debug.Log($"[SpawnPoint] Reserved: {chosen.name}");
+        ;
         return chosen;
     }
 

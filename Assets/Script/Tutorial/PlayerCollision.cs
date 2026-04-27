@@ -46,7 +46,7 @@ public class PlayerCollision : MonoBehaviour
 
         ai.ApplyCollisionPush(-bounceDir, bounceForce, slowdownAmount, slowdownDuration);
 
-        Debug.Log($"💥 {gameObject.name} collided with {ai.opponentName}!");
+        ;
     }
 
     public void ResetBounce()

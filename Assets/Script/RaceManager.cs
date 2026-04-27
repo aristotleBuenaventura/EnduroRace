@@ -74,7 +74,7 @@ public class RaceManager : NetworkBehaviour
     public override void OnStartServer()
     {
         base.OnStartServer();
-        Debug.Log("[RaceManager] Server started");
+        ;
         ServerManager.OnRemoteConnectionState += OnPlayerConnectionChanged;
         StartCoroutine(WaitAndStartCountdown());
     }
@@ -119,7 +119,7 @@ public class RaceManager : NetworkBehaviour
             if (!playerData.ContainsKey(conn))
             {
                 playerData[conn] = new PlayerRaceData(conn);
-                Debug.Log($"[RaceManager] Player {conn.ClientId} registered");
+                ;
             }
         }
         else if (args.ConnectionState == FishNet.Transporting.RemoteConnectionState.Stopped)
@@ -127,7 +127,7 @@ public class RaceManager : NetworkBehaviour
             if (playerData.ContainsKey(conn))
             {
                 playerData.Remove(conn);
-                Debug.Log($"[RaceManager] Player {conn.ClientId} removed");
+                ;
             }
         }
     }
@@ -141,7 +141,7 @@ public class RaceManager : NetworkBehaviour
         while (cutsceneCamera != null && cutsceneCamera.enabled)
             yield return null;
 
-        Debug.Log("[RaceManager] Waiting 2 seconds for clients to connect...");
+        ;
         yield return new WaitForSeconds(2f);
 
         StartCountdown();
@@ -163,7 +163,7 @@ public class RaceManager : NetworkBehaviour
 
         // Snapshot expected human finisher count at race start
         totalExpectedFinishers = playerData.Count;
-        Debug.Log($"[RaceManager] Countdown started — expecting {totalExpectedFinishers} human finisher(s)");
+        ;
 
         DisableAllPlayerInputRpc();
 
@@ -187,7 +187,7 @@ public class RaceManager : NetworkBehaviour
         if (aiManager != null)
             aiManager.StartRace();
         else
-            Debug.LogWarning("[RaceManager] No AI Manager assigned - AI won't start!");
+            ;
 
         StartRace();
     }
@@ -196,7 +196,7 @@ public class RaceManager : NetworkBehaviour
     private void StartRace()
     {
         raceStarted.Value = true;
-        Debug.Log("[RaceManager] Race started!");
+        ;
     }
 
     // ── Update ────────────────────────────────────────────────────────────────
@@ -252,7 +252,7 @@ public class RaceManager : NetworkBehaviour
     {
         if (segmentText == null)
         {
-            Debug.LogWarning("[RaceManager] Segment Text is not assigned!");
+            ;
             return;
         }
 
@@ -271,7 +271,7 @@ public class RaceManager : NetworkBehaviour
 
     public void ProgressToSegment(Segment newSegment)
     {
-        Debug.Log($"[RaceManager] Progressing to segment: {newSegment}");
+        ;
         mySegment = newSegment;
         UpdateSegmentUI();
         ServerUpdatePlayerSegment(newSegment);
@@ -285,7 +285,7 @@ public class RaceManager : NetworkBehaviour
         playerData[sender].currentSegment = newSegment;
 
         // hasFinished is owned by ServerRpcPlayerFinished — only log segment here
-        Debug.Log($"[RaceManager] Player {sender.ClientId} → {newSegment}");
+        ;
     }
 
     // ── Finish Race ───────────────────────────────────────────────────────────
@@ -294,7 +294,7 @@ public class RaceManager : NetworkBehaviour
     {
         ProgressToSegment(Segment.Finished);
         CoinManager.Instance?.SaveCoinsToFirebase();
-        Debug.Log("[RaceManager] Race finished — coins saved");
+        ;
 
         // Report finish time to live ranking display
         MultiplayerRaceRanking rankingSystem = FindFirstObjectByType<MultiplayerRaceRanking>();
@@ -323,7 +323,7 @@ public class RaceManager : NetworkBehaviour
         // Guard against double-call
         if (playerData[sender].hasFinished)
         {
-            Debug.LogWarning($"[RaceManager] Player {sender.ClientId} already marked finished — ignoring duplicate");
+            ;
             return;
         }
 
@@ -332,7 +332,7 @@ public class RaceManager : NetworkBehaviour
         finishPlacementCounter++;
 
         int placement = finishPlacementCounter;
-        Debug.Log($"[RaceManager] Player {sender.ClientId} finished {placement} place — time: {raceTime:F2}s");
+        ;
 
         // Find this player's NetworkPlayer so we can TargetRpc them
         NetworkPlayer finishedPlayer = null;
@@ -346,7 +346,7 @@ public class RaceManager : NetworkBehaviour
         if (podiumManager != null && finishedPlayer != null)
             podiumManager.NotifyPlayerFinished(finishedPlayer, placement, raceTime);
         else
-            Debug.LogWarning("[RaceManager] PodiumManager or NetworkPlayer not found for TargetRpc");
+            ;
 
         CheckAllFinished();
     }
@@ -359,26 +359,26 @@ public class RaceManager : NetworkBehaviour
             if (!data.hasFinished) return;
         }
 
-        Debug.Log("[RaceManager] All players finished — triggering podium");
+        ;
 
         if (podiumManager != null)
             podiumManager.ShowPodium(finishPlacementCounter, 0f);
         else
-            Debug.LogError("[RaceManager] PodiumManager not assigned on RaceManager!");
+            ;
     }
 
     // ── SyncVar Callbacks ─────────────────────────────────────────────────────
 
     private void OnCountdownActiveChanged(bool prev, bool next, bool asServer)
     {
-        Debug.Log($"[RaceManager] Countdown active: {next}");
+        ;
         if (next && tipsUI != null)
             tipsUI.Hide();
     }
 
     private void OnRaceStartedChanged(bool prev, bool next, bool asServer)
     {
-        Debug.Log($"[RaceManager] Race started: {next}");
+        ;
     }
 
     // ── RPCs ──────────────────────────────────────────────────────────────────
@@ -394,14 +394,14 @@ public class RaceManager : NetworkBehaviour
     [ObserversRpc]
     private void DisableAllPlayerInputRpc()
     {
-        Debug.Log("[RaceManager] Disabling player movement");
+        ;
         NetworkPlayer[] players = FindObjectsByType<NetworkPlayer>(FindObjectsSortMode.None);
         foreach (var player in players)
         {
             if (player.IsOwner)
             {
                 player.ServerSetCanMove(false);
-                Debug.Log("[RaceManager] Movement locked for local player");
+                ;
                 break;
             }
         }
@@ -410,7 +410,7 @@ public class RaceManager : NetworkBehaviour
     [ObserversRpc]
     private void EnableAllPlayerInputRpc()
     {
-        Debug.Log("[RaceManager] Enabling player movement");
+        ;
         CoinManager.Instance?.ResetSessionCoins();
         NetworkPlayer[] players = FindObjectsByType<NetworkPlayer>(FindObjectsSortMode.None);
         foreach (var player in players)
@@ -418,7 +418,7 @@ public class RaceManager : NetworkBehaviour
             if (player.IsOwner)
             {
                 player.ServerSetCanMove(true);
-                Debug.Log("[RaceManager] Movement unlocked for local player");
+                ;
                 break;
             }
         }
