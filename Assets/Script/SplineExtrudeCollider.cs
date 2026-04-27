@@ -13,6 +13,11 @@ public class SplineExtrudeCollider : MonoBehaviour
     public Vector3 centerOffset = Vector3.zero;
     public bool showPreview = true;
 
+    [Header("Wall Bump Settings")]
+    public float tripStaminaCost = 10f;
+    public float stunDuration = 1f;
+    public float knockbackDistance = 0.5f;
+
     [ContextMenu("Generate Colliders")]
     public void GenerateColliders()
     {
@@ -50,10 +55,16 @@ public class SplineExtrudeCollider : MonoBehaviour
             col.size = colliderSize;
             col.isTrigger = true;
 
-            // ✅ IMPORTANT FIX (THIS MAKES TRIGGERS WORK RELIABLY)
+            // Trigger callbacks are more reliable when one side has a Rigidbody.
             Rigidbody rb = colObj.AddComponent<Rigidbody>();
             rb.isKinematic = true;
             rb.useGravity = false;
+
+            // Combine spline collider generation + wall bump behavior.
+            wallBumpMesh wallBump = colObj.AddComponent<wallBumpMesh>();
+            wallBump.tripStaminaCost = tripStaminaCost;
+            wallBump.stunDuration = stunDuration;
+            wallBump.knockbackDistance = knockbackDistance;
         }
     }
 
