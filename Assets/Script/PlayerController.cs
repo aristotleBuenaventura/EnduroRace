@@ -114,7 +114,7 @@ public class PlayerController : NetworkBehaviour
     {
         characterController = GetComponent<CharacterController>();
         if (characterController == null)
-            Debug.LogError("[PlayerController] CharacterController not found!");
+            ;
 
         animator       = GetComponent<Animator>();
         footstepSource = GetComponent<AudioSource>();
@@ -137,7 +137,7 @@ public class PlayerController : NetworkBehaviour
         exhaustionAudioSource.playOnAwake = false;
         exhaustionAudioSource.loop       = true;
 
-        Debug.Log($"[PlayerController] Setup - Root: {rootTransform?.name}");
+        ;
     }
 
     public override void OnStartClient()
@@ -197,10 +197,9 @@ public class PlayerController : NetworkBehaviour
         float equipReduction = EquipmentManager.Instance?.GetStaminaDecreaseReduction() ?? 0f;
         tierStaminaDecreaseRate = Mathf.Max(0f, tierStaminaDecreaseRate - equipReduction);
 
-        Debug.Log($"[PlayerController] Final drain rate after equipment: {tierStaminaDecreaseRate}");
+        ;
 
-        Debug.Log($"[PlayerController] Tier '{tier}' — DrainRate: {tierStaminaDecreaseRate} " +
-                  $"(equip reduction: {equipReduction}), RegenRate: {tierStaminaRegenRate}, RegenEnabled: {tierRegenEnabled}");
+        ;
     }
 
     private IEnumerator InitializeAfterSpawn()
@@ -224,7 +223,7 @@ public class PlayerController : NetworkBehaviour
                     characterController.enabled = true;
                     velocity.y = 0f;
 
-                    Debug.LogWarning($"[PlayerController] Repositioned to {groundPos}");
+                    ;
                 }
             }
         }
@@ -332,13 +331,13 @@ public class PlayerController : NetworkBehaviour
         if (!isExhausted && currentStamina <= 0f)
         {
             isExhausted = true;
-            Debug.Log("[PlayerController] Exhaustion state ENTERED");
+            ;
             PlayHeavyBreathing(true);
         }
         else if (isExhausted && currentStamina > maxStamina * 0.1f)
         {
             isExhausted = false;
-            Debug.Log("[PlayerController] Exhaustion state EXITED");
+            ;
             PlayHeavyBreathing(false);
         }
     }
@@ -376,7 +375,7 @@ public class PlayerController : NetworkBehaviour
 
     private void ApplyAnimationState(byte state)
     {
-        if (animator == null) { Debug.LogError("[PlayerController] Animator is NULL!"); return; }
+        if (animator == null) { ; return; }
         animator.SetBool("isJogging",  state == 1);
         animator.SetBool("isRunning",  state == 2);
         animator.SetBool("isSwimming", state == 3);
@@ -518,7 +517,7 @@ public class PlayerController : NetworkBehaviour
     private void TriggerCameraShake(float intensity)
     {
         if (impulseSource != null) impulseSource.GenerateImpulse(intensity);
-        else Debug.LogWarning("[PlayerController] CinemachineImpulseSource not assigned!");
+        else ;
     }
 
     private IEnumerator PlayTripAnimation()
@@ -605,7 +604,7 @@ public class PlayerController : NetworkBehaviour
             obstacleAudioSource.loop = false;
             obstacleAudioSource.Stop();
         }
-        Debug.Log("[PlayerController] ExitWhirlpool — movement restored");
+        ;
     }
 
     private void ApplyWhirlpoolPull()
@@ -652,7 +651,7 @@ public class PlayerController : NetworkBehaviour
             if (horizontalDir.magnitude < 0.1f)
             {
                 characterController.Move(transform.forward * -2f);
-                Debug.Log("[PlayerController] Whirlpool center reached — ejecting player");
+                ;
                 break;
             }
 
@@ -678,7 +677,7 @@ public class PlayerController : NetworkBehaviour
         whirlpoolCenter = null;
 
         if (elapsed >= maxSuckTime)
-            Debug.LogWarning("[PlayerController] Whirlpool suck timed out — forced player release");
+            ;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -737,7 +736,7 @@ public class PlayerController : NetworkBehaviour
     {
         currentStamina = Mathf.Clamp(currentStamina + amount, 0f, maxStamina);
         staminaUI?.SetStamina(currentStamina, maxStamina);
-        Debug.Log($"[PlayerController] Stamina restored by {amount}. Current: {currentStamina}");
+        ;
     }
 
     public void ResetForDismount(Vector3 worldPos, Quaternion worldRot)
@@ -777,6 +776,6 @@ public class PlayerController : NetworkBehaviour
         isBeingSucked  = false;
         whirlpoolCenter = null;
 
-        Debug.Log($"[PlayerController] ResetForDismount — pos: {worldPos}, yRot: {targetYRotation}");
+        ;
     }
 }

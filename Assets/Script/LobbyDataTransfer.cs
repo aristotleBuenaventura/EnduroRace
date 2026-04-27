@@ -38,7 +38,7 @@ public class LobbyDataTransfer : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
-            Debug.Log("[LobbyDataTransfer] Created and persisted");
+            ;
         }
         else
         {
@@ -58,9 +58,9 @@ public class LobbyDataTransfer : MonoBehaviour
         // Then fetch from Firebase to override with the most accurate value
         FetchAndApplyModelFromFirebase();
 
-        Debug.Log($"[LobbyDataTransfer] Set lobby data: {players.Count} players");
+        ;
         foreach (var player in players)
-            Debug.Log($"  - {player.displayName} | Model: {player.selectedModel} | Local: {player.isLocalPlayer}");
+            ;
     }
 
     /// <summary>
@@ -71,7 +71,7 @@ public class LobbyDataTransfer : MonoBehaviour
     {
         if (!FirebaseManager.Instance.IsFirebaseReady)
         {
-            Debug.LogWarning("[LobbyDataTransfer] Firebase not ready - using PlayerPrefs fallback");
+            ;
             onComplete?.Invoke();
             return;
         }
@@ -84,7 +84,7 @@ public class LobbyDataTransfer : MonoBehaviour
             {
                 if (task.IsFaulted || task.IsCanceled)
                 {
-                    Debug.LogWarning("[LobbyDataTransfer] Firebase fetch failed - using PlayerPrefs fallback");
+                    ;
                     onComplete?.Invoke();
                     return;
                 }
@@ -92,7 +92,7 @@ public class LobbyDataTransfer : MonoBehaviour
                 var snap = task.Result;
                 if (!snap.Exists)
                 {
-                    Debug.LogWarning("[LobbyDataTransfer] Player document not found - using PlayerPrefs fallback");
+                    ;
                     onComplete?.Invoke();
                     return;
                 }
@@ -101,7 +101,7 @@ public class LobbyDataTransfer : MonoBehaviour
                     ? snap.GetValue<string>("selectedModel")
                     : "Male";
 
-                Debug.Log($"[LobbyDataTransfer] Firebase selectedModel = '{modelFromFirebase}'");
+                ;
 
                 // Sync PlayerPrefs so both are consistent
                 PlayerPrefs.SetString("SelectedModel", modelFromFirebase);
@@ -112,11 +112,11 @@ public class LobbyDataTransfer : MonoBehaviour
                 if (local != null)
                 {
                     local.selectedModel = modelFromFirebase;
-                    Debug.Log($"[LobbyDataTransfer] Applied Firebase model '{modelFromFirebase}' to {local.displayName}");
+                    ;
                 }
                 else
                 {
-                    Debug.LogWarning("[LobbyDataTransfer] Could not find local player entry to apply model!");
+                    ;
                 }
 
                 onComplete?.Invoke();
@@ -134,11 +134,11 @@ public class LobbyDataTransfer : MonoBehaviour
         if (local != null)
         {
             local.selectedModel = savedModel;
-            Debug.Log($"[LobbyDataTransfer] Applied PlayerPrefs model '{savedModel}' to {local.displayName}");
+            ;
         }
         else
         {
-            Debug.LogWarning("[LobbyDataTransfer] Could not find local player to apply model!");
+            ;
         }
     }
 
@@ -162,6 +162,6 @@ public class LobbyDataTransfer : MonoBehaviour
         relayClientPort = 7770;
         relaySessionToken = 0;
         relayUserToken = 0;
-        Debug.Log("[LobbyDataTransfer] Cleared data");
+        ;
     }
 }

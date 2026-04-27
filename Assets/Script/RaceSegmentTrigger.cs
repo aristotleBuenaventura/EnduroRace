@@ -21,7 +21,7 @@ public class RaceSegmentTrigger : MonoBehaviour
             raceManager = Object.FindFirstObjectByType<RaceManager>();
             if (raceManager == null)
             {
-                Debug.LogWarning("[RaceSegmentTrigger] No RaceManager found in scene!");
+                ;
             }
         }
     }
@@ -39,7 +39,7 @@ public class RaceSegmentTrigger : MonoBehaviour
         PlayerBikeInteraction bikeInteraction = networkPlayer.GetComponent<PlayerBikeInteraction>();
         if (bikeInteraction == null)
         {
-            Debug.LogWarning("[RaceSegmentTrigger] PlayerBikeInteraction not found on player!");
+            ;
             return;
         }
 
@@ -50,30 +50,30 @@ public class RaceSegmentTrigger : MonoBehaviour
             case TriggerType.SwimToBike:
                 if (currentSegment != RaceManager.Segment.Swim)
                 {
-                    Debug.Log("[RaceSegmentTrigger] Player not in Swim segment, cannot progress to Bike");
+                    ;
                     return;
                 }
-                Debug.Log("[RaceSegmentTrigger] Player progressing to Bike segment");
+                ;
                 raceManager?.ProgressToSegment(RaceManager.Segment.Bike);
                 break;
 
             case TriggerType.BikeToRun:
                 if (currentSegment != RaceManager.Segment.Bike)
                 {
-                    Debug.Log("[RaceSegmentTrigger] Player not in Bike segment, cannot progress to Run");
+                    ;
                     return;
                 }
-                Debug.Log("[RaceSegmentTrigger] Player progressing to Run segment");
+                ;
                 raceManager?.ProgressToSegment(RaceManager.Segment.Run);
                 break;
 
             case TriggerType.Finish:
                 if (currentSegment != RaceManager.Segment.Run)
                 {
-                    Debug.Log("[RaceSegmentTrigger] Player not in Run segment, cannot finish");
+                    ;
                     return;
                 }
-                Debug.Log("[RaceSegmentTrigger] Player finished race!");
+                ;
                 raceManager?.FinishRace();
 
                 // Show podium for this player

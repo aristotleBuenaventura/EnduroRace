@@ -19,7 +19,7 @@ public class MiniMapIconFollow : MonoBehaviour
     public void SetTarget(Transform newTarget)
     {
         target = newTarget;
-        Debug.Log($"[MiniMapIconFollow] SetTarget called — target={newTarget?.name ?? "NULL"}");
+        ;
     }
 
     private void LateUpdate()

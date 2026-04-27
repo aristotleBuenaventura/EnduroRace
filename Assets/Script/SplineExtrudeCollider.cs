@@ -28,7 +28,7 @@ public class SplineExtrudeCollider : MonoBehaviour
             splineContainer = GetComponent<SplineContainer>();
 
         if (enableDebugLogs)
-            Debug.Log($"[SplineExtrudeCollider] GenerateColliders start on {name} | parentLayer={LayerMask.LayerToName(gameObject.layer)}({gameObject.layer})");
+            ;
 
         // Clear old colliders
         for (int i = transform.childCount - 1; i >= 0; i--)
@@ -76,12 +76,12 @@ public class SplineExtrudeCollider : MonoBehaviour
 
             if (enableDebugLogs)
             {
-                Debug.Log($"[SplineExtrudeCollider] Created {colObj.name} | pos={colObj.transform.position} | layer={LayerMask.LayerToName(colObj.layer)}({colObj.layer})");
+                ;
             }
         }
 
         if (enableDebugLogs)
-            Debug.Log($"[SplineExtrudeCollider] GenerateColliders done. Total colliders attempted: {count}");
+            ;
     }
 
     private void OnDrawGizmos()

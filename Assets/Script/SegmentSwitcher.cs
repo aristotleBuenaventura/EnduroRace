@@ -89,7 +89,7 @@ public class SegmentSwitcher : NetworkBehaviour
 
         networkPlayer.IsOnBike.OnChange += OnBikeStateChanged;
 
-        Debug.Log($"[SegmentSwitcher] Initialized - IsOwner={IsOwner}");
+        ;
     }
 
     private void OnDestroy()
@@ -107,12 +107,12 @@ public class SegmentSwitcher : NetworkBehaviour
         Transform t = CurrentPlayerTransform;
         SceneReference.GetMinimapCameraFollow()?.SetTarget(t);
         SceneReference.GetMinimapIconFollow()?.SetTarget(t);
-        Debug.Log($"[SegmentSwitcher] Minimap targets updated to: {t?.name}");
+        ;
     }
 
     private void OnBikeStateChanged(bool prev, bool next, bool asServer)
     {
-        Debug.Log($"[SegmentSwitcher] Bike state changed: {prev} → {next} (IsOwner={IsOwner})");
+        ;
 
         if (!isSwitching)
         {
@@ -154,7 +154,7 @@ public class SegmentSwitcher : NetworkBehaviour
 
     public void SwitchToRunner(Vector3 pos, Quaternion rot)
     {
-        Debug.Log($"[SegmentSwitcher] SwitchToRunner called - IsOwner={IsOwner} isSwitching={isSwitching}");
+        ;
         if (!IsOwner || isSwitching) return;
         StartCoroutine(DismountRoutine(pos, rot));
     }
@@ -190,7 +190,7 @@ public class SegmentSwitcher : NetworkBehaviour
 
         bikeInteraction?.RebindInteract();
 
-        Debug.Log("[SegmentSwitcher] Mounted bike");
+        ;
         isSwitching = false;
     }
 
@@ -222,7 +222,7 @@ public class SegmentSwitcher : NetworkBehaviour
         AssignCamera(runnerFollowPoint, runnerLookPoint);
         OnPlayerModelChanged?.Invoke();
 
-        Debug.Log($"[SegmentSwitcher] About to rebind - current map: {playerInput.currentActionMap?.name}");
+        ;
         bikeInteraction?.RebindInteract();
 
         isSwitching = false;

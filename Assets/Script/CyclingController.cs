@@ -145,8 +145,7 @@ public class CyclingController : NetworkBehaviour
         float equipReduction = EquipmentManager.Instance?.GetStaminaDecreaseReduction() ?? 0f;
         tierStaminaDecreaseRate = Mathf.Max(0f, tierStaminaDecreaseRate - equipReduction);
 
-        Debug.Log($"[CyclingController] Tier '{tier}' — DrainRate: {tierStaminaDecreaseRate} " +
-                  $"(equip reduction: {equipReduction}), RegenRate: {tierStaminaRegenRate}, RegenEnabled: {tierRegenEnabled}");
+        ;
     }
 
     private void Update()
@@ -207,13 +206,13 @@ public class CyclingController : NetworkBehaviour
         if (!isExhausted && currentStamina <= 0f)
         {
             isExhausted = true;
-            Debug.Log("[CyclingController] Exhaustion state ENTERED");
+            ;
             PlayHeavyBreathing(true);
         }
         else if (isExhausted && currentStamina > maxStamina * 0.1f)
         {
             isExhausted = false;
-            Debug.Log("[CyclingController] Exhaustion state EXITED");
+            ;
             PlayHeavyBreathing(false);
         }
     }
@@ -337,7 +336,7 @@ public class CyclingController : NetworkBehaviour
 
     private void ApplyAnimationState(byte state)
     {
-        if (animator == null) { Debug.LogError("[CyclingController] Animator is NULL!"); return; }
+        if (animator == null) { ; return; }
         animator.SetBool("isIdle",  state == 0);
         animator.SetBool("isMove",  state == 1);
         animator.SetBool("isAccel", state == 2);
@@ -365,7 +364,7 @@ public class CyclingController : NetworkBehaviour
     private void TriggerCameraShake(float intensity)
     {
         if (impulseSource != null) impulseSource.GenerateImpulse(intensity);
-        else Debug.LogWarning("[CyclingController] CinemachineImpulseSource not assigned!");
+        else ;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -474,6 +473,6 @@ public class CyclingController : NetworkBehaviour
     {
         currentStamina = Mathf.Clamp(currentStamina + amount, 0f, maxStamina);
         staminaUI?.SetStamina(currentStamina, maxStamina);
-        Debug.Log($"[CyclingController] Stamina restored by {amount}. Current: {currentStamina}");
+        ;
     }
 }

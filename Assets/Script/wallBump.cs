@@ -26,7 +26,7 @@ public class wallBump : MonoBehaviour
 
         if (netPlayer == null)
         {
-            Debug.LogError("[wallBump] NetworkPlayer not found on collider hierarchy!");
+            ;
             return;
         }
 
@@ -40,7 +40,7 @@ public class wallBump : MonoBehaviour
         bool useCyclist = cyclistActive || (hitCyclist != null && !playerActive);
         bool usePlayer = !useCyclist && hitPlayer != null;
 
-        Debug.Log($"[wallBump] Wall bump triggered | useCyclist={useCyclist}, usePlayer={usePlayer}");
+        ;
 
         if (usePlayer && hitPlayer != null)
             hitPlayer.currentStamina = Mathf.Max(0f, hitPlayer.currentStamina - tripStaminaCost);

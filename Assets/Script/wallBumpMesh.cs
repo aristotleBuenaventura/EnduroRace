@@ -17,14 +17,14 @@ public class wallBumpMesh : MonoBehaviour
 
         Collider ownCollider = GetComponent<Collider>();
         Rigidbody ownRb = GetComponent<Rigidbody>();
-        Debug.Log($"[wallBumpMesh] Ready on {name} | layer={LayerMask.LayerToName(gameObject.layer)}({gameObject.layer}) | hasCollider={ownCollider != null} trigger={ownCollider != null && ownCollider.isTrigger} | hasRigidbody={ownRb != null}");
+        ;
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (enableDebugLogs)
         {
-            Debug.Log($"[wallBumpMesh] OnTriggerEnter on {name} with {other.name} | otherLayer={LayerMask.LayerToName(other.gameObject.layer)}({other.gameObject.layer})");
+            ;
         }
 
         PlayerController hitPlayer = other.GetComponentInParent<PlayerController>();
@@ -33,7 +33,7 @@ public class wallBumpMesh : MonoBehaviour
         if (hitPlayer == null && hitCyclist == null)
         {
             if (enableDebugLogs)
-                Debug.Log($"[wallBumpMesh] Ignored trigger: no PlayerController/CyclingController in parent hierarchy of {other.name}");
+                ;
             return;
         }
 
@@ -49,14 +49,14 @@ public class wallBumpMesh : MonoBehaviour
 
         if (netPlayer == null)
         {
-            Debug.LogError("[wallBumpMesh] NetworkPlayer not found!");
+            ;
             return;
         }
 
         if (!netPlayer.IsOwner || netPlayer.IsStunned.Value)
         {
             if (enableDebugLogs)
-                Debug.Log($"[wallBumpMesh] Ignored trigger: IsOwner={netPlayer.IsOwner}, IsStunned={netPlayer.IsStunned.Value}");
+                ;
             return;
         }
 
@@ -66,7 +66,7 @@ public class wallBumpMesh : MonoBehaviour
         bool useCyclist = cyclistActive || (hitCyclist != null && !playerActive);
         bool usePlayer = !useCyclist && hitPlayer != null;
 
-        Debug.Log($"[wallBumpMesh] Triggered | player={usePlayer}, cyclist={useCyclist}");
+        ;
 
         if (usePlayer && hitPlayer != null)
             hitPlayer.currentStamina = Mathf.Max(0f, hitPlayer.currentStamina - tripStaminaCost);
@@ -102,6 +102,6 @@ public class wallBumpMesh : MonoBehaviour
     {
         if (!enableDebugLogs || hasLoggedStay) return;
         hasLoggedStay = true;
-        Debug.Log($"[wallBumpMesh] OnTriggerStay detected with {other.name}. Trigger system is active.");
+        ;
     }
 }

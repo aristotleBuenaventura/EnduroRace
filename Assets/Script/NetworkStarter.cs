@@ -66,7 +66,7 @@ public class NetworkStarter : MonoBehaviour
     {
         #if UNITY_ANDROID || UNITY_IOS
                 useMobileJoystick = true;
-                Debug.Log("[NetworkStarter] Mobile platform detected");
+                ;
         #endif
 
         if (networkManager == null)
@@ -74,7 +74,7 @@ public class NetworkStarter : MonoBehaviour
 
         if (networkManager == null)
         {
-            Debug.LogError("[NetworkStarter] NetworkManager not found!");
+            ;
             return;
         }
 
@@ -102,18 +102,16 @@ public class NetworkStarter : MonoBehaviour
 
                 transport.SetEdgegapRelayData(relayData);
 
-                Debug.Log($"[NetworkStarter] Relay data set - Host: {LobbyDataTransfer.Instance.relayHost}, " +
-                          $"ServerPort: {LobbyDataTransfer.Instance.relayServerPort}, " +
-                          $"ClientPort: {LobbyDataTransfer.Instance.relayClientPort}, IsHost: {isHost}");
+                ;
             }
             else
             {
-                Debug.LogError("[NetworkStarter] EdgegapKcpTransport not found on NetworkManager!");
+                ;
             }
         }
         else
         {
-            Debug.LogWarning("[NetworkStarter] No relay data - using direct IP fallback");
+            ;
         }
 
         playerTracker = Object.FindFirstObjectByType<RacePlayerTracker>();
@@ -135,11 +133,11 @@ public class NetworkStarter : MonoBehaviour
             StartCoroutine(DebugSpawnPoints());
 
         #if UNITY_EDITOR || UNITY_STANDALONE
-            Debug.Log("[NetworkStarter] Starting as Host");
+            ;
             StartHost();
         #elif UNITY_ANDROID || UNITY_IOS
             useMobileJoystick = true;
-            Debug.Log("[NetworkStarter] Starting as Mobile Client");
+            ;
             StartCoroutine(StartMobileClientCoroutine());
         #endif
     }
@@ -162,12 +160,12 @@ public class NetworkStarter : MonoBehaviour
     {
         bool alreadySpawned = clientModels.ContainsKey(conn); // model was never set = spawned via fallback
         clientModels[conn] = modelName;
-        Debug.Log($"[NetworkStarter] Registered model '{modelName}' for conn {conn.ClientId}");
+        ;
 
         // If the player was already spawned with the wrong prefab, respawn them
         if (alreadySpawned)
         {
-            Debug.Log($"[NetworkStarter] Model arrived after spawn — checking if respawn needed");
+            ;
             RespawnWithCorrectModelIfNeeded(conn, modelName);
         }
     }
@@ -186,11 +184,11 @@ public class NetworkStarter : MonoBehaviour
 
             if (spawnedPrefabName == correctPrefab.name)
             {
-                Debug.Log($"[NetworkStarter] Already correct model '{modelName}' — no respawn needed");
+                ;
                 return;
             }
 
-            Debug.Log($"[NetworkStarter] Respawning conn {conn.ClientId}: '{spawnedPrefabName}' → '{correctPrefab.name}'");
+            ;
 
             // Save spawn position before despawn
             Vector3 pos = netObj.transform.position;
@@ -236,14 +234,14 @@ public class NetworkStarter : MonoBehaviour
         if (networkManager == null) return;
         networkManager.ServerManager.StartConnection();
         networkManager.ClientManager.StartConnection();
-        Debug.Log("[NetworkStarter] Host started");
+        ;
     }
 
     public void StartServer()
     {
         if (networkManager == null) return;
         networkManager.ServerManager.StartConnection();
-        Debug.Log("[NetworkStarter] Server started");
+        ;
     }
 
     public void StartClient()
@@ -262,12 +260,12 @@ public class NetworkStarter : MonoBehaviour
         }
 
         networkManager.ClientManager.StartConnection();
-        Debug.Log("[NetworkStarter] Client started");
+        ;
     }
 
     private IEnumerator StartMobileClientCoroutine()
     {
-        Debug.Log("[NetworkStarter] Starting mobile client...");
+        ;
 
         yield return new WaitForSeconds(3f);
 
@@ -276,7 +274,7 @@ public class NetworkStarter : MonoBehaviour
 
         while (elapsed < totalTimeout)
         {
-            Debug.Log($"[NetworkStarter] Attempting connection... ({elapsed:F0}s)");
+            ;
 
             networkManager.ClientManager.StartConnection();
 
@@ -286,7 +284,7 @@ public class NetworkStarter : MonoBehaviour
                 if (networkManager.ClientManager.Connection != null &&
                     networkManager.ClientManager.Connection.IsActive)
                 {
-                    Debug.Log("[NetworkStarter] Mobile client connected!");
+                    ;
                     yield break;
                 }
                 attemptTime += 0.5f;
@@ -297,10 +295,10 @@ public class NetworkStarter : MonoBehaviour
             yield return new WaitForSeconds(1f);
 
             elapsed += 6f;
-            Debug.Log($"[NetworkStarter] Retrying connection...");
+            ;
         }
 
-        Debug.LogError("[NetworkStarter] Connection failed after all retries!");
+        ;
     }
 
     private IEnumerator DebugSpawnPoints()
@@ -308,32 +306,32 @@ public class NetworkStarter : MonoBehaviour
         yield return null;
 
         SpawnPoint testPoint = SpawnPoint.GetRandomSpawnPoint();
-        Debug.Log($"[NetworkStarter] SpawnPoint found: {testPoint != null}");
+        ;
 
         if (testPoint != null)
         {
             testPoint.GetSpawnTransform(out Vector3 pos, out Quaternion rot);
-            Debug.Log($"[NetworkStarter] SpawnPoint position: {pos}");
+            ;
         }
         else
         {
-            Debug.LogError("[NetworkStarter] NO SPAWN POINTS FOUND!");
+            ;
         }
     }
 
     private void OnServerConnectionState(ServerConnectionStateArgs args)
     {
-        Debug.Log($"[NetworkStarter] Server state: {args.ConnectionState}");
+        ;
     }
 
     private void OnClientConnectionState(ClientConnectionStateArgs args)
     {
-        Debug.Log($"[NetworkStarter] Client state: {args.ConnectionState}");
+        ;
 
         if (args.ConnectionState == LocalConnectionState.Started)
-            Debug.Log("[NetworkStarter] Client connected!");
+            ;
         else if (args.ConnectionState == LocalConnectionState.Stopped)
-            Debug.LogError("[NetworkStarter] Client disconnected!");
+            ;
     }
 
     private void OnRemoteConnectionState(NetworkConnection conn, RemoteConnectionStateArgs args)
@@ -342,7 +340,7 @@ public class NetworkStarter : MonoBehaviour
 
         if (args.ConnectionState == RemoteConnectionState.Started)
         {
-            Debug.Log($"[NetworkStarter] Client {conn.ClientId} connected");
+            ;
             StartCoroutine(WaitAndSpawnPlayer(conn));
         }
         else if (args.ConnectionState == RemoteConnectionState.Stopped)
@@ -351,7 +349,7 @@ public class NetworkStarter : MonoBehaviour
             {
                 usedSpawnPoints[conn].Release();
                 usedSpawnPoints.Remove(conn);
-                Debug.Log($"[NetworkStarter] Released spawn point for {conn.ClientId}");
+                ;
             }
 
             if (clientModels.ContainsKey(conn))
@@ -371,7 +369,7 @@ public class NetworkStarter : MonoBehaviour
         }
 
         if (!clientModels.ContainsKey(conn))
-            Debug.LogWarning($"[NetworkStarter] Model RPC never arrived for conn {conn.ClientId} — using fallback");
+            ;
 
         yield return new WaitForEndOfFrame();
         yield return new WaitForEndOfFrame();
@@ -389,7 +387,7 @@ public class NetworkStarter : MonoBehaviour
     {
         if (playerPrefab == null)
         {
-            Debug.LogError("[NetworkStarter] Player prefab not assigned!");
+            ;
             return;
         }
 
@@ -432,7 +430,7 @@ public class NetworkStarter : MonoBehaviour
         if (np != null)
             StartCoroutine(ConfirmSpawnAfterDelay(np, spawnPos, spawnRot));
 
-        Debug.Log($"[NetworkStarter] Spawned '{prefabToSpawn.name}' for conn {conn.ClientId} at {spawnPos}");
+        ;
     }
 
     private GameObject GetPrefabForConnection(NetworkConnection conn)
@@ -440,14 +438,14 @@ public class NetworkStarter : MonoBehaviour
         // 1. Check if client sent their model directly via RPC (most reliable for mobile)
         if (clientModels.TryGetValue(conn, out string sentModel))
         {
-            Debug.Log($"[NetworkStarter] Using client-sent model '{sentModel}' for conn {conn.ClientId}");
+            ;
             return GetPrefabByModelName(sentModel);
         }
 
         // 2. Fallback to LobbyDataTransfer (works for host/editor)
         if (LobbyDataTransfer.Instance == null)
         {
-            Debug.LogWarning("[NetworkStarter] LobbyDataTransfer is null - defaulting to male prefab");
+            ;
             return playerPrefab;
         }
 
@@ -459,11 +457,11 @@ public class NetworkStarter : MonoBehaviour
 
         if (data == null)
         {
-            Debug.LogWarning($"[NetworkStarter] No PlayerData for conn {conn.ClientId} - defaulting to male prefab");
+            ;
             return playerPrefab;
         }
 
-        Debug.Log($"[NetworkStarter] Conn {conn.ClientId} selectedModel from LobbyData: '{data.selectedModel}'");
+        ;
         return GetPrefabByModelName(data.selectedModel);
     }
 
@@ -492,8 +490,7 @@ public class NetworkStarter : MonoBehaviour
         // Index 0 = host/local player, index 1+ = remote players
         int playerIndex = 1 + remoteAlreadySpawned;
 
-        Debug.Log($"[NetworkStarter] Conn {conn.ClientId}: PlayerData[{playerIndex}] " +
-                $"(remoteSpawned={remoteAlreadySpawned}, total={players.Count})");
+        ;
 
         if (playerIndex < players.Count)
             return players[playerIndex];
@@ -503,12 +500,12 @@ public class NetworkStarter : MonoBehaviour
         {
             if (!p.isLocalPlayer)
             {
-                Debug.Log($"[NetworkStarter] Fallback: '{p.displayName}' for conn {conn.ClientId}");
+                ;
                 return p;
             }
         }
 
-        Debug.LogWarning($"[NetworkStarter] No PlayerData found for conn {conn.ClientId}");
+        ;
         return null;
 }
     private IEnumerator ConfirmSpawnAfterDelay(NetworkPlayer netPlayer, Vector3 spawnPos, Quaternion rot)
@@ -521,11 +518,11 @@ public class NetworkStarter : MonoBehaviour
         if (drift < 1f)
         {
             netPlayer.RpcConfirmSpawnPosition(spawnPos, rot);
-            Debug.Log($"[NetworkStarter] Spawn confirm sent (drift={drift:F2}m)");
+            ;
         }
         else
         {
-            Debug.Log($"[NetworkStarter] Spawn confirm skipped — player already moved (drift={drift:F2}m)");
+            ;
         }
     }
 
@@ -566,7 +563,7 @@ public class NetworkStarter : MonoBehaviour
                 if (FoamTrailEffect.Instance != null)
                 FoamTrailEffect.Instance.SetPlayerFeet(feet);
 
-                Debug.Log("[NetworkStarter] Found local player");
+                ;
                 break;
             }
         }

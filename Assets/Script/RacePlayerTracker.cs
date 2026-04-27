@@ -23,7 +23,7 @@ public class RacePlayerTracker : MonoBehaviour
         foreach (var player in players)
         {
             lobbyPlayers[player.playerId] = player;
-            Debug.Log($"[RacePlayerTracker] Registered lobby player: '{player.displayName}' (playerId: {player.playerId})");
+            ;
         }
     }
 
@@ -65,7 +65,7 @@ public class RacePlayerTracker : MonoBehaviour
             ? pd.displayName
             : "<not in lobby>";
 
-        Debug.Log($"[RacePlayerTracker] Linked OwnerId={networkPlayer.OwnerId} → firebaseId={firebasePlayerId} → name='{displayName}'");
+        ;
     }
 
     // -------------------------------------------------------------------------
@@ -138,28 +138,28 @@ public class RacePlayerTracker : MonoBehaviour
     {
         if (lobbyPlayers.Count == 0)
         {
-            Debug.LogWarning("[RacePlayerTracker] lobbyPlayers is empty — SetPlayers() may not have been called yet.");
+            ;
             return;
         }
 
         if (playerIdToNetworkPlayer.Count == 0)
         {
-            Debug.LogWarning("[RacePlayerTracker] No NetworkPlayers linked yet — RegisterNetworkPlayer() may not have been called.");
+            ;
             return;
         }
 
-        Debug.Log($"[RacePlayerTracker] === Player Mapping ({playerIdToNetworkPlayer.Count} linked) ===");
+        ;
         foreach (var kvp in playerIdToNetworkPlayer)
         {
             string firebaseId = kvp.Key;
             NetworkPlayer np  = kvp.Value;
             string name       = lobbyPlayers.TryGetValue(firebaseId, out var pd) ? pd.displayName : "<no lobby entry>";
             int ownerId       = np != null ? np.OwnerId : -1;
-            Debug.Log($"[RacePlayerTracker]   OwnerId={ownerId} | firebaseId={firebaseId} | displayName='{name}'");
+            ;
         }
 
         var unlinked = lobbyPlayers.Keys.Except(playerIdToNetworkPlayer.Keys).ToList();
         foreach (var fid in unlinked)
-            Debug.LogWarning($"[RacePlayerTracker]   UNLINKED lobby entry: firebaseId={fid} | displayName='{lobbyPlayers[fid].displayName}'");
+            ;
     }
 }

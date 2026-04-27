@@ -142,7 +142,7 @@ public class PlayerAppearanceFemale : NetworkBehaviour
             }
             else
             {
-                Debug.LogWarning($"[PlayerAppearanceFemale] Missing texture idx {colorIndex} on {renderer.name}");
+                ;
             }
         }
 

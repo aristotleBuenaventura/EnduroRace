@@ -332,8 +332,7 @@ public class PlayerProfileManager : MonoBehaviour
                         bool isTutorialActive = PlayerPrefs.GetInt(TUTORIAL_ACTIVE_KEY, 0) == 1;
                         int  mainMenuStep     = PlayerPrefs.GetInt(MAIN_MENU_STEP_KEY, 0);
 
-                        Debug.Log($"[ProfileTutorial] hasSeenTutorial=false, " +
-                                  $"isTutorialActive={isTutorialActive}, mainMenuStep={mainMenuStep}");
+                        ;
 
                         if (isTutorialActive && mainMenuStep == PROFILE_STEP_INDEX)
                         {
