@@ -7,6 +7,7 @@ public class BikeTrigger : NetworkBehaviour
     public Transform mountPoint;
     public float triggerRadius = 2f;
     public GameObject mountPromptUI;
+    public GameObject textBG;
 
     [HideInInspector] public bool isPlayerNearby = false;
 
@@ -16,6 +17,7 @@ public class BikeTrigger : NetworkBehaviour
     {
         if (mountPromptUI != null)
             mountPromptUI.SetActive(false);
+            textBG.SetActive(false);
     }
 
     private void Update()
@@ -41,6 +43,7 @@ public class BikeTrigger : NetworkBehaviour
         {
             if (mountPromptUI.activeSelf)
                 mountPromptUI.SetActive(false);
+                textBG.SetActive(false);
 
             isPlayerNearby = false;
             return;
@@ -57,6 +60,7 @@ public class BikeTrigger : NetworkBehaviour
             {
                 isPlayerNearby = true;
                 mountPromptUI.SetActive(true);
+                textBG.SetActive(true);
                 ;
             }
         }
@@ -66,6 +70,7 @@ public class BikeTrigger : NetworkBehaviour
             {
                 isPlayerNearby = false;
                 mountPromptUI.SetActive(false);
+                textBG.SetActive(false);
                 ;
             }
         }

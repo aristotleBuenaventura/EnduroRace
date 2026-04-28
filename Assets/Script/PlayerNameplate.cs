@@ -81,8 +81,8 @@ public class PlayerNameplate : NetworkBehaviour
         frontBackground.color = Color.white;
         backBackground.color = Color.white;
 
-        frontText.color = Color.black;
-        backText.color = Color.black;
+        frontText.color = Color.white;
+        backText.color = Color.white;
     }
 
     private void SetNameFromLobbyData()
@@ -111,8 +111,8 @@ public class PlayerNameplate : NetworkBehaviour
         frontText.text = playerName;
         backText.text = playerName;
 
-        frontText.color = Color.black;
-        backText.color = Color.black;
+        frontText.color = Color.white;
+        backText.color = Color.white;
 
         Canvas.ForceUpdateCanvases();
         LayoutRebuild();
