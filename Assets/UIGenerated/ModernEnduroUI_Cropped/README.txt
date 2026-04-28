@@ -11,3 +11,11 @@ Suggested Unity import settings:
 - For panels/buttons/borders: set Sprite Editor borders, then use Image Type = Sliced.
 
 Original untrimmed set: Assets/UIGenerated/ModernEnduroUI
+
+Blue fixed additions:
+- modern_settings_button_blue.png
+- modern_lightbulb_button_blue.png
+- modern_running_button_blue.png
+- modern_icon_run_blue.png
+
+Circular controls were regenerated without the old white glass bar highlight.
