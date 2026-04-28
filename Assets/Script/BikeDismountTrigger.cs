@@ -7,6 +7,7 @@ public class BikeDismountTrigger : NetworkBehaviour
     public Transform dismountPoint;
     public float triggerRadius = 2f;
     public GameObject dismountPromptUI;
+    public GameObject textBG;
 
     private SegmentSwitcher localSegmentSwitcher;
     private bool isPlayerNearby;
@@ -15,6 +16,7 @@ public class BikeDismountTrigger : NetworkBehaviour
     {
         if (dismountPromptUI != null)
             dismountPromptUI.SetActive(false); // hide UI initially
+            textBG.SetActive(false);
     }
 
     private void Update()
@@ -42,6 +44,7 @@ public class BikeDismountTrigger : NetworkBehaviour
             {
                 isPlayerNearby = false;
                 dismountPromptUI.SetActive(false);
+                textBG.SetActive(false);
                 ;
             }
             return;
@@ -56,6 +59,7 @@ public class BikeDismountTrigger : NetworkBehaviour
             {
                 isPlayerNearby = true;
                 dismountPromptUI.SetActive(true);
+                textBG.SetActive(true);
                 ;
             }
         }
@@ -65,6 +69,7 @@ public class BikeDismountTrigger : NetworkBehaviour
             {
                 isPlayerNearby = false;
                 dismountPromptUI.SetActive(false);
+                textBG.SetActive(true);
                 ;
             }
         }
