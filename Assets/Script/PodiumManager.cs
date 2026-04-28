@@ -30,8 +30,7 @@ public class PodiumManager : NetworkBehaviour
     public Transform[] podiumPositions;
     public GameObject podiumCutsceneObject;
 
-    [Header("Effects")]
-    public ParticleSystem confettiEffect;
+    [Header("Audio")]
     public AudioSource podiumMusic;
 
     [Header("Cameras")]
@@ -53,9 +52,6 @@ public class PodiumManager : NetworkBehaviour
 
     [Header("Progress Bar")]
     public Slider pointsProgressBar;
-
-    [Header("Trophy")]
-    public GameObject trophyPrefab;
 
     private FirebaseFirestore db;
     private bool podiumShown = false;
@@ -258,7 +254,6 @@ public class PodiumManager : NetworkBehaviour
             }
         }
 
-        if (confettiEffect != null && finalPlacement <= 3) confettiEffect.Play();
         if (podiumMusic    != null) podiumMusic.Play();
 
         yield return new WaitForSeconds(2f);
@@ -334,26 +329,6 @@ public class PodiumManager : NetworkBehaviour
             string trigger = rank == 1 ? "Victory" : "Clap";
             animator.SetTrigger(trigger);
 
-            if (rank == 1 && trophyPrefab != null)
-            {
-                Transform rightHand = animator.GetBoneTransform(HumanBodyBones.RightHand);
-                if (rightHand != null)
-                {
-                    // Check for pre-existing trophy child first, otherwise instantiate
-                    Transform trophy = rightHand.Find("trophy");
-                    if (trophy != null)
-                    {
-                        trophy.gameObject.SetActive(true);
-                    }
-                    else
-                    {
-                        GameObject trophyGO = Instantiate(trophyPrefab, rightHand);
-                        trophyGO.name = "trophy";
-                        trophyGO.transform.localPosition = Vector3.zero;
-                        trophyGO.transform.localRotation = Quaternion.identity;
-                    }
-                }
-            }
         }
         else
         {
@@ -745,7 +720,6 @@ public class PodiumManager : NetworkBehaviour
     private IEnumerator ReturnToLobby()
     {
         if (podiumMusic    != null) podiumMusic.Stop();
-        if (confettiEffect != null) confettiEffect.Stop();
 
         if (LobbyDataTransfer.Instance != null)
             LobbyDataTransfer.Instance.ClearData();
