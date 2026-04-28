@@ -564,8 +564,8 @@ public class MultiplayerRaceRanking : NetworkBehaviour
         ServerRpcFinish(networkPlayer.OwnerId, time);
     }
 
-    [ServerRpc(RequireOwnership = false)]
-    private void ServerRpcFinish(int ownerId, float time)
+    [Server]
+    public void RecordFinishTime(int ownerId, float time)
     {
         var racer = racers.FirstOrDefault(r =>
             r.type == RacerType.NetworkPlayer &&
@@ -577,6 +577,12 @@ public class MultiplayerRaceRanking : NetworkBehaviour
             racer.finishTime = time;
             SortAndBroadcast();
         }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void ServerRpcFinish(int ownerId, float time)
+    {
+        RecordFinishTime(ownerId, time);
     }
 
     public void ReportAIFinish(Transform aiTransform, float time)

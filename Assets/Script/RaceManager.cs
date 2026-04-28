@@ -342,6 +342,13 @@ public class RaceManager : NetworkBehaviour
             if (np.Owner == sender) { finishedPlayer = np; break; }
         }
 
+        if (finishedPlayer != null)
+        {
+            MultiplayerRaceRanking rankingSystem = FindFirstObjectByType<MultiplayerRaceRanking>();
+            if (rankingSystem != null)
+                rankingSystem.RecordFinishTime(finishedPlayer.OwnerId, raceTime);
+        }
+
         // Send personal result immediately to that client only
         if (podiumManager != null && finishedPlayer != null)
             podiumManager.NotifyPlayerFinished(finishedPlayer, placement, raceTime);
