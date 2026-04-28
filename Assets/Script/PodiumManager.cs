@@ -458,11 +458,13 @@ public class PodiumManager : NetworkBehaviour
             TMP_Text nameText = entry.transform.Find("NameText")?.GetComponent<TMP_Text>();
             if (nameText != null) nameText.text = snap.name;
 
-            TMP_Text timeText = entry.transform.Find("TimeText")?.GetComponent<TMP_Text>();
+            TMP_Text timeText = entry.transform.Find("TimeText")?.GetComponent<TMP_Text>()
+                ?? entry.transform.Find("GapText")?.GetComponent<TMP_Text>();
             if (timeText != null)
             {
-                // Local player uses locally-tracked finalRaceTime (most accurate)
-                if (isLocal)
+                // Local player uses locally-tracked finalRaceTime when available,
+                // then falls back to the server snapshot used by all other rows.
+                if (isLocal && finalRaceTime > 0f)
                     timeText.text = FormatTime(finalRaceTime);
                 else if (snap.finishTime > 0f)
                     timeText.text = FormatTime(snap.finishTime);

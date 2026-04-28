@@ -354,11 +354,17 @@ public class MultiplayerRaceRanking : NetworkBehaviour
         for (int i = 0; i < racers.Count; i++)
             racers[i].rank = i + 1;
 
+        var snapshot = BuildCurrentSnapshot();
+        RpcReceiveRankings(snapshot);
+    }
+
+    private RankSnapshot[] BuildCurrentSnapshot()
+    {
         // FIX: Re-resolve names every broadcast so late-arriving tracker data
         // corrects any names that were wrong at init time
         RacePlayerTracker tracker = FindFirstObjectByType<RacePlayerTracker>();
 
-        var snapshot = racers.Take(maxDisplayedRanks).Select(r =>
+        return racers.Take(maxDisplayedRanks).Select(r =>
         {
             string resolvedName = r.name;
 
@@ -385,8 +391,6 @@ public class MultiplayerRaceRanking : NetworkBehaviour
                 finishTime    = r.finishTime,
             };
         }).ToArray();
-
-        RpcReceiveRankings(snapshot);
     }
 
     // -------------------------------------------------------------------------
@@ -569,7 +573,10 @@ public class MultiplayerRaceRanking : NetworkBehaviour
             r.networkPlayer.OwnerId == ownerId);
 
         if (racer != null)
+        {
             racer.finishTime = time;
+            SortAndBroadcast();
+        }
     }
 
     public void ReportAIFinish(Transform aiTransform, float time)
@@ -577,7 +584,10 @@ public class MultiplayerRaceRanking : NetworkBehaviour
         if (!IsServerStarted) return;
         var racer = racers.FirstOrDefault(r => r.type == RacerType.AI && r.GetTransform() == aiTransform);
         if (racer != null)
+        {
             racer.finishTime = time;
+            SortAndBroadcast();
+        }
     }
 
     // -------------------------------------------------------------------------
@@ -649,7 +659,16 @@ public class MultiplayerRaceRanking : NetworkBehaviour
         => latestSnapshot.FirstOrDefault(s => s.isLocalPlayer).rank;
 
     public List<RankSnapshot> GetFinalRankings()
-        => latestSnapshot.ToList();
+    {
+        if (!IsServerStarted)
+            return latestSnapshot.ToList();
+
+        racers.Sort((a, b) => b.totalProgress.CompareTo(a.totalProgress));
+        for (int i = 0; i < racers.Count; i++)
+            racers[i].rank = i + 1;
+
+        return BuildCurrentSnapshot().ToList();
+    }
 
     public string GetRacerName(int rank)
         => latestSnapshot.FirstOrDefault(s => s.rank == rank).name ?? "Unknown";
