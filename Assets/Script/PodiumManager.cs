@@ -548,10 +548,10 @@ public class PodiumManager : NetworkBehaviour
         yield return new WaitUntil(() => done);
 
         int newPoints = currentPoints + pointsEarned;
-        bool advancing = IsAdvancing(currentTier, placement, raceTime, firstPlaceTime);
+        bool advancing = IsAdvancing(currentTier, placement, raceTime, newPoints);
         string newTier = advancing ? GetNextTier(currentTier) : currentTier;
         int savedPoints = advancing ? 0 : newPoints;
-        string tierStatus = GetTierStatus(currentTier, placement, raceTime, firstPlaceTime, advancing);
+        string tierStatus = GetTierStatus(currentTier, placement, raceTime, newPoints, advancing);
 
         currentTierAtRaceEnd = currentTier;
 
@@ -668,15 +668,14 @@ public class PodiumManager : NetworkBehaviour
         }
     }
 
-    private bool IsAdvancing(string tier, int placement, float playerTime, float p1Time)
+    private bool IsAdvancing(string tier, int placement, float playerTime, int totalPoints)
     {
         switch (tier)
         {
             case "Beginner":
                 return playerTime <= BEGINNER_TARGET_TIME;
             case "Intermediate":
-                if (p1Time <= 0f) return false;
-                return playerTime <= p1Time * 1.15f;
+                return totalPoints >= INTERMEDIATE_TO_PRO_THRESHOLD;
             case "Pro":
                 return placement == 1;
             default:
@@ -695,7 +694,7 @@ public class PodiumManager : NetworkBehaviour
     }
 
     private string GetTierStatus(string tier, int placement, float playerTime,
-        float p1Time, bool advancing)
+        int totalPoints, bool advancing)
     {
         switch (tier)
         {
@@ -705,13 +704,8 @@ public class PodiumManager : NetworkBehaviour
                 return $"Beat the target time to advance — you were {diff:F0}s over";
             case "Intermediate":
                 if (advancing) return "🎉 Advancing to Pro!";
-                if (p1Time > 0f)
-                {
-                    float threshold = p1Time * 1.15f;
-                    float gap = playerTime - threshold;
-                    return $"Finish within 15% of 1st place — you were {gap:F0}s off";
-                }
-                return "Finish within 15% of 1st place time to advance to Pro";
+                int pointsNeeded = Mathf.Max(0, INTERMEDIATE_TO_PRO_THRESHOLD - totalPoints);
+                return $"Need {pointsNeeded} more points to advance to Pro";
             case "Pro":
                 return advancing ? "🏆 Pro Tier Complete!" : "Finish 1st to complete Pro tier";
             default:
