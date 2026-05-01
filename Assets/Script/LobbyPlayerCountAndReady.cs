@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using Firebase.Firestore;
+using Firebase.Extensions;
 using TMPro;
 
 public class LobbyPlayerCountAndReady : MonoBehaviour
@@ -9,6 +10,9 @@ public class LobbyPlayerCountAndReady : MonoBehaviour
     private FirebaseFirestore db;
     private string lobbyId;
     private int maxPlayers = 20;
+    private const int BEGINNER_MAX_PLAYERS = 20;
+    private const int INTERMEDIATE_MAX_PLAYERS = 15;
+    private const int PRO_MAX_PLAYERS = 10;
 
     void Start()
     {
@@ -27,7 +31,47 @@ public class LobbyPlayerCountAndReady : MonoBehaviour
         yield return new WaitUntil(() => lobby.IsLobbyReady);
 
         lobbyId = lobby.GetLobbyId();
+        yield return StartCoroutine(ResolveLobbyMaxPlayers());
         ListenForPlayers();
+    }
+
+    private IEnumerator ResolveLobbyMaxPlayers()
+    {
+        // 1) Start with tier-based defaults
+        string tier = LobbyDataTransfer.Instance?.GetLocalPlayerData()?.tier ?? "Beginner";
+        maxPlayers = GetTierMaxPlayers(tier);
+
+        // 2) If lobby document has maxPlayers, use that authoritative value
+        if (string.IsNullOrEmpty(lobbyId))
+            yield break;
+
+        bool done = false;
+        db.Collection("lobbies")
+          .Document(lobbyId)
+          .GetSnapshotAsync()
+          .ContinueWithOnMainThread(task =>
+          {
+              if (!task.IsFaulted && task.Result.Exists && task.Result.ContainsField("maxPlayers"))
+                  maxPlayers = (int)task.Result.GetValue<long>("maxPlayers");
+
+              done = true;
+          });
+
+        yield return new WaitUntil(() => done);
+    }
+
+    private int GetTierMaxPlayers(string tier)
+    {
+        switch (tier)
+        {
+            case "Intermediate":
+                return INTERMEDIATE_MAX_PLAYERS;
+            case "Pro":
+                return PRO_MAX_PLAYERS;
+            case "Beginner":
+            default:
+                return BEGINNER_MAX_PLAYERS;
+        }
     }
 
     private void ListenForPlayers()
