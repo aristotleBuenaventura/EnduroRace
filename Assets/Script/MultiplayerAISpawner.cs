@@ -135,7 +135,7 @@ public class MultiplayerAISpawner : NetworkBehaviour
                 return allPlayers[0].tier;
         }
 
-        string sceneName = SceneManager.GetActiveScene().name;
+        string sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
         if (sceneName.Contains("Pro"))
             return "Pro";
         if (sceneName.Contains("Intermediate"))
