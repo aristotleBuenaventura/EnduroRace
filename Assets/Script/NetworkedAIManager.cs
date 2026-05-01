@@ -10,6 +10,8 @@ public class NetworkedAIManager : NetworkBehaviour
     {
         public Transform[] bikeApproachPath;
         public Collider swimToBikeTrigger;
+        public int bikeSlotIndex = -1;
+        public bool bikeHidden = false;
     }
 
     [Header("AI Prefab")]
@@ -44,6 +46,10 @@ public class NetworkedAIManager : NetworkBehaviour
     [Header("Bike Approach Paths (Separate, Attach 20)")]
     [Tooltip("Attach dito yung 20 transforms (bike targets) na pupuntahan muna ng AI bago mag bike transition.")]
     public List<Transform> bikeApproachPaths = new List<Transform>();
+
+    [Header("Bike Slots (Attach 20)")]
+    [Tooltip("Attach dito yung 20 bike GameObjects. Matatago ang assigned bike kapag naabot ng AI ang transition slot.")]
+    public List<GameObject> bikeSlots = new List<GameObject>();
 
     [Header("AI Names")]
     public string[] aiNames = { "Alex", "Jordan", "Taylor", "Morgan", "Casey" };
@@ -281,6 +287,8 @@ public class NetworkedAIManager : NetworkBehaviour
     public void SpawnOpponents()
     {
         ;
+
+        SetAllBikeSlotsActive(true);
 
         if (aiOpponentPrefab == null && aiOpponentPrefab1 == null)
         {
@@ -627,28 +635,32 @@ public class NetworkedAIManager : NetworkBehaviour
     {
         List<BikeTransitionAssignment> validSlots = new List<BikeTransitionAssignment>();
 
-        int pairedCount = Mathf.Min(bikeApproachPaths.Count, bikeTransitionSlots.Count);
+        int pairedCount = Mathf.Min(bikeApproachPaths.Count, Mathf.Min(bikeTransitionSlots.Count, bikeSlots.Count));
         if (pairedCount > 0)
         {
             for (int i = 0; i < pairedCount; i++)
             {
                 Transform approachTarget = bikeApproachPaths[i];
                 Collider triggerCollider = bikeTransitionSlots[i];
+                GameObject bikeSlotObject = bikeSlots[i];
                 if (approachTarget == null)
                     continue;
                 if (triggerCollider == null)
+                    continue;
+                if (bikeSlotObject == null)
                     continue;
 
                 validSlots.Add(new BikeTransitionAssignment
                 {
                     bikeApproachPath = new Transform[] { approachTarget },
-                    swimToBikeTrigger = triggerCollider
+                    swimToBikeTrigger = triggerCollider,
+                    bikeSlotIndex = i
                 });
             }
 
-            if (bikeApproachPaths.Count != bikeTransitionSlots.Count)
+            if (bikeApproachPaths.Count != bikeTransitionSlots.Count || bikeApproachPaths.Count != bikeSlots.Count)
             {
-                Debug.LogWarning($"[NetworkedAIManager] Bike Approach Paths ({bikeApproachPaths.Count}) and Swim To Bike Trigger Slots ({bikeTransitionSlots.Count}) count mismatch. Using matched index pairs only.");
+                Debug.LogWarning($"[NetworkedAIManager] Bike Approach Paths ({bikeApproachPaths.Count}), Swim To Bike Trigger Slots ({bikeTransitionSlots.Count}), and Bike Slots ({bikeSlots.Count}) count mismatch. Using matched index pairs only.");
             }
         }
 
@@ -688,6 +700,7 @@ public class NetworkedAIManager : NetworkBehaviour
         if (!slot.swimToBikeTrigger.bounds.Contains(opponent.transform.position))
             return;
 
+        HideBikeSlotForAssignment(slot);
         TransitionOpponent(opponent, NetworkedAIOpponent.AISegment.Bike);
     }
 
@@ -702,6 +715,50 @@ public class NetworkedAIManager : NetworkBehaviour
 
         position = slot.swimToBikeTrigger.bounds.center;
         return true;
+    }
+
+    [Server]
+    private void HideBikeSlotForAssignment(BikeTransitionAssignment slot)
+    {
+        if (slot == null || slot.bikeHidden)
+            return;
+
+        if (slot.bikeSlotIndex < 0 || slot.bikeSlotIndex >= bikeSlots.Count)
+            return;
+
+        slot.bikeHidden = true;
+        SetBikeSlotActive(slot.bikeSlotIndex, false);
+    }
+
+    [Server]
+    private void SetAllBikeSlotsActive(bool isActive)
+    {
+        for (int i = 0; i < bikeSlots.Count; i++)
+            SetBikeSlotActive(i, isActive);
+    }
+
+    [Server]
+    private void SetBikeSlotActive(int slotIndex, bool isActive)
+    {
+        if (slotIndex < 0 || slotIndex >= bikeSlots.Count)
+            return;
+
+        GameObject bike = bikeSlots[slotIndex];
+        if (bike != null)
+            bike.SetActive(isActive);
+
+        RpcSetBikeSlotActive(slotIndex, isActive);
+    }
+
+    [ObserversRpc]
+    private void RpcSetBikeSlotActive(int slotIndex, bool isActive)
+    {
+        if (slotIndex < 0 || slotIndex >= bikeSlots.Count)
+            return;
+
+        GameObject bike = bikeSlots[slotIndex];
+        if (bike != null)
+            bike.SetActive(isActive);
     }
 
     private void ShufflePathList(List<Transform[]> paths)
@@ -766,6 +823,8 @@ public class NetworkedAIManager : NetworkBehaviour
     [Server]
     public void RemoveAllOpponents()
     {
+        SetAllBikeSlotsActive(true);
+
         foreach (var opponent in activeOpponents)
         {
             if (opponent == null) continue;
