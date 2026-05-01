@@ -61,9 +61,18 @@ public class NetworkedAIManager : NetworkBehaviour
     public Vector2 paceShiftMultiplierRange = new Vector2(0.72f, 1.28f);
 
     [Header("Segment Move Speed Randomness")]
-    public Vector2 swimMoveSpeedRange = new Vector2(0.5f, 1.85f);
-    public Vector2 bikeMoveSpeedRange = new Vector2(0.55f, 1.9f);
-    public Vector2 runMoveSpeedRange = new Vector2(0.5f, 1.8f);
+    public Vector2 swimMoveSpeedRange = new Vector2(0.2f, 2.2f);
+    public Vector2 bikeMoveSpeedRange = new Vector2(0.25f, 2.25f);
+    public Vector2 runMoveSpeedRange = new Vector2(0.2f, 2.15f);
+    [Range(0.05f, 1f)] public float swimMoveSpeedStdDev = 0.48f;
+    [Range(0.05f, 1f)] public float bikeMoveSpeedStdDev = 0.45f;
+    [Range(0.05f, 1f)] public float runMoveSpeedStdDev = 0.42f;
+
+    [Header("Guaranteed Super Slow AI")]
+    public bool forceOneSuperSlowAI = true;
+    public Vector2 superSlowSwimRange = new Vector2(0.12f, 0.28f);
+    public Vector2 superSlowBikeRange = new Vector2(0.16f, 0.34f);
+    public Vector2 superSlowRunRange = new Vector2(0.12f, 0.3f);
 
     [Header("Race Start Spread")]
     public Vector2 raceStartDelayRange = new Vector2(0f, 1.25f);
@@ -218,9 +227,18 @@ public class NetworkedAIManager : NetworkBehaviour
         List<Transform[]> swimAssignments = BuildPathAssignments(GetAvailablePaths(swimPath1, swimPath2), reserved.Count);
         List<Transform[]> bikeAssignments = BuildPathAssignments(GetAvailablePaths(bikePath1, bikePath2), reserved.Count);
         List<Transform[]> runAssignments = BuildPathAssignments(GetAvailablePaths(runPath1, runPath2), reserved.Count);
+        int superSlowIndex = forceOneSuperSlowAI && reserved.Count > 0 ? Random.Range(0, reserved.Count) : -1;
 
         for (int i = 0; i < reserved.Count; i++)
-            SpawnOpponent(i, reserved.Count, reserved[i], swimAssignments[i], bikeAssignments[i], runAssignments[i]);
+            SpawnOpponent(
+                i,
+                reserved.Count,
+                reserved[i],
+                swimAssignments[i],
+                bikeAssignments[i],
+                runAssignments[i],
+                i == superSlowIndex
+            );
 
         ;
     }
@@ -232,7 +250,8 @@ public class NetworkedAIManager : NetworkBehaviour
         SpawnPoint spawnPoint,
         Transform[] assignedSwimPath,
         Transform[] assignedBikePath,
-        Transform[] assignedRunPath)
+        Transform[] assignedRunPath,
+        bool forceSuperSlow)
     {
         GameObject selectedPrefab;
         if (randomizeGender)
@@ -279,7 +298,7 @@ public class NetworkedAIManager : NetworkBehaviour
         aiGO.name = "AI_" + ai.opponentName;
         ai.baseSpeed = Random.Range(minSpeed, maxSpeed);
 
-        AIProfile profile = CreateProfile(index, totalOpponents, assignedSwimPath, assignedBikePath, assignedRunPath);
+        AIProfile profile = CreateProfile(index, totalOpponents, assignedSwimPath, assignedBikePath, assignedRunPath, forceSuperSlow);
         ai.baseSpeed *= profile.speedMultiplier;
         ai.ConfigureMovementProfile(
             profile.lateralOffset,
@@ -332,7 +351,13 @@ public class NetworkedAIManager : NetworkBehaviour
         ;
     }
 
-    private AIProfile CreateProfile(int slotIndex, int totalOpponents, Transform[] swimPath, Transform[] bikePath, Transform[] runPath)
+    private AIProfile CreateProfile(
+        int slotIndex,
+        int totalOpponents,
+        Transform[] swimPath,
+        Transform[] bikePath,
+        Transform[] runPath,
+        bool forceSuperSlow)
     {
         float normalizedLane = totalOpponents <= 1
             ? 0.5f
@@ -347,6 +372,16 @@ public class NetworkedAIManager : NetworkBehaviour
         GetPaceTierRange(tierIndex, out paceLow, out paceHigh);
         float swimTierBase = GetSwimTierBase(tierIndex);
 
+        float swimMoveMultiplier = forceSuperSlow
+            ? RandomRange(superSlowSwimRange)
+            : RandomGaussianAroundOne(swimMoveSpeedRange, swimMoveSpeedStdDev);
+        float bikeMoveMultiplier = forceSuperSlow
+            ? RandomRange(superSlowBikeRange)
+            : RandomGaussianAroundOne(bikeMoveSpeedRange, bikeMoveSpeedStdDev);
+        float runMoveMultiplier = forceSuperSlow
+            ? RandomRange(superSlowRunRange)
+            : RandomGaussianAroundOne(runMoveSpeedRange, runMoveSpeedStdDev);
+
         return new AIProfile
         {
             swimPath = swimPath,
@@ -359,9 +394,9 @@ public class NetworkedAIManager : NetworkBehaviour
             swimAnimSpeed = Mathf.Clamp(swimTierBase + Random.Range(-0.08f, 0.08f), 0.5f, 1.55f),
             bikeAnimSpeed = Mathf.Clamp(RandomRange(bikeAnimationSpeedRange) * animationTier, 0.65f, 1.45f),
             runAnimSpeed = Mathf.Clamp(RandomRange(runAnimationSpeedRange) * animationTier, 0.65f, 1.45f),
-            swimMoveSpeedMultiplier = RandomRange(swimMoveSpeedRange),
-            bikeMoveSpeedMultiplier = RandomRange(bikeMoveSpeedRange),
-            runMoveSpeedMultiplier = RandomRange(runMoveSpeedRange),
+            swimMoveSpeedMultiplier = swimMoveMultiplier,
+            bikeMoveSpeedMultiplier = bikeMoveMultiplier,
+            runMoveSpeedMultiplier = runMoveMultiplier,
             swimAnimationPhaseOffset = Random.Range(0f, 1f),
             bikeAnimationPhaseOffset = Random.Range(0f, 1f),
             runAnimationPhaseOffset = Random.Range(0f, 1f),
@@ -420,6 +455,20 @@ public class NetworkedAIManager : NetworkBehaviour
         float min = Mathf.Min(range.x, range.y);
         float max = Mathf.Max(range.x, range.y);
         return Random.Range(min, max);
+    }
+
+    private float RandomGaussianAroundOne(Vector2 range, float stdDev)
+    {
+        float min = Mathf.Min(range.x, range.y);
+        float max = Mathf.Max(range.x, range.y);
+        float sigma = Mathf.Max(0.0001f, stdDev);
+
+        float u1 = Mathf.Clamp(Random.value, 0.0001f, 0.9999f);
+        float u2 = Random.value;
+        float z0 = Mathf.Sqrt(-2f * Mathf.Log(u1)) * Mathf.Cos(2f * Mathf.PI * u2);
+
+        float sample = 1f + z0 * sigma;
+        return Mathf.Clamp(sample, min, max);
     }
 
     private List<Transform[]> GetAvailablePaths(params Transform[][] candidates)

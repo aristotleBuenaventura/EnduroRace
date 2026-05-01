@@ -583,9 +583,9 @@ public class NetworkedAIOpponent : NetworkBehaviour
         _swimAnimationSpeed.Value = swimAnimSpeed;
         _bikeAnimationSpeed.Value = bikeAnimSpeed;
         _runAnimationSpeed.Value = runAnimSpeed;
-        _swimMoveSpeedMultiplier.Value = Mathf.Clamp(swimMoveSpeedMultiplier, 0.35f, 2.4f);
-        _bikeMoveSpeedMultiplier.Value = Mathf.Clamp(bikeMoveSpeedMultiplier, 0.35f, 2.4f);
-        _runMoveSpeedMultiplier.Value = Mathf.Clamp(runMoveSpeedMultiplier, 0.35f, 2.4f);
+        _swimMoveSpeedMultiplier.Value = Mathf.Clamp(swimMoveSpeedMultiplier, 0.12f, 2.6f);
+        _bikeMoveSpeedMultiplier.Value = Mathf.Clamp(bikeMoveSpeedMultiplier, 0.12f, 2.6f);
+        _runMoveSpeedMultiplier.Value = Mathf.Clamp(runMoveSpeedMultiplier, 0.12f, 2.6f);
         _swimAnimationPhaseOffset.Value = Mathf.Repeat(swimPhaseOffset, 1f);
         _bikeAnimationPhaseOffset.Value = Mathf.Repeat(bikePhaseOffset, 1f);
         _runAnimationPhaseOffset.Value = Mathf.Repeat(runPhaseOffset, 1f);
