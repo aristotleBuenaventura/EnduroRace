@@ -491,7 +491,6 @@ public class PodiumManager : NetworkBehaviour
             if (nameText != null && isLocal)
                 nameText.fontStyle = FontStyles.Bold;
 
-            Image rowBg = entry.GetComponent<Image>();
             createdEntries.Add(new LeaderboardEntryUIRefs
             {
                 key = GetLeaderboardKey(snap),
