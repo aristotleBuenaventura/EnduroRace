@@ -75,6 +75,7 @@ public class PodiumManager : NetworkBehaviour
     private class LeaderboardEntryUIRefs
     {
         public string key;
+        public Transform rootTransform;
         public TMP_Text rankText;
         public TMP_Text nameText;
         public TMP_Text timeText;
@@ -494,6 +495,7 @@ public class PodiumManager : NetworkBehaviour
             createdEntries.Add(new LeaderboardEntryUIRefs
             {
                 key = GetLeaderboardKey(snap),
+                rootTransform = entry.transform,
                 rankText = rankText,
                 nameText = nameText,
                 timeText = timeText,
@@ -528,10 +530,13 @@ public class PodiumManager : NetworkBehaviour
             liveRankings = initialRankings;
 
         var liveByKey = new Dictionary<string, MultiplayerRaceRanking.RankSnapshot>(liveRankings.Count);
+        var liveOrderByKey = new Dictionary<string, int>(liveRankings.Count);
         for (int i = 0; i < liveRankings.Count; i++)
         {
             var liveSnap = liveRankings[i];
-            liveByKey[GetLeaderboardKey(liveSnap)] = liveSnap;
+            string key = GetLeaderboardKey(liveSnap);
+            liveByKey[key] = liveSnap;
+            liveOrderByKey[key] = i;
         }
 
         foreach (var entry in createdEntries)
@@ -579,6 +584,12 @@ public class PodiumManager : NetworkBehaviour
                     entry.rowBg.color = new Color(topThreeColor.r, topThreeColor.g, topThreeColor.b, entry.rowBg.color.a);
                 else
                     entry.rowBg.color = entry.defaultRowBgColor;
+            }
+
+            if (liveOrderByKey.TryGetValue(entry.key, out int siblingIndex) &&
+                entry.rootTransform != null)
+            {
+                entry.rootTransform.SetSiblingIndex(siblingIndex);
             }
         }
     }
