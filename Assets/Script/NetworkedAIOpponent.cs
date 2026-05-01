@@ -39,6 +39,9 @@ public class NetworkedAIOpponent : NetworkBehaviour
     private readonly SyncVar<float> _animationCadenceAmplitude = new SyncVar<float>(0.08f);
     private readonly SyncVar<float> _animationCadencePhase = new SyncVar<float>(0f);
     private readonly SyncVar<float> _networkPaceMultiplier = new SyncVar<float>(1f);
+    private readonly SyncVar<float> _swimAnimationPhaseOffset = new SyncVar<float>(0f);
+    private readonly SyncVar<float> _bikeAnimationPhaseOffset = new SyncVar<float>(0f);
+    private readonly SyncVar<float> _runAnimationPhaseOffset = new SyncVar<float>(0f);
 
     // Public accessor so all existing code (NetworkedAIManager, etc.) compiles unchanged
     public AISegment currentSegment
@@ -100,6 +103,9 @@ public class NetworkedAIOpponent : NetworkBehaviour
     private float maxPaceShiftDuration = 1.8f;
     private float minPaceShiftMultiplier = 0.78f;
     private float maxPaceShiftMultiplier = 1.2f;
+    private bool hasAppliedSwimPhaseOffset = false;
+    private bool hasAppliedBikePhaseOffset = false;
+    private bool hasAppliedRunPhaseOffset = false;
 
     // FIX: Track last position on clients for movement detection
     // (CharacterController.velocity is always zero on non-server clients)
@@ -355,6 +361,7 @@ public class NetworkedAIOpponent : NetworkBehaviour
 
         if ((isFullyInWater || isInWater) && currentSegment == AISegment.Swim)
         {
+            TryApplySegmentPhaseOffset(AISegment.Swim);
             if (runnerAnimator != null)
             {
                 runnerAnimator.SetBool("isSwimming", isMoving);
@@ -365,6 +372,7 @@ public class NetworkedAIOpponent : NetworkBehaviour
         }
         else if (currentSegment == AISegment.Swim || currentSegment == AISegment.Run)
         {
+            TryApplySegmentPhaseOffset(AISegment.Run);
             if (runnerAnimator != null)
             {
                 runnerAnimator.SetBool("isSwimming", false);
@@ -375,6 +383,7 @@ public class NetworkedAIOpponent : NetworkBehaviour
         }
         else if (currentSegment == AISegment.Bike)
         {
+            TryApplySegmentPhaseOffset(AISegment.Bike);
             if (cyclistAnimator != null)
             {
                 cyclistAnimator.SetBool("isIdle", !isMoving);
@@ -403,6 +412,7 @@ public class NetworkedAIOpponent : NetworkBehaviour
         // ↓ Now matches server logic exactly, using synced booleans
         if ((isFullyInWater || isInWater) && currentSegment == AISegment.Swim)
         {
+            TryApplySegmentPhaseOffset(AISegment.Swim);
             if (runnerAnimator != null)
             {
                 runnerAnimator.SetBool("isSwimming", moving);
@@ -413,6 +423,7 @@ public class NetworkedAIOpponent : NetworkBehaviour
         }
         else if (currentSegment == AISegment.Swim || currentSegment == AISegment.Run)
         {
+            TryApplySegmentPhaseOffset(AISegment.Run);
             if (runnerAnimator != null)
             {
                 runnerAnimator.SetBool("isSwimming", false);
@@ -423,6 +434,7 @@ public class NetworkedAIOpponent : NetworkBehaviour
         }
         else if (currentSegment == AISegment.Bike)
         {
+            TryApplySegmentPhaseOffset(AISegment.Bike);
             if (cyclistAnimator != null)
             {
                 cyclistAnimator.SetBool("isIdle", !moving);
@@ -436,6 +448,9 @@ public class NetworkedAIOpponent : NetworkBehaviour
     public void SetSegment(AISegment segment)
     {
         currentSegment = segment; // routes through the property → _currentSegment.Value
+        if (segment == AISegment.Swim) hasAppliedSwimPhaseOffset = false;
+        if (segment == AISegment.Bike) hasAppliedBikePhaseOffset = false;
+        if (segment == AISegment.Run) hasAppliedRunPhaseOffset = false;
 
         switch (segment)
         {
@@ -535,6 +550,9 @@ public class NetworkedAIOpponent : NetworkBehaviour
         float swimAnimSpeed,
         float bikeAnimSpeed,
         float runAnimSpeed,
+        float swimPhaseOffset,
+        float bikePhaseOffset,
+        float runPhaseOffset,
         float cadenceFrequency,
         float cadenceAmplitude,
         float cadencePhase,
@@ -553,10 +571,16 @@ public class NetworkedAIOpponent : NetworkBehaviour
         _swimAnimationSpeed.Value = swimAnimSpeed;
         _bikeAnimationSpeed.Value = bikeAnimSpeed;
         _runAnimationSpeed.Value = runAnimSpeed;
+        _swimAnimationPhaseOffset.Value = Mathf.Repeat(swimPhaseOffset, 1f);
+        _bikeAnimationPhaseOffset.Value = Mathf.Repeat(bikePhaseOffset, 1f);
+        _runAnimationPhaseOffset.Value = Mathf.Repeat(runPhaseOffset, 1f);
         _animationCadenceFrequency.Value = Mathf.Max(0.05f, cadenceFrequency);
         _animationCadenceAmplitude.Value = Mathf.Clamp(cadenceAmplitude, 0f, 0.25f);
         _animationCadencePhase.Value = cadencePhase;
         _networkPaceMultiplier.Value = 1f;
+        hasAppliedSwimPhaseOffset = false;
+        hasAppliedBikePhaseOffset = false;
+        hasAppliedRunPhaseOffset = false;
 
         minPaceShiftInterval = Mathf.Max(0.1f, Mathf.Min(paceShiftMinInterval, paceShiftMaxInterval));
         maxPaceShiftInterval = Mathf.Max(minPaceShiftInterval, Mathf.Max(paceShiftMinInterval, paceShiftMaxInterval));
@@ -569,6 +593,44 @@ public class NetworkedAIOpponent : NetworkBehaviour
         currentPaceMultiplier = 1f;
 
         raceStartDelay = Mathf.Max(0f, startDelay);
+    }
+
+    private void TryApplySegmentPhaseOffset(AISegment segment)
+    {
+        Animator animator = null;
+        float phaseOffset = 0f;
+        bool alreadyApplied = false;
+
+        if (segment == AISegment.Swim)
+        {
+            animator = runnerAnimator;
+            phaseOffset = _swimAnimationPhaseOffset.Value;
+            alreadyApplied = hasAppliedSwimPhaseOffset;
+        }
+        else if (segment == AISegment.Bike)
+        {
+            animator = cyclistAnimator;
+            phaseOffset = _bikeAnimationPhaseOffset.Value;
+            alreadyApplied = hasAppliedBikePhaseOffset;
+        }
+        else if (segment == AISegment.Run)
+        {
+            animator = runnerAnimator;
+            phaseOffset = _runAnimationPhaseOffset.Value;
+            alreadyApplied = hasAppliedRunPhaseOffset;
+        }
+
+        if (alreadyApplied || animator == null)
+            return;
+        if (animator.IsInTransition(0))
+            return;
+
+        AnimatorStateInfo currentState = animator.GetCurrentAnimatorStateInfo(0);
+        animator.Play(currentState.fullPathHash, 0, phaseOffset);
+
+        if (segment == AISegment.Swim) hasAppliedSwimPhaseOffset = true;
+        if (segment == AISegment.Bike) hasAppliedBikePhaseOffset = true;
+        if (segment == AISegment.Run) hasAppliedRunPhaseOffset = true;
     }
 
     private void HandlePaceShifting()

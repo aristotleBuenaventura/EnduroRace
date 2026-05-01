@@ -83,6 +83,9 @@ public class NetworkedAIManager : NetworkBehaviour
         public float swimAnimSpeed;
         public float bikeAnimSpeed;
         public float runAnimSpeed;
+        public float swimAnimationPhaseOffset;
+        public float bikeAnimationPhaseOffset;
+        public float runAnimationPhaseOffset;
         public float animationCadenceFrequency;
         public float animationCadenceAmplitude;
         public float animationCadencePhase;
@@ -277,6 +280,9 @@ public class NetworkedAIManager : NetworkBehaviour
             profile.swimAnimSpeed,
             profile.bikeAnimSpeed,
             profile.runAnimSpeed,
+            profile.swimAnimationPhaseOffset,
+            profile.bikeAnimationPhaseOffset,
+            profile.runAnimationPhaseOffset,
             profile.animationCadenceFrequency,
             profile.animationCadenceAmplitude,
             profile.animationCadencePhase,
@@ -328,6 +334,7 @@ public class NetworkedAIManager : NetworkBehaviour
         float paceLow;
         float paceHigh;
         GetPaceTierRange(tierIndex, out paceLow, out paceHigh);
+        float swimTierBase = GetSwimTierBase(tierIndex);
 
         return new AIProfile
         {
@@ -338,9 +345,12 @@ public class NetworkedAIManager : NetworkBehaviour
             lateralOffset = Mathf.Clamp(laneOffset, minLaneOffset, maxLaneOffset),
             turnSpeed = Random.Range(minRotationSpeed, maxRotationSpeed),
             waypointReachDistance = Random.Range(minWaypointReachDistance, maxWaypointReachDistance),
-            swimAnimSpeed = Mathf.Clamp(RandomRange(swimAnimationSpeedRange) * animationTier, 0.65f, 1.45f),
+            swimAnimSpeed = Mathf.Clamp(swimTierBase + Random.Range(-0.08f, 0.08f), 0.5f, 1.55f),
             bikeAnimSpeed = Mathf.Clamp(RandomRange(bikeAnimationSpeedRange) * animationTier, 0.65f, 1.45f),
             runAnimSpeed = Mathf.Clamp(RandomRange(runAnimationSpeedRange) * animationTier, 0.65f, 1.45f),
+            swimAnimationPhaseOffset = Random.Range(0f, 1f),
+            bikeAnimationPhaseOffset = Random.Range(0f, 1f),
+            runAnimationPhaseOffset = Random.Range(0f, 1f),
             animationCadenceFrequency = RandomRange(animationCadenceFrequencyRange),
             animationCadenceAmplitude = RandomRange(animationCadenceAmplitudeRange),
             animationCadencePhase = Random.Range(0f, Mathf.PI * 2f),
@@ -382,6 +392,13 @@ public class NetworkedAIManager : NetworkBehaviour
 
         min = 1.05f;
         max = 1.36f;
+    }
+
+    private float GetSwimTierBase(int tierIndex)
+    {
+        if (tierIndex == 0) return 0.62f; // slow swimmer cadence
+        if (tierIndex == 1) return 0.95f; // normal swimmer cadence
+        return 1.32f;                      // fast swimmer cadence
     }
 
     private float RandomRange(Vector2 range)
