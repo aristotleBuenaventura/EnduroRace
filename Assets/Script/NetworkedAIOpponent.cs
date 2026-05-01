@@ -20,6 +20,7 @@ public class NetworkedAIOpponent : NetworkBehaviour
     public int currentWaypointIndex = 0;
     public float waypointReachDistance = 2f;
     public float rotationSpeed = 5f;
+    public float pathLateralOffset = 0f;
     public enum AISegment { Swim, Bike, Run }
 
     [Header("Stamina")]
@@ -31,6 +32,19 @@ public class NetworkedAIOpponent : NetworkBehaviour
     // FIX: FishNet v4 generic SyncVar<T> — replaces the obsolete [SyncVar] attribute.
     // Subscribe to OnChange in OnStartNetwork so clients react when the server updates the segment.
     private readonly SyncVar<AISegment> _currentSegment = new SyncVar<AISegment>(AISegment.Swim);
+    private readonly SyncVar<float> _swimAnimationSpeed = new SyncVar<float>(1f);
+    private readonly SyncVar<float> _bikeAnimationSpeed = new SyncVar<float>(1f);
+    private readonly SyncVar<float> _runAnimationSpeed = new SyncVar<float>(1f);
+    private readonly SyncVar<float> _animationCadenceFrequency = new SyncVar<float>(0.9f);
+    private readonly SyncVar<float> _animationCadenceAmplitude = new SyncVar<float>(0.08f);
+    private readonly SyncVar<float> _animationCadencePhase = new SyncVar<float>(0f);
+    private readonly SyncVar<float> _networkPaceMultiplier = new SyncVar<float>(1f);
+    private readonly SyncVar<float> _swimAnimationPhaseOffset = new SyncVar<float>(0f);
+    private readonly SyncVar<float> _bikeAnimationPhaseOffset = new SyncVar<float>(0f);
+    private readonly SyncVar<float> _runAnimationPhaseOffset = new SyncVar<float>(0f);
+    private readonly SyncVar<float> _swimMoveSpeedMultiplier = new SyncVar<float>(1f);
+    private readonly SyncVar<float> _bikeMoveSpeedMultiplier = new SyncVar<float>(1f);
+    private readonly SyncVar<float> _runMoveSpeedMultiplier = new SyncVar<float>(1f);
 
     // Public accessor so all existing code (NetworkedAIManager, etc.) compiles unchanged
     public AISegment currentSegment
@@ -81,6 +95,20 @@ public class NetworkedAIOpponent : NetworkBehaviour
     private float pushSlowdownAmount = 0f;
     private Coroutine waterEntryCoroutine;
     private Coroutine waterExitCoroutine;
+    private Coroutine delayedRaceStartCoroutine;
+    private float raceStartDelay = 0f;
+    private float paceShiftTimer = 0f;
+    private float paceShiftDurationTimer = 0f;
+    private float currentPaceMultiplier = 1f;
+    private float minPaceShiftInterval = 2f;
+    private float maxPaceShiftInterval = 5f;
+    private float minPaceShiftDuration = 0.7f;
+    private float maxPaceShiftDuration = 1.8f;
+    private float minPaceShiftMultiplier = 0.78f;
+    private float maxPaceShiftMultiplier = 1.2f;
+    private bool hasAppliedSwimPhaseOffset = false;
+    private bool hasAppliedBikePhaseOffset = false;
+    private bool hasAppliedRunPhaseOffset = false;
 
     // FIX: Track last position on clients for movement detection
     // (CharacterController.velocity is always zero on non-server clients)
@@ -133,6 +161,7 @@ public class NetworkedAIOpponent : NetworkBehaviour
 
         HandleStamina();
         HandleSprinting();
+        HandlePaceShifting();
         FollowPath();
 
         if (pushSlowdownTimer > 0f)
@@ -227,8 +256,33 @@ public class NetworkedAIOpponent : NetworkBehaviour
             return;
         }
 
-        Vector3 direction = (targetWaypoint.position - transform.position).normalized;
-        direction.y = 0f;
+        Vector3 targetPosition = targetWaypoint.position;
+        Vector3 flatToTarget = new Vector3(
+            targetPosition.x - transform.position.x,
+            0f,
+            targetPosition.z - transform.position.z
+        );
+
+        if (flatToTarget.sqrMagnitude < 0.0001f)
+        {
+            currentWaypointIndex++;
+            return;
+        }
+
+        Vector3 forwardDirection = flatToTarget.normalized;
+        if (Mathf.Abs(pathLateralOffset) > 0.01f)
+        {
+            // Keep each AI in its own "lane" so they don't overlap exactly.
+            Vector3 right = Vector3.Cross(Vector3.up, forwardDirection);
+            targetPosition += right * pathLateralOffset;
+            flatToTarget = new Vector3(
+                targetPosition.x - transform.position.x,
+                0f,
+                targetPosition.z - transform.position.z
+            );
+        }
+
+        Vector3 direction = flatToTarget.normalized;
 
         if (direction != Vector3.zero)
         {
@@ -240,16 +294,24 @@ public class NetworkedAIOpponent : NetworkBehaviour
 
         if (isFullyInWater && currentSegment == AISegment.Swim)
         {
-            moveSpeed = swimSpeed;
+            moveSpeed = swimSpeed * _swimMoveSpeedMultiplier.Value;
             if (isSprinting && currentStamina > 0f)
                 moveSpeed *= swimSpeedMultiplier;
         }
-        else
+        else if (currentSegment == AISegment.Bike)
         {
-            moveSpeed = currentSpeed;
+            moveSpeed = currentSpeed * _bikeMoveSpeedMultiplier.Value;
             if (isSprinting && currentStamina > 0f)
                 moveSpeed *= 1.8f;
         }
+        else
+        {
+            moveSpeed = currentSpeed * _runMoveSpeedMultiplier.Value;
+            if (isSprinting && currentStamina > 0f)
+                moveSpeed *= 1.8f;
+        }
+
+        moveSpeed *= currentPaceMultiplier;
 
         if (pushSlowdownTimer > 0f)
             moveSpeed *= (1f - pushSlowdownAmount);
@@ -265,7 +327,7 @@ public class NetworkedAIOpponent : NetworkBehaviour
 
         float distance = Vector3.Distance(
             new Vector3(transform.position.x, 0, transform.position.z),
-            new Vector3(targetWaypoint.position.x, 0, targetWaypoint.position.z)
+            new Vector3(targetPosition.x, 0, targetPosition.z)
         );
 
         if (distance < waypointReachDistance)
@@ -304,8 +366,11 @@ public class NetworkedAIOpponent : NetworkBehaviour
     // Server-side animation update (has full state available)
     private void UpdateAnimations()
     {
+        ApplyAnimatorSpeeds();
+
         if ((isFullyInWater || isInWater) && currentSegment == AISegment.Swim)
         {
+            TryApplySegmentPhaseOffset(AISegment.Swim);
             if (runnerAnimator != null)
             {
                 runnerAnimator.SetBool("isSwimming", isMoving);
@@ -316,6 +381,7 @@ public class NetworkedAIOpponent : NetworkBehaviour
         }
         else if (currentSegment == AISegment.Swim || currentSegment == AISegment.Run)
         {
+            TryApplySegmentPhaseOffset(AISegment.Run);
             if (runnerAnimator != null)
             {
                 runnerAnimator.SetBool("isSwimming", false);
@@ -326,6 +392,7 @@ public class NetworkedAIOpponent : NetworkBehaviour
         }
         else if (currentSegment == AISegment.Bike)
         {
+            TryApplySegmentPhaseOffset(AISegment.Bike);
             if (cyclistAnimator != null)
             {
                 cyclistAnimator.SetBool("isIdle", !isMoving);
@@ -342,6 +409,8 @@ public class NetworkedAIOpponent : NetworkBehaviour
     //   3. Reads currentSegment which is now a SyncVar so clients have the correct value
     private void UpdateClientAnimations()
     {
+        ApplyAnimatorSpeeds();
+
         float distanceMoved = Vector3.Distance(
             new Vector3(transform.position.x, 0, transform.position.z),
             new Vector3(_lastClientPosition.x, 0, _lastClientPosition.z)
@@ -352,6 +421,7 @@ public class NetworkedAIOpponent : NetworkBehaviour
         // ↓ Now matches server logic exactly, using synced booleans
         if ((isFullyInWater || isInWater) && currentSegment == AISegment.Swim)
         {
+            TryApplySegmentPhaseOffset(AISegment.Swim);
             if (runnerAnimator != null)
             {
                 runnerAnimator.SetBool("isSwimming", moving);
@@ -362,6 +432,7 @@ public class NetworkedAIOpponent : NetworkBehaviour
         }
         else if (currentSegment == AISegment.Swim || currentSegment == AISegment.Run)
         {
+            TryApplySegmentPhaseOffset(AISegment.Run);
             if (runnerAnimator != null)
             {
                 runnerAnimator.SetBool("isSwimming", false);
@@ -372,6 +443,7 @@ public class NetworkedAIOpponent : NetworkBehaviour
         }
         else if (currentSegment == AISegment.Bike)
         {
+            TryApplySegmentPhaseOffset(AISegment.Bike);
             if (cyclistAnimator != null)
             {
                 cyclistAnimator.SetBool("isIdle", !moving);
@@ -385,6 +457,9 @@ public class NetworkedAIOpponent : NetworkBehaviour
     public void SetSegment(AISegment segment)
     {
         currentSegment = segment; // routes through the property → _currentSegment.Value
+        if (segment == AISegment.Swim) hasAppliedSwimPhaseOffset = false;
+        if (segment == AISegment.Bike) hasAppliedBikePhaseOffset = false;
+        if (segment == AISegment.Run) hasAppliedRunPhaseOffset = false;
 
         switch (segment)
         {
@@ -451,16 +526,185 @@ public class NetworkedAIOpponent : NetworkBehaviour
         currentWaypointIndex = 0;
     }
 
+    private void ApplyAnimatorSpeeds()
+    {
+        float cadenceWave =
+            1f + Mathf.Sin((Time.time + _animationCadencePhase.Value) * _animationCadenceFrequency.Value)
+            * _animationCadenceAmplitude.Value;
+        float clampedCadence = Mathf.Clamp(cadenceWave, 0.7f, 1.3f);
+        float networkPace = Mathf.Clamp(_networkPaceMultiplier.Value, 0.65f, 1.35f);
+
+        if (runnerAnimator != null)
+        {
+            float baseSpeed = currentSegment == AISegment.Swim
+                ? _swimAnimationSpeed.Value
+                : _runAnimationSpeed.Value;
+            runnerAnimator.speed = Mathf.Clamp(baseSpeed * clampedCadence * networkPace, 0.5f, 1.6f);
+        }
+
+        if (cyclistAnimator != null)
+        {
+            float bikeCadence = 1f
+                + Mathf.Cos((Time.time + _animationCadencePhase.Value) * _animationCadenceFrequency.Value * 0.85f)
+                * _animationCadenceAmplitude.Value;
+            cyclistAnimator.speed = Mathf.Clamp(_bikeAnimationSpeed.Value * bikeCadence * networkPace, 0.5f, 1.6f);
+        }
+    }
+
+    [Server]
+    public void ConfigureMovementProfile(
+        float lateralOffset,
+        float turnSpeed,
+        float reachDistance,
+        float swimAnimSpeed,
+        float bikeAnimSpeed,
+        float runAnimSpeed,
+        float swimMoveSpeedMultiplier,
+        float bikeMoveSpeedMultiplier,
+        float runMoveSpeedMultiplier,
+        float swimPhaseOffset,
+        float bikePhaseOffset,
+        float runPhaseOffset,
+        float cadenceFrequency,
+        float cadenceAmplitude,
+        float cadencePhase,
+        float paceShiftMinInterval,
+        float paceShiftMaxInterval,
+        float paceShiftMinDuration,
+        float paceShiftMaxDuration,
+        float paceShiftMinMultiplier,
+        float paceShiftMaxMultiplier,
+        float startDelay)
+    {
+        pathLateralOffset = lateralOffset;
+        rotationSpeed = turnSpeed;
+        waypointReachDistance = reachDistance;
+
+        _swimAnimationSpeed.Value = swimAnimSpeed;
+        _bikeAnimationSpeed.Value = bikeAnimSpeed;
+        _runAnimationSpeed.Value = runAnimSpeed;
+        _swimMoveSpeedMultiplier.Value = Mathf.Clamp(swimMoveSpeedMultiplier, 0.12f, 2.6f);
+        _bikeMoveSpeedMultiplier.Value = Mathf.Clamp(bikeMoveSpeedMultiplier, 0.12f, 2.6f);
+        _runMoveSpeedMultiplier.Value = Mathf.Clamp(runMoveSpeedMultiplier, 0.12f, 2.6f);
+        _swimAnimationPhaseOffset.Value = Mathf.Repeat(swimPhaseOffset, 1f);
+        _bikeAnimationPhaseOffset.Value = Mathf.Repeat(bikePhaseOffset, 1f);
+        _runAnimationPhaseOffset.Value = Mathf.Repeat(runPhaseOffset, 1f);
+        _animationCadenceFrequency.Value = Mathf.Max(0.05f, cadenceFrequency);
+        _animationCadenceAmplitude.Value = Mathf.Clamp(cadenceAmplitude, 0f, 0.25f);
+        _animationCadencePhase.Value = cadencePhase;
+        _networkPaceMultiplier.Value = 1f;
+        hasAppliedSwimPhaseOffset = false;
+        hasAppliedBikePhaseOffset = false;
+        hasAppliedRunPhaseOffset = false;
+
+        minPaceShiftInterval = Mathf.Max(0.1f, Mathf.Min(paceShiftMinInterval, paceShiftMaxInterval));
+        maxPaceShiftInterval = Mathf.Max(minPaceShiftInterval, Mathf.Max(paceShiftMinInterval, paceShiftMaxInterval));
+        minPaceShiftDuration = Mathf.Max(0.1f, Mathf.Min(paceShiftMinDuration, paceShiftMaxDuration));
+        maxPaceShiftDuration = Mathf.Max(minPaceShiftDuration, Mathf.Max(paceShiftMinDuration, paceShiftMaxDuration));
+        minPaceShiftMultiplier = Mathf.Clamp(Mathf.Min(paceShiftMinMultiplier, paceShiftMaxMultiplier), 0.5f, 1.5f);
+        maxPaceShiftMultiplier = Mathf.Clamp(Mathf.Max(paceShiftMinMultiplier, paceShiftMaxMultiplier), minPaceShiftMultiplier, 1.6f);
+        paceShiftTimer = Random.Range(minPaceShiftInterval * 0.3f, maxPaceShiftInterval);
+        paceShiftDurationTimer = 0f;
+        currentPaceMultiplier = 1f;
+
+        raceStartDelay = Mathf.Max(0f, startDelay);
+    }
+
+    private void TryApplySegmentPhaseOffset(AISegment segment)
+    {
+        Animator animator = null;
+        float phaseOffset = 0f;
+        bool alreadyApplied = false;
+
+        if (segment == AISegment.Swim)
+        {
+            animator = runnerAnimator;
+            phaseOffset = _swimAnimationPhaseOffset.Value;
+            alreadyApplied = hasAppliedSwimPhaseOffset;
+        }
+        else if (segment == AISegment.Bike)
+        {
+            animator = cyclistAnimator;
+            phaseOffset = _bikeAnimationPhaseOffset.Value;
+            alreadyApplied = hasAppliedBikePhaseOffset;
+        }
+        else if (segment == AISegment.Run)
+        {
+            animator = runnerAnimator;
+            phaseOffset = _runAnimationPhaseOffset.Value;
+            alreadyApplied = hasAppliedRunPhaseOffset;
+        }
+
+        if (alreadyApplied || animator == null)
+            return;
+        if (animator.IsInTransition(0))
+            return;
+
+        AnimatorStateInfo currentState = animator.GetCurrentAnimatorStateInfo(0);
+        animator.Play(currentState.fullPathHash, 0, phaseOffset);
+
+        if (segment == AISegment.Swim) hasAppliedSwimPhaseOffset = true;
+        if (segment == AISegment.Bike) hasAppliedBikePhaseOffset = true;
+        if (segment == AISegment.Run) hasAppliedRunPhaseOffset = true;
+    }
+
+    private void HandlePaceShifting()
+    {
+        if (paceShiftDurationTimer > 0f)
+        {
+            paceShiftDurationTimer -= Time.deltaTime;
+            if (paceShiftDurationTimer <= 0f)
+            {
+                currentPaceMultiplier = 1f;
+                _networkPaceMultiplier.Value = currentPaceMultiplier;
+                paceShiftTimer = Random.Range(minPaceShiftInterval, maxPaceShiftInterval);
+            }
+            return;
+        }
+
+        paceShiftTimer -= Time.deltaTime;
+        if (paceShiftTimer <= 0f)
+        {
+            currentPaceMultiplier = Random.Range(minPaceShiftMultiplier, maxPaceShiftMultiplier);
+            _networkPaceMultiplier.Value = currentPaceMultiplier;
+            paceShiftDurationTimer = Random.Range(minPaceShiftDuration, maxPaceShiftDuration);
+            paceShiftTimer = Random.Range(minPaceShiftInterval, maxPaceShiftInterval);
+        }
+    }
+
     [Server]
     public void StartRace()
     {
-        raceStarted = true;
+        if (delayedRaceStartCoroutine != null)
+            StopCoroutine(delayedRaceStartCoroutine);
+
+        if (raceStartDelay <= 0.01f)
+        {
+            raceStarted = true;
+            return;
+        }
+
+        delayedRaceStartCoroutine = StartCoroutine(StartRaceDelayedRoutine());
     }
 
     [Server]
     public void StopRace()
     {
+        if (delayedRaceStartCoroutine != null)
+        {
+            StopCoroutine(delayedRaceStartCoroutine);
+            delayedRaceStartCoroutine = null;
+        }
+
         raceStarted = false;
+    }
+
+    private IEnumerator StartRaceDelayedRoutine()
+    {
+        raceStarted = false;
+        yield return new WaitForSeconds(raceStartDelay);
+        raceStarted = true;
+        delayedRaceStartCoroutine = null;
     }
 
     private void OnTriggerEnter(Collider other)
