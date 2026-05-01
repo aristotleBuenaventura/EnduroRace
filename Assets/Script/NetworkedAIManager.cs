@@ -6,19 +6,9 @@ using FishNet.Connection;
 
 public class NetworkedAIManager : NetworkBehaviour
 {
-    [System.Serializable]
-    public class BikeApproachPathSlot
+    private class BikeTransitionAssignment
     {
-        [Tooltip("Separate bike approach path papunta muna sa bikes.")]
-        public Transform[] path;
-    }
-
-    [System.Serializable]
-    public class BikeTransitionSlot
-    {
-        [Tooltip("Legacy fallback path (optional). Prefer Bike Approach Paths list.")]
         public Transform[] bikeApproachPath;
-        [Tooltip("Collider na tatamaan ng AI para mag-transition to Bike.")]
         public Collider swimToBikeTrigger;
     }
 
@@ -48,12 +38,12 @@ public class NetworkedAIManager : NetworkBehaviour
     public Transform bikeToRunTransition;
 
     [Header("Swim To Bike Trigger Slots (Attach 20)")]
-    [Tooltip("Attach dito yung swimtobike colliders (20). Imamatch ito by index sa Bike Approach Paths.")]
-    public List<BikeTransitionSlot> bikeTransitionSlots = new List<BikeTransitionSlot>();
+    [Tooltip("Attach dito yung 20 swimtobike colliders. Imamatch ito by index sa Bike Approach Paths.")]
+    public List<Collider> bikeTransitionSlots = new List<Collider>();
 
     [Header("Bike Approach Paths (Separate, Attach 20)")]
-    [Tooltip("Hiwalay na bike paths papunta muna sa bikes bago mag transition sa bike segment.")]
-    public List<BikeApproachPathSlot> bikeApproachPaths = new List<BikeApproachPathSlot>();
+    [Tooltip("Attach dito yung 20 transforms (bike targets) na pupuntahan muna ng AI bago mag bike transition.")]
+    public List<Transform> bikeApproachPaths = new List<Transform>();
 
     [Header("AI Names")]
     public string[] aiNames = { "Alex", "Jordan", "Taylor", "Morgan", "Casey" };
@@ -106,7 +96,7 @@ public class NetworkedAIManager : NetworkBehaviour
     private Dictionary<NetworkedAIOpponent, AIProfile> aiProfiles = new Dictionary<NetworkedAIOpponent, AIProfile>();
     private Dictionary<NetworkedAIOpponent, float> aiElapsedRaceTimes = new Dictionary<NetworkedAIOpponent, float>();
     private HashSet<NetworkedAIOpponent> aiFinishTimesReported = new HashSet<NetworkedAIOpponent>();
-    private Dictionary<NetworkedAIOpponent, BikeTransitionSlot> aiBikeSlots = new Dictionary<NetworkedAIOpponent, BikeTransitionSlot>();
+    private Dictionary<NetworkedAIOpponent, BikeTransitionAssignment> aiBikeSlots = new Dictionary<NetworkedAIOpponent, BikeTransitionAssignment>();
     private HashSet<NetworkedAIOpponent> aiHeadingToBikeSlot = new HashSet<NetworkedAIOpponent>();
     private bool raceRunning = false;
 
@@ -316,7 +306,7 @@ public class NetworkedAIManager : NetworkBehaviour
         List<Transform[]> swimAssignments = BuildPathAssignments(GetAvailablePaths(swimPath1, swimPath2), reserved.Count);
         List<Transform[]> bikeAssignments = BuildPathAssignments(GetAvailablePaths(bikePath1, bikePath2), reserved.Count);
         List<Transform[]> runAssignments = BuildPathAssignments(GetAvailablePaths(runPath1, runPath2), reserved.Count);
-        List<BikeTransitionSlot> bikeSlotAssignments = BuildBikeSlotAssignments(reserved.Count);
+        List<BikeTransitionAssignment> bikeSlotAssignments = BuildBikeSlotAssignments(reserved.Count);
         int superSlowIndex = forceOneSuperSlowAI && reserved.Count > 0 ? Random.Range(0, reserved.Count) : -1;
 
         for (int i = 0; i < reserved.Count; i++)
@@ -342,7 +332,7 @@ public class NetworkedAIManager : NetworkBehaviour
         Transform[] assignedSwimPath,
         Transform[] assignedBikePath,
         Transform[] assignedRunPath,
-        BikeTransitionSlot assignedBikeSlot,
+        BikeTransitionAssignment assignedBikeSlot,
         bool forceSuperSlow)
     {
         GameObject selectedPrefab;
@@ -601,13 +591,13 @@ public class NetworkedAIManager : NetworkBehaviour
         return assignments;
     }
 
-    private List<BikeTransitionSlot> BuildBikeSlotAssignments(int aiCount)
+    private List<BikeTransitionAssignment> BuildBikeSlotAssignments(int aiCount)
     {
-        List<BikeTransitionSlot> assignments = new List<BikeTransitionSlot>(aiCount);
+        List<BikeTransitionAssignment> assignments = new List<BikeTransitionAssignment>(aiCount);
         if (aiCount <= 0)
             return assignments;
 
-        List<BikeTransitionSlot> validSlots = GetValidBikeTransitionSlots();
+        List<BikeTransitionAssignment> validSlots = GetValidBikeTransitionSlots();
         if (validSlots.Count == 0)
         {
             for (int i = 0; i < aiCount; i++)
@@ -633,26 +623,26 @@ public class NetworkedAIManager : NetworkBehaviour
         return assignments;
     }
 
-    private List<BikeTransitionSlot> GetValidBikeTransitionSlots()
+    private List<BikeTransitionAssignment> GetValidBikeTransitionSlots()
     {
-        List<BikeTransitionSlot> validSlots = new List<BikeTransitionSlot>();
+        List<BikeTransitionAssignment> validSlots = new List<BikeTransitionAssignment>();
 
         int pairedCount = Mathf.Min(bikeApproachPaths.Count, bikeTransitionSlots.Count);
         if (pairedCount > 0)
         {
             for (int i = 0; i < pairedCount; i++)
             {
-                BikeApproachPathSlot approachSlot = bikeApproachPaths[i];
-                BikeTransitionSlot triggerSlot = bikeTransitionSlots[i];
-                if (approachSlot == null || approachSlot.path == null || approachSlot.path.Length == 0)
+                Transform approachTarget = bikeApproachPaths[i];
+                Collider triggerCollider = bikeTransitionSlots[i];
+                if (approachTarget == null)
                     continue;
-                if (triggerSlot == null || triggerSlot.swimToBikeTrigger == null)
+                if (triggerCollider == null)
                     continue;
 
-                validSlots.Add(new BikeTransitionSlot
+                validSlots.Add(new BikeTransitionAssignment
                 {
-                    bikeApproachPath = approachSlot.path,
-                    swimToBikeTrigger = triggerSlot.swimToBikeTrigger
+                    bikeApproachPath = new Transform[] { approachTarget },
+                    swimToBikeTrigger = triggerCollider
                 });
             }
 
@@ -662,24 +652,10 @@ public class NetworkedAIManager : NetworkBehaviour
             }
         }
 
-        if (validSlots.Count > 0)
-            return validSlots;
-
-        // Legacy fallback: gamitin ang old paired setup kung walang valid separate configuration.
-        foreach (BikeTransitionSlot slot in bikeTransitionSlots)
-        {
-            if (slot == null)
-                continue;
-            if (slot.bikeApproachPath == null || slot.bikeApproachPath.Length == 0)
-                continue;
-            if (slot.swimToBikeTrigger == null)
-                continue;
-            validSlots.Add(slot);
-        }
         return validSlots;
     }
 
-    private void ShuffleBikeSlotList(List<BikeTransitionSlot> slots)
+    private void ShuffleBikeSlotList(List<BikeTransitionAssignment> slots)
     {
         for (int i = slots.Count - 1; i > 0; i--)
         {
@@ -691,7 +667,7 @@ public class NetworkedAIManager : NetworkBehaviour
     [Server]
     private bool TrySendToAssignedBikeSlot(NetworkedAIOpponent opponent)
     {
-        if (!aiBikeSlots.TryGetValue(opponent, out BikeTransitionSlot slot) || slot == null)
+        if (!aiBikeSlots.TryGetValue(opponent, out BikeTransitionAssignment slot) || slot == null)
             return false;
         if (slot.bikeApproachPath == null || slot.bikeApproachPath.Length == 0)
             return false;
@@ -704,7 +680,7 @@ public class NetworkedAIManager : NetworkBehaviour
     [Server]
     private void TryTransitionToBikeIfReachedSlot(NetworkedAIOpponent opponent)
     {
-        if (!aiBikeSlots.TryGetValue(opponent, out BikeTransitionSlot slot) || slot == null)
+        if (!aiBikeSlots.TryGetValue(opponent, out BikeTransitionAssignment slot) || slot == null)
             return;
         if (slot.swimToBikeTrigger == null)
             return;
@@ -719,7 +695,7 @@ public class NetworkedAIManager : NetworkBehaviour
     {
         position = opponent.transform.position;
 
-        if (!aiBikeSlots.TryGetValue(opponent, out BikeTransitionSlot slot) || slot == null)
+        if (!aiBikeSlots.TryGetValue(opponent, out BikeTransitionAssignment slot) || slot == null)
             return false;
         if (slot.swimToBikeTrigger == null)
             return false;
