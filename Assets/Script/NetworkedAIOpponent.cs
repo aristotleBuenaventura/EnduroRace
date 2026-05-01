@@ -38,6 +38,7 @@ public class NetworkedAIOpponent : NetworkBehaviour
     private readonly SyncVar<float> _animationCadenceFrequency = new SyncVar<float>(0.9f);
     private readonly SyncVar<float> _animationCadenceAmplitude = new SyncVar<float>(0.08f);
     private readonly SyncVar<float> _animationCadencePhase = new SyncVar<float>(0f);
+    private readonly SyncVar<float> _networkPaceMultiplier = new SyncVar<float>(1f);
 
     // Public accessor so all existing code (NetworkedAIManager, etc.) compiles unchanged
     public AISegment currentSegment
@@ -90,6 +91,15 @@ public class NetworkedAIOpponent : NetworkBehaviour
     private Coroutine waterExitCoroutine;
     private Coroutine delayedRaceStartCoroutine;
     private float raceStartDelay = 0f;
+    private float paceShiftTimer = 0f;
+    private float paceShiftDurationTimer = 0f;
+    private float currentPaceMultiplier = 1f;
+    private float minPaceShiftInterval = 2f;
+    private float maxPaceShiftInterval = 5f;
+    private float minPaceShiftDuration = 0.7f;
+    private float maxPaceShiftDuration = 1.8f;
+    private float minPaceShiftMultiplier = 0.78f;
+    private float maxPaceShiftMultiplier = 1.2f;
 
     // FIX: Track last position on clients for movement detection
     // (CharacterController.velocity is always zero on non-server clients)
@@ -142,6 +152,7 @@ public class NetworkedAIOpponent : NetworkBehaviour
 
         HandleStamina();
         HandleSprinting();
+        HandlePaceShifting();
         FollowPath();
 
         if (pushSlowdownTimer > 0f)
@@ -284,6 +295,8 @@ public class NetworkedAIOpponent : NetworkBehaviour
             if (isSprinting && currentStamina > 0f)
                 moveSpeed *= 1.8f;
         }
+
+        moveSpeed *= currentPaceMultiplier;
 
         if (pushSlowdownTimer > 0f)
             moveSpeed *= (1f - pushSlowdownAmount);
@@ -495,13 +508,14 @@ public class NetworkedAIOpponent : NetworkBehaviour
             1f + Mathf.Sin((Time.time + _animationCadencePhase.Value) * _animationCadenceFrequency.Value)
             * _animationCadenceAmplitude.Value;
         float clampedCadence = Mathf.Clamp(cadenceWave, 0.7f, 1.3f);
+        float networkPace = Mathf.Clamp(_networkPaceMultiplier.Value, 0.65f, 1.35f);
 
         if (runnerAnimator != null)
         {
             float baseSpeed = currentSegment == AISegment.Swim
                 ? _swimAnimationSpeed.Value
                 : _runAnimationSpeed.Value;
-            runnerAnimator.speed = Mathf.Clamp(baseSpeed * clampedCadence, 0.65f, 1.45f);
+            runnerAnimator.speed = Mathf.Clamp(baseSpeed * clampedCadence * networkPace, 0.5f, 1.6f);
         }
 
         if (cyclistAnimator != null)
@@ -509,7 +523,7 @@ public class NetworkedAIOpponent : NetworkBehaviour
             float bikeCadence = 1f
                 + Mathf.Cos((Time.time + _animationCadencePhase.Value) * _animationCadenceFrequency.Value * 0.85f)
                 * _animationCadenceAmplitude.Value;
-            cyclistAnimator.speed = Mathf.Clamp(_bikeAnimationSpeed.Value * bikeCadence, 0.65f, 1.45f);
+            cyclistAnimator.speed = Mathf.Clamp(_bikeAnimationSpeed.Value * bikeCadence * networkPace, 0.5f, 1.6f);
         }
     }
 
@@ -524,6 +538,12 @@ public class NetworkedAIOpponent : NetworkBehaviour
         float cadenceFrequency,
         float cadenceAmplitude,
         float cadencePhase,
+        float paceShiftMinInterval,
+        float paceShiftMaxInterval,
+        float paceShiftMinDuration,
+        float paceShiftMaxDuration,
+        float paceShiftMinMultiplier,
+        float paceShiftMaxMultiplier,
         float startDelay)
     {
         pathLateralOffset = lateralOffset;
@@ -536,8 +556,43 @@ public class NetworkedAIOpponent : NetworkBehaviour
         _animationCadenceFrequency.Value = Mathf.Max(0.05f, cadenceFrequency);
         _animationCadenceAmplitude.Value = Mathf.Clamp(cadenceAmplitude, 0f, 0.25f);
         _animationCadencePhase.Value = cadencePhase;
+        _networkPaceMultiplier.Value = 1f;
+
+        minPaceShiftInterval = Mathf.Max(0.1f, Mathf.Min(paceShiftMinInterval, paceShiftMaxInterval));
+        maxPaceShiftInterval = Mathf.Max(minPaceShiftInterval, Mathf.Max(paceShiftMinInterval, paceShiftMaxInterval));
+        minPaceShiftDuration = Mathf.Max(0.1f, Mathf.Min(paceShiftMinDuration, paceShiftMaxDuration));
+        maxPaceShiftDuration = Mathf.Max(minPaceShiftDuration, Mathf.Max(paceShiftMinDuration, paceShiftMaxDuration));
+        minPaceShiftMultiplier = Mathf.Clamp(Mathf.Min(paceShiftMinMultiplier, paceShiftMaxMultiplier), 0.5f, 1.5f);
+        maxPaceShiftMultiplier = Mathf.Clamp(Mathf.Max(paceShiftMinMultiplier, paceShiftMaxMultiplier), minPaceShiftMultiplier, 1.6f);
+        paceShiftTimer = Random.Range(minPaceShiftInterval * 0.3f, maxPaceShiftInterval);
+        paceShiftDurationTimer = 0f;
+        currentPaceMultiplier = 1f;
 
         raceStartDelay = Mathf.Max(0f, startDelay);
+    }
+
+    private void HandlePaceShifting()
+    {
+        if (paceShiftDurationTimer > 0f)
+        {
+            paceShiftDurationTimer -= Time.deltaTime;
+            if (paceShiftDurationTimer <= 0f)
+            {
+                currentPaceMultiplier = 1f;
+                _networkPaceMultiplier.Value = currentPaceMultiplier;
+                paceShiftTimer = Random.Range(minPaceShiftInterval, maxPaceShiftInterval);
+            }
+            return;
+        }
+
+        paceShiftTimer -= Time.deltaTime;
+        if (paceShiftTimer <= 0f)
+        {
+            currentPaceMultiplier = Random.Range(minPaceShiftMultiplier, maxPaceShiftMultiplier);
+            _networkPaceMultiplier.Value = currentPaceMultiplier;
+            paceShiftDurationTimer = Random.Range(minPaceShiftDuration, maxPaceShiftDuration);
+            paceShiftTimer = Random.Range(minPaceShiftInterval, maxPaceShiftInterval);
+        }
     }
 
     [Server]

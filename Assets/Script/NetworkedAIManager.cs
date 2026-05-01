@@ -49,11 +49,16 @@ public class NetworkedAIManager : NetworkBehaviour
     public float maxWaypointReachDistance = 2.4f;
 
     [Header("Animation Variation")]
-    public Vector2 swimAnimationSpeedRange = new Vector2(0.78f, 1.22f);
-    public Vector2 bikeAnimationSpeedRange = new Vector2(0.8f, 1.2f);
-    public Vector2 runAnimationSpeedRange = new Vector2(0.8f, 1.24f);
-    public Vector2 animationCadenceFrequencyRange = new Vector2(0.55f, 1.25f);
-    public Vector2 animationCadenceAmplitudeRange = new Vector2(0.04f, 0.14f);
+    public Vector2 swimAnimationSpeedRange = new Vector2(0.72f, 1.28f);
+    public Vector2 bikeAnimationSpeedRange = new Vector2(0.75f, 1.25f);
+    public Vector2 runAnimationSpeedRange = new Vector2(0.74f, 1.3f);
+    public Vector2 animationCadenceFrequencyRange = new Vector2(0.42f, 1.35f);
+    public Vector2 animationCadenceAmplitudeRange = new Vector2(0.08f, 0.2f);
+
+    [Header("Dynamic Pace Shift")]
+    public Vector2 paceShiftIntervalRange = new Vector2(1.5f, 4.2f);
+    public Vector2 paceShiftDurationRange = new Vector2(0.8f, 2.4f);
+    public Vector2 paceShiftMultiplierRange = new Vector2(0.72f, 1.28f);
 
     [Header("Race Start Spread")]
     public Vector2 raceStartDelayRange = new Vector2(0f, 1.25f);
@@ -81,6 +86,12 @@ public class NetworkedAIManager : NetworkBehaviour
         public float animationCadenceFrequency;
         public float animationCadenceAmplitude;
         public float animationCadencePhase;
+        public float paceShiftMinInterval;
+        public float paceShiftMaxInterval;
+        public float paceShiftMinDuration;
+        public float paceShiftMaxDuration;
+        public float paceShiftMinMultiplier;
+        public float paceShiftMaxMultiplier;
         public float startDelay;
     }
 
@@ -269,6 +280,12 @@ public class NetworkedAIManager : NetworkBehaviour
             profile.animationCadenceFrequency,
             profile.animationCadenceAmplitude,
             profile.animationCadencePhase,
+            profile.paceShiftMinInterval,
+            profile.paceShiftMaxInterval,
+            profile.paceShiftMinDuration,
+            profile.paceShiftMaxDuration,
+            profile.paceShiftMinMultiplier,
+            profile.paceShiftMaxMultiplier,
             profile.startDelay
         );
 
@@ -303,10 +320,14 @@ public class NetworkedAIManager : NetworkBehaviour
         float normalizedLane = totalOpponents <= 1
             ? 0.5f
             : (float)slotIndex / (totalOpponents - 1f);
+        int tierIndex = GetAnimationTierIndex(slotIndex);
         float animationTier = GetAnimationTierMultiplier(slotIndex);
 
         float laneCenter = Mathf.Lerp(minLaneOffset, maxLaneOffset, normalizedLane);
         float laneOffset = laneCenter + Random.Range(-Mathf.Abs(laneJitter), Mathf.Abs(laneJitter));
+        float paceLow;
+        float paceHigh;
+        GetPaceTierRange(tierIndex, out paceLow, out paceHigh);
 
         return new AIProfile
         {
@@ -323,16 +344,44 @@ public class NetworkedAIManager : NetworkBehaviour
             animationCadenceFrequency = RandomRange(animationCadenceFrequencyRange),
             animationCadenceAmplitude = RandomRange(animationCadenceAmplitudeRange),
             animationCadencePhase = Random.Range(0f, Mathf.PI * 2f),
+            paceShiftMinInterval = RandomRange(paceShiftIntervalRange) * Random.Range(0.8f, 1f),
+            paceShiftMaxInterval = RandomRange(paceShiftIntervalRange) * Random.Range(1f, 1.35f),
+            paceShiftMinDuration = RandomRange(paceShiftDurationRange) * Random.Range(0.8f, 1f),
+            paceShiftMaxDuration = RandomRange(paceShiftDurationRange) * Random.Range(1f, 1.35f),
+            paceShiftMinMultiplier = Mathf.Clamp(paceLow, 0.55f, 1.1f),
+            paceShiftMaxMultiplier = Mathf.Clamp(paceHigh, 0.9f, 1.6f),
             startDelay = RandomRange(raceStartDelayRange),
         };
     }
 
+    private int GetAnimationTierIndex(int slotIndex) => Mathf.Abs(slotIndex) % 3;
+
     private float GetAnimationTierMultiplier(int slotIndex)
     {
-        int tierIndex = Mathf.Abs(slotIndex) % 3;
-        if (tierIndex == 0) return 0.85f; // visibly slower
+        int tierIndex = GetAnimationTierIndex(slotIndex);
+        if (tierIndex == 0) return 0.72f; // visibly slower
         if (tierIndex == 1) return 1f;    // normal
-        return 1.15f;                     // visibly faster
+        return 1.28f;                     // visibly faster
+    }
+
+    private void GetPaceTierRange(int tierIndex, out float min, out float max)
+    {
+        if (tierIndex == 0)
+        {
+            min = 0.62f;
+            max = 0.95f;
+            return;
+        }
+
+        if (tierIndex == 1)
+        {
+            min = 0.9f;
+            max = 1.12f;
+            return;
+        }
+
+        min = 1.05f;
+        max = 1.36f;
     }
 
     private float RandomRange(Vector2 range)
