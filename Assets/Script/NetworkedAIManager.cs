@@ -80,6 +80,9 @@ public class NetworkedAIManager : NetworkBehaviour
     private List<NetworkedAIOpponent> activeOpponents = new List<NetworkedAIOpponent>();
     private Dictionary<NetworkedAIOpponent, SpawnPoint> usedSpawnPoints = new Dictionary<NetworkedAIOpponent, SpawnPoint>();
     private Dictionary<NetworkedAIOpponent, AIProfile> aiProfiles = new Dictionary<NetworkedAIOpponent, AIProfile>();
+    private Dictionary<NetworkedAIOpponent, float> aiElapsedRaceTimes = new Dictionary<NetworkedAIOpponent, float>();
+    private HashSet<NetworkedAIOpponent> aiFinishTimesReported = new HashSet<NetworkedAIOpponent>();
+    private bool raceRunning = false;
 
     // Track each AI's current segment so we know when to transition
     private Dictionary<NetworkedAIOpponent, NetworkedAIOpponent.AISegment> aiSegments
@@ -132,6 +135,15 @@ public class NetworkedAIManager : NetworkBehaviour
             if (!aiSegments.ContainsKey(opponent)) continue;
 
             NetworkedAIOpponent.AISegment currentSeg = aiSegments[opponent];
+            bool hasFinished = currentSeg == (NetworkedAIOpponent.AISegment)99;
+
+            if (raceRunning && !hasFinished)
+            {
+                if (!aiElapsedRaceTimes.ContainsKey(opponent))
+                    aiElapsedRaceTimes[opponent] = 0f;
+
+                aiElapsedRaceTimes[opponent] += Time.deltaTime;
+            }
 
             // AI has exhausted its current waypoints — trigger next segment
             if (opponent.currentWaypointIndex >= opponent.waypointPath?.Length)
@@ -149,10 +161,35 @@ public class NetworkedAIManager : NetworkBehaviour
                 else if (currentSeg == NetworkedAIOpponent.AISegment.Run)
                 {
                     // AI finished the race — mark done so we stop checking
-                    ;
+                    if (!aiFinishTimesReported.Contains(opponent))
+                    {
+                        float finishTime = aiElapsedRaceTimes.TryGetValue(opponent, out float elapsedTime)
+                            ? elapsedTime
+                            : 0f;
+                        ReportAIFinishTime(opponent, finishTime);
+                        aiFinishTimesReported.Add(opponent);
+                        Debug.Log($"[NetworkedAIManager] AI finished: {opponent.opponentName} | time={finishTime:F2}s");
+                    }
                     aiSegments[opponent] = (NetworkedAIOpponent.AISegment)99; // sentinel: finished
                 }
             }
+        }
+    }
+
+    [Server]
+    private void ReportAIFinishTime(NetworkedAIOpponent opponent, float finishTime)
+    {
+        if (opponent == null) return;
+
+        MultiplayerRaceRanking ranking = FindFirstObjectByType<MultiplayerRaceRanking>();
+        if (ranking != null)
+        {
+            ranking.ReportAIFinish(opponent.transform, finishTime);
+            Debug.Log($"[NetworkedAIManager] Reported AI finish time to ranking: {opponent.opponentName} => {finishTime:F2}s");
+        }
+        else
+        {
+            Debug.LogWarning($"[NetworkedAIManager] Could not report AI finish time. MultiplayerRaceRanking not found for {opponent.opponentName}.");
         }
     }
 
@@ -332,6 +369,8 @@ public class NetworkedAIManager : NetworkBehaviour
 
         usedSpawnPoints[ai] = spawnPoint;
         aiProfiles[ai] = profile;
+        aiElapsedRaceTimes[ai] = 0f;
+        aiFinishTimesReported.Remove(ai);
 
         Transform[] chosenSwimPath = profile.swimPath ?? GetRandomSwimPath();
         if (chosenSwimPath != null && chosenSwimPath.Length > 0)
@@ -541,6 +580,8 @@ public class NetworkedAIManager : NetworkBehaviour
     [Server]
     public void StartRace()
     {
+        raceRunning = true;
+
         foreach (var opponent in activeOpponents)
         {
             if (opponent != null)
@@ -552,6 +593,8 @@ public class NetworkedAIManager : NetworkBehaviour
     [Server]
     public void StopRace()
     {
+        raceRunning = false;
+
         foreach (var opponent in activeOpponents)
         {
             if (opponent != null)
@@ -581,6 +624,9 @@ public class NetworkedAIManager : NetworkBehaviour
         usedSpawnPoints.Clear();
         aiProfiles.Clear();
         aiSegments.Clear();
+        aiElapsedRaceTimes.Clear();
+        aiFinishTimesReported.Clear();
+        raceRunning = false;
         ;
     }
 }

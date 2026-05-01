@@ -69,6 +69,18 @@ public class PodiumManager : NetworkBehaviour
     private const float BEGINNER_TARGET_TIME = 600f;
 
     private readonly List<NetworkPlayer> frozenPlayers = new List<NetworkPlayer>();
+    private const float LEADERBOARD_REFRESH_INTERVAL = 0.1f;
+    private readonly HashSet<string> loggedLeaderboardTimeKeys = new HashSet<string>();
+
+    private class LeaderboardEntryUIRefs
+    {
+        public string key;
+        public TMP_Text rankText;
+        public TMP_Text nameText;
+        public TMP_Text timeText;
+        public Image rowBg;
+        public Color defaultRowBgColor;
+    }
 
     private void Start()
     {
@@ -443,6 +455,8 @@ public class PodiumManager : NetworkBehaviour
             Destroy(child.gameObject);
 
         leaderboardPanel.SetActive(true);
+        loggedLeaderboardTimeKeys.Clear();
+        List<LeaderboardEntryUIRefs> createdEntries = new List<LeaderboardEntryUIRefs>();
 
         for (int i = 0; i < rankings.Count; i++)
         {
@@ -459,19 +473,7 @@ public class PodiumManager : NetworkBehaviour
             if (nameText != null) nameText.text = snap.name;
 
             TMP_Text timeText = FindEntryText(entry.transform, "TimeText", "GapText");
-            if (timeText != null)
-            {
-                timeText.gameObject.SetActive(true);
-
-                // Local player uses locally-tracked finalRaceTime when available,
-                // then falls back to the server snapshot used by all other rows.
-                if (isLocal && finalRaceTime > 0f)
-                    timeText.text = FormatTime(finalRaceTime);
-                else if (snap.finishTime > 0f)
-                    timeText.text = FormatTime(snap.finishTime);
-                else
-                    timeText.text = "---";
-            }
+            if (timeText != null) timeText.gameObject.SetActive(true);
 
             // FIX: use ownerId-based isLocal for color — fixes all-yellow bug
             Color rowColor = isLocal ? localPlayerColor
@@ -489,11 +491,104 @@ public class PodiumManager : NetworkBehaviour
             if (nameText != null && isLocal)
                 nameText.fontStyle = FontStyles.Bold;
 
+            Image rowBg = entry.GetComponent<Image>();
+            createdEntries.Add(new LeaderboardEntryUIRefs
+            {
+                key = GetLeaderboardKey(snap),
+                rankText = rankText,
+                nameText = nameText,
+                timeText = timeText,
+                rowBg = rowBg,
+                defaultRowBgColor = rowBg != null ? rowBg.color : Color.white
+            });
+
             yield return new WaitForSeconds(entryRevealDelay);
         }
 
-        yield return new WaitForSeconds(leaderboardDisplayDuration);
+        float elapsed = 0f;
+        while (elapsed < leaderboardDisplayDuration)
+        {
+            UpdateLeaderboardEntriesRealtime(rankings, createdEntries, localOwnerId);
+            yield return new WaitForSeconds(LEADERBOARD_REFRESH_INTERVAL);
+            elapsed += LEADERBOARD_REFRESH_INTERVAL;
+        }
+
         leaderboardPanel.SetActive(false);
+    }
+
+    private void UpdateLeaderboardEntriesRealtime(
+        List<MultiplayerRaceRanking.RankSnapshot> initialRankings,
+        List<LeaderboardEntryUIRefs> createdEntries,
+        int localOwnerId)
+    {
+        if (createdEntries == null || createdEntries.Count == 0) return;
+
+        List<MultiplayerRaceRanking.RankSnapshot> liveRankings =
+            rankingSystem != null ? rankingSystem.GetFinalRankings() : initialRankings;
+        if (liveRankings == null || liveRankings.Count == 0)
+            liveRankings = initialRankings;
+
+        var liveByKey = new Dictionary<string, MultiplayerRaceRanking.RankSnapshot>(liveRankings.Count);
+        for (int i = 0; i < liveRankings.Count; i++)
+        {
+            var liveSnap = liveRankings[i];
+            liveByKey[GetLeaderboardKey(liveSnap)] = liveSnap;
+        }
+
+        foreach (var entry in createdEntries)
+        {
+            if (entry == null || !liveByKey.TryGetValue(entry.key, out var snap))
+                continue;
+
+            bool isLocal = snap.ownerId == localOwnerId;
+
+            if (entry.rankText != null)
+                entry.rankText.text = GetOrdinal(snap.rank);
+
+            if (entry.nameText != null)
+                entry.nameText.text = snap.name;
+
+            if (entry.timeText != null)
+            {
+                if (isLocal && finalRaceTime > 0f)
+                {
+                    entry.timeText.text = FormatTime(finalRaceTime);
+                    if (loggedLeaderboardTimeKeys.Add(entry.key))
+                        Debug.Log($"[PodiumManager] Leaderboard time set (LOCAL) {snap.name}: {entry.timeText.text}");
+                }
+                else if (snap.finishTime > 0f)
+                {
+                    entry.timeText.text = FormatTime(snap.finishTime);
+                    if (loggedLeaderboardTimeKeys.Add(entry.key))
+                        Debug.Log($"[PodiumManager] Leaderboard time set {snap.name}: {entry.timeText.text}");
+                }
+                else
+                    entry.timeText.text = "---";
+            }
+
+            Color rowColor = isLocal ? localPlayerColor
+                           : snap.racerType == MultiplayerRaceRanking.RacerType.AI ? aiColor
+                           : otherPlayerColor;
+
+            if (entry.rankText != null) entry.rankText.color = rowColor;
+            if (entry.nameText != null) entry.nameText.color = rowColor;
+            if (entry.timeText != null) entry.timeText.color = rowColor;
+
+            if (entry.rowBg != null)
+            {
+                if (snap.rank <= 3)
+                    entry.rowBg.color = new Color(topThreeColor.r, topThreeColor.g, topThreeColor.b, entry.rowBg.color.a);
+                else
+                    entry.rowBg.color = entry.defaultRowBgColor;
+            }
+        }
+    }
+
+    private string GetLeaderboardKey(MultiplayerRaceRanking.RankSnapshot snap)
+    {
+        return snap.racerType == MultiplayerRaceRanking.RacerType.NetworkPlayer
+            ? $"p_{snap.ownerId}"
+            : $"ai_{snap.name}";
     }
 
     private TMP_Text FindEntryText(Transform root, params string[] names)
