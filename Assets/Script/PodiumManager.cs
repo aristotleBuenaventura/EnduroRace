@@ -64,6 +64,10 @@ public class PodiumManager : NetworkBehaviour
     private const int POINTS_3RD   = 50;
     private const int POINTS_OTHER = 35;
 
+    private const int BEGINNER_ADVANCE_MAX_PLACEMENT = 15;
+    private const int INTERMEDIATE_ADVANCE_MAX_PLACEMENT = 10;
+    private const int PRO_ADVANCE_MAX_PLACEMENT = 1;
+
     private const int INTERMEDIATE_TO_PRO_THRESHOLD = 100;
     private float firstPlaceTime = 0f;
     private const float BEGINNER_TARGET_TIME = 600f;
@@ -778,11 +782,11 @@ public class PodiumManager : NetworkBehaviour
         switch (tier)
         {
             case "Beginner":
-                return playerTime <= BEGINNER_TARGET_TIME;
+                return placement <= BEGINNER_ADVANCE_MAX_PLACEMENT;
             case "Intermediate":
-                return totalPoints >= INTERMEDIATE_TO_PRO_THRESHOLD;
+                return placement <= INTERMEDIATE_ADVANCE_MAX_PLACEMENT;
             case "Pro":
-                return placement == 1;
+                return placement <= PRO_ADVANCE_MAX_PLACEMENT;
             default:
                 return false;
         }
@@ -805,12 +809,10 @@ public class PodiumManager : NetworkBehaviour
         {
             case "Beginner":
                 if (advancing) return "🎉 Advancing to Intermediate!";
-                float diff = playerTime - BEGINNER_TARGET_TIME;
-                return $"Beat the target time to advance — you were {diff:F0}s over";
+                return $"Finish Top {BEGINNER_ADVANCE_MAX_PLACEMENT} to advance (you placed {GetOrdinal(placement)})";
             case "Intermediate":
                 if (advancing) return "🎉 Advancing to Pro!";
-                int pointsNeeded = Mathf.Max(0, INTERMEDIATE_TO_PRO_THRESHOLD - totalPoints);
-                return $"Need {pointsNeeded} more points to advance to Pro";
+                return $"Finish Top {INTERMEDIATE_ADVANCE_MAX_PLACEMENT} to advance to Pro (you placed {GetOrdinal(placement)})";
             case "Pro":
                 return advancing ? "🏆 Pro Tier Complete!" : "Finish 1st to complete Pro tier";
             default:
