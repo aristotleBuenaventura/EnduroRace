@@ -37,13 +37,47 @@ public class NetworkedAIManager : NetworkBehaviour
     [Header("Difficulty Settings")]
     public float minSpeed = 4.5f;
     public float maxSpeed = 5.5f;
+    public Vector2 speedMultiplierRange = new Vector2(0.92f, 1.1f);
+
+    [Header("Movement Variation")]
+    public float minLaneOffset = -1.1f;
+    public float maxLaneOffset = 1.1f;
+    public float laneJitter = 0.2f;
+    public float minRotationSpeed = 4f;
+    public float maxRotationSpeed = 7f;
+    public float minWaypointReachDistance = 1.4f;
+    public float maxWaypointReachDistance = 2.4f;
+
+    [Header("Animation Variation")]
+    public Vector2 swimAnimationSpeedRange = new Vector2(0.88f, 1.15f);
+    public Vector2 bikeAnimationSpeedRange = new Vector2(0.9f, 1.12f);
+    public Vector2 runAnimationSpeedRange = new Vector2(0.9f, 1.18f);
+
+    [Header("Race Start Spread")]
+    public Vector2 raceStartDelayRange = new Vector2(0f, 1.25f);
 
     private List<NetworkedAIOpponent> activeOpponents = new List<NetworkedAIOpponent>();
     private Dictionary<NetworkedAIOpponent, SpawnPoint> usedSpawnPoints = new Dictionary<NetworkedAIOpponent, SpawnPoint>();
+    private Dictionary<NetworkedAIOpponent, AIProfile> aiProfiles = new Dictionary<NetworkedAIOpponent, AIProfile>();
 
     // Track each AI's current segment so we know when to transition
     private Dictionary<NetworkedAIOpponent, NetworkedAIOpponent.AISegment> aiSegments
         = new Dictionary<NetworkedAIOpponent, NetworkedAIOpponent.AISegment>();
+
+    private class AIProfile
+    {
+        public Transform[] swimPath;
+        public Transform[] bikePath;
+        public Transform[] runPath;
+        public float speedMultiplier;
+        public float lateralOffset;
+        public float turnSpeed;
+        public float waypointReachDistance;
+        public float swimAnimSpeed;
+        public float bikeAnimSpeed;
+        public float runAnimSpeed;
+        public float startDelay;
+    }
 
     public override void OnStartServer()
     {
@@ -95,13 +129,19 @@ public class NetworkedAIManager : NetworkBehaviour
         switch (newSegment)
         {
             case NetworkedAIOpponent.AISegment.Bike:
-                newPath = GetRandomBikePath();
+                if (aiProfiles.TryGetValue(opponent, out AIProfile bikeProfile))
+                    newPath = bikeProfile.bikePath;
+                if (newPath == null || newPath.Length == 0)
+                    newPath = GetRandomBikePath();
                 if (swimToBikeTransition != null)
                     transitionPos = swimToBikeTransition.position;
                 break;
 
             case NetworkedAIOpponent.AISegment.Run:
-                newPath = GetRandomRunPath();
+                if (aiProfiles.TryGetValue(opponent, out AIProfile runProfile))
+                    newPath = runProfile.runPath;
+                if (newPath == null || newPath.Length == 0)
+                    newPath = GetRandomRunPath();
                 if (bikeToRunTransition != null)
                     transitionPos = bikeToRunTransition.position;
                 break;
@@ -148,14 +188,24 @@ public class NetworkedAIManager : NetworkBehaviour
             }
         }
 
+        List<Transform[]> swimAssignments = BuildPathAssignments(GetAvailablePaths(swimPath1, swimPath2), reserved.Count);
+        List<Transform[]> bikeAssignments = BuildPathAssignments(GetAvailablePaths(bikePath1, bikePath2), reserved.Count);
+        List<Transform[]> runAssignments = BuildPathAssignments(GetAvailablePaths(runPath1, runPath2), reserved.Count);
+
         for (int i = 0; i < reserved.Count; i++)
-            SpawnOpponent(i, reserved[i]);
+            SpawnOpponent(i, reserved.Count, reserved[i], swimAssignments[i], bikeAssignments[i], runAssignments[i]);
 
         ;
     }
 
     [Server]
-    private void SpawnOpponent(int index, SpawnPoint spawnPoint)
+    private void SpawnOpponent(
+        int index,
+        int totalOpponents,
+        SpawnPoint spawnPoint,
+        Transform[] assignedSwimPath,
+        Transform[] assignedBikePath,
+        Transform[] assignedRunPath)
     {
         GameObject selectedPrefab;
         if (randomizeGender)
@@ -202,14 +252,27 @@ public class NetworkedAIManager : NetworkBehaviour
         aiGO.name = "AI_" + ai.opponentName;
         ai.baseSpeed = Random.Range(minSpeed, maxSpeed);
 
+        AIProfile profile = CreateProfile(index, totalOpponents, assignedSwimPath, assignedBikePath, assignedRunPath);
+        ai.baseSpeed *= profile.speedMultiplier;
+        ai.ConfigureMovementProfile(
+            profile.lateralOffset,
+            profile.turnSpeed,
+            profile.waypointReachDistance,
+            profile.swimAnimSpeed,
+            profile.bikeAnimSpeed,
+            profile.runAnimSpeed,
+            profile.startDelay
+        );
+
         if (ai.runnerModel != null) ai.runnerModel.SetActive(true);
         if (ai.cyclistModel != null) ai.cyclistModel.SetActive(false);
 
         ServerManager.Spawn(aiGO);
 
         usedSpawnPoints[ai] = spawnPoint;
+        aiProfiles[ai] = profile;
 
-        Transform[] chosenSwimPath = GetRandomSwimPath();
+        Transform[] chosenSwimPath = profile.swimPath ?? GetRandomSwimPath();
         if (chosenSwimPath != null && chosenSwimPath.Length > 0)
         {
             ai.SetWaypointPath(chosenSwimPath);
@@ -225,6 +288,81 @@ public class NetworkedAIManager : NetworkBehaviour
 
         activeOpponents.Add(ai);
         ;
+    }
+
+    private AIProfile CreateProfile(int slotIndex, int totalOpponents, Transform[] swimPath, Transform[] bikePath, Transform[] runPath)
+    {
+        float normalizedLane = totalOpponents <= 1
+            ? 0.5f
+            : (float)slotIndex / (totalOpponents - 1f);
+
+        float laneCenter = Mathf.Lerp(minLaneOffset, maxLaneOffset, normalizedLane);
+        float laneOffset = laneCenter + Random.Range(-Mathf.Abs(laneJitter), Mathf.Abs(laneJitter));
+
+        return new AIProfile
+        {
+            swimPath = swimPath,
+            bikePath = bikePath,
+            runPath = runPath,
+            speedMultiplier = RandomRange(speedMultiplierRange),
+            lateralOffset = Mathf.Clamp(laneOffset, minLaneOffset, maxLaneOffset),
+            turnSpeed = Random.Range(minRotationSpeed, maxRotationSpeed),
+            waypointReachDistance = Random.Range(minWaypointReachDistance, maxWaypointReachDistance),
+            swimAnimSpeed = RandomRange(swimAnimationSpeedRange),
+            bikeAnimSpeed = RandomRange(bikeAnimationSpeedRange),
+            runAnimSpeed = RandomRange(runAnimationSpeedRange),
+            startDelay = RandomRange(raceStartDelayRange),
+        };
+    }
+
+    private float RandomRange(Vector2 range)
+    {
+        float min = Mathf.Min(range.x, range.y);
+        float max = Mathf.Max(range.x, range.y);
+        return Random.Range(min, max);
+    }
+
+    private List<Transform[]> GetAvailablePaths(params Transform[][] candidates)
+    {
+        List<Transform[]> paths = new List<Transform[]>();
+        foreach (Transform[] path in candidates)
+        {
+            if (path != null && path.Length > 0)
+                paths.Add(path);
+        }
+
+        return paths;
+    }
+
+    private List<Transform[]> BuildPathAssignments(List<Transform[]> availablePaths, int aiCount)
+    {
+        List<Transform[]> assignments = new List<Transform[]>(aiCount);
+        if (aiCount <= 0)
+            return assignments;
+
+        if (availablePaths.Count == 0)
+        {
+            for (int i = 0; i < aiCount; i++)
+                assignments.Add(null);
+            return assignments;
+        }
+
+        List<Transform[]> shuffled = new List<Transform[]>(availablePaths);
+        ShufflePathList(shuffled);
+
+        for (int i = 0; i < aiCount; i++)
+            assignments.Add(shuffled[i % shuffled.Count]);
+
+        return assignments;
+    }
+
+    private void ShufflePathList(List<Transform[]> paths)
+    {
+        for (int i = paths.Count - 1; i > 0; i--)
+        {
+            int swapIndex = Random.Range(0, i + 1);
+            (paths[i], paths[swapIndex]) = (paths[swapIndex], paths[i]);
+        }
     }
 
     private Transform[] GetRandomFromList(List<Transform[]> paths)
@@ -292,6 +430,7 @@ public class NetworkedAIManager : NetworkBehaviour
 
         activeOpponents.Clear();
         usedSpawnPoints.Clear();
+        aiProfiles.Clear();
         aiSegments.Clear();
         ;
     }

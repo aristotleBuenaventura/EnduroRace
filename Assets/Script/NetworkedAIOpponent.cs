@@ -20,6 +20,7 @@ public class NetworkedAIOpponent : NetworkBehaviour
     public int currentWaypointIndex = 0;
     public float waypointReachDistance = 2f;
     public float rotationSpeed = 5f;
+    public float pathLateralOffset = 0f;
     public enum AISegment { Swim, Bike, Run }
 
     [Header("Stamina")]
@@ -31,6 +32,9 @@ public class NetworkedAIOpponent : NetworkBehaviour
     // FIX: FishNet v4 generic SyncVar<T> — replaces the obsolete [SyncVar] attribute.
     // Subscribe to OnChange in OnStartNetwork so clients react when the server updates the segment.
     private readonly SyncVar<AISegment> _currentSegment = new SyncVar<AISegment>(AISegment.Swim);
+    private readonly SyncVar<float> _swimAnimationSpeed = new SyncVar<float>(1f);
+    private readonly SyncVar<float> _bikeAnimationSpeed = new SyncVar<float>(1f);
+    private readonly SyncVar<float> _runAnimationSpeed = new SyncVar<float>(1f);
 
     // Public accessor so all existing code (NetworkedAIManager, etc.) compiles unchanged
     public AISegment currentSegment
@@ -81,6 +85,8 @@ public class NetworkedAIOpponent : NetworkBehaviour
     private float pushSlowdownAmount = 0f;
     private Coroutine waterEntryCoroutine;
     private Coroutine waterExitCoroutine;
+    private Coroutine delayedRaceStartCoroutine;
+    private float raceStartDelay = 0f;
 
     // FIX: Track last position on clients for movement detection
     // (CharacterController.velocity is always zero on non-server clients)
@@ -227,8 +233,33 @@ public class NetworkedAIOpponent : NetworkBehaviour
             return;
         }
 
-        Vector3 direction = (targetWaypoint.position - transform.position).normalized;
-        direction.y = 0f;
+        Vector3 targetPosition = targetWaypoint.position;
+        Vector3 flatToTarget = new Vector3(
+            targetPosition.x - transform.position.x,
+            0f,
+            targetPosition.z - transform.position.z
+        );
+
+        if (flatToTarget.sqrMagnitude < 0.0001f)
+        {
+            currentWaypointIndex++;
+            return;
+        }
+
+        Vector3 forwardDirection = flatToTarget.normalized;
+        if (Mathf.Abs(pathLateralOffset) > 0.01f)
+        {
+            // Keep each AI in its own "lane" so they don't overlap exactly.
+            Vector3 right = Vector3.Cross(Vector3.up, forwardDirection);
+            targetPosition += right * pathLateralOffset;
+            flatToTarget = new Vector3(
+                targetPosition.x - transform.position.x,
+                0f,
+                targetPosition.z - transform.position.z
+            );
+        }
+
+        Vector3 direction = flatToTarget.normalized;
 
         if (direction != Vector3.zero)
         {
@@ -265,7 +296,7 @@ public class NetworkedAIOpponent : NetworkBehaviour
 
         float distance = Vector3.Distance(
             new Vector3(transform.position.x, 0, transform.position.z),
-            new Vector3(targetWaypoint.position.x, 0, targetWaypoint.position.z)
+            new Vector3(targetPosition.x, 0, targetPosition.z)
         );
 
         if (distance < waypointReachDistance)
@@ -304,6 +335,8 @@ public class NetworkedAIOpponent : NetworkBehaviour
     // Server-side animation update (has full state available)
     private void UpdateAnimations()
     {
+        ApplyAnimatorSpeeds();
+
         if ((isFullyInWater || isInWater) && currentSegment == AISegment.Swim)
         {
             if (runnerAnimator != null)
@@ -342,6 +375,8 @@ public class NetworkedAIOpponent : NetworkBehaviour
     //   3. Reads currentSegment which is now a SyncVar so clients have the correct value
     private void UpdateClientAnimations()
     {
+        ApplyAnimatorSpeeds();
+
         float distanceMoved = Vector3.Distance(
             new Vector3(transform.position.x, 0, transform.position.z),
             new Vector3(_lastClientPosition.x, 0, _lastClientPosition.z)
@@ -451,16 +486,73 @@ public class NetworkedAIOpponent : NetworkBehaviour
         currentWaypointIndex = 0;
     }
 
+    private void ApplyAnimatorSpeeds()
+    {
+        if (runnerAnimator != null)
+        {
+            runnerAnimator.speed = currentSegment == AISegment.Swim
+                ? _swimAnimationSpeed.Value
+                : _runAnimationSpeed.Value;
+        }
+
+        if (cyclistAnimator != null)
+            cyclistAnimator.speed = _bikeAnimationSpeed.Value;
+    }
+
+    [Server]
+    public void ConfigureMovementProfile(
+        float lateralOffset,
+        float turnSpeed,
+        float reachDistance,
+        float swimAnimSpeed,
+        float bikeAnimSpeed,
+        float runAnimSpeed,
+        float startDelay)
+    {
+        pathLateralOffset = lateralOffset;
+        rotationSpeed = turnSpeed;
+        waypointReachDistance = reachDistance;
+
+        _swimAnimationSpeed.Value = swimAnimSpeed;
+        _bikeAnimationSpeed.Value = bikeAnimSpeed;
+        _runAnimationSpeed.Value = runAnimSpeed;
+
+        raceStartDelay = Mathf.Max(0f, startDelay);
+    }
+
     [Server]
     public void StartRace()
     {
-        raceStarted = true;
+        if (delayedRaceStartCoroutine != null)
+            StopCoroutine(delayedRaceStartCoroutine);
+
+        if (raceStartDelay <= 0.01f)
+        {
+            raceStarted = true;
+            return;
+        }
+
+        delayedRaceStartCoroutine = StartCoroutine(StartRaceDelayedRoutine());
     }
 
     [Server]
     public void StopRace()
     {
+        if (delayedRaceStartCoroutine != null)
+        {
+            StopCoroutine(delayedRaceStartCoroutine);
+            delayedRaceStartCoroutine = null;
+        }
+
         raceStarted = false;
+    }
+
+    private IEnumerator StartRaceDelayedRoutine()
+    {
+        raceStarted = false;
+        yield return new WaitForSeconds(raceStartDelay);
+        raceStarted = true;
+        delayedRaceStartCoroutine = null;
     }
 
     private void OnTriggerEnter(Collider other)
