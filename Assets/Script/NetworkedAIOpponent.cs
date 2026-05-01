@@ -42,6 +42,9 @@ public class NetworkedAIOpponent : NetworkBehaviour
     private readonly SyncVar<float> _swimAnimationPhaseOffset = new SyncVar<float>(0f);
     private readonly SyncVar<float> _bikeAnimationPhaseOffset = new SyncVar<float>(0f);
     private readonly SyncVar<float> _runAnimationPhaseOffset = new SyncVar<float>(0f);
+    private readonly SyncVar<float> _swimMoveSpeedMultiplier = new SyncVar<float>(1f);
+    private readonly SyncVar<float> _bikeMoveSpeedMultiplier = new SyncVar<float>(1f);
+    private readonly SyncVar<float> _runMoveSpeedMultiplier = new SyncVar<float>(1f);
 
     // Public accessor so all existing code (NetworkedAIManager, etc.) compiles unchanged
     public AISegment currentSegment
@@ -291,13 +294,19 @@ public class NetworkedAIOpponent : NetworkBehaviour
 
         if (isFullyInWater && currentSegment == AISegment.Swim)
         {
-            moveSpeed = swimSpeed;
+            moveSpeed = swimSpeed * _swimMoveSpeedMultiplier.Value;
             if (isSprinting && currentStamina > 0f)
                 moveSpeed *= swimSpeedMultiplier;
         }
+        else if (currentSegment == AISegment.Bike)
+        {
+            moveSpeed = currentSpeed * _bikeMoveSpeedMultiplier.Value;
+            if (isSprinting && currentStamina > 0f)
+                moveSpeed *= 1.8f;
+        }
         else
         {
-            moveSpeed = currentSpeed;
+            moveSpeed = currentSpeed * _runMoveSpeedMultiplier.Value;
             if (isSprinting && currentStamina > 0f)
                 moveSpeed *= 1.8f;
         }
@@ -550,6 +559,9 @@ public class NetworkedAIOpponent : NetworkBehaviour
         float swimAnimSpeed,
         float bikeAnimSpeed,
         float runAnimSpeed,
+        float swimMoveSpeedMultiplier,
+        float bikeMoveSpeedMultiplier,
+        float runMoveSpeedMultiplier,
         float swimPhaseOffset,
         float bikePhaseOffset,
         float runPhaseOffset,
@@ -571,6 +583,9 @@ public class NetworkedAIOpponent : NetworkBehaviour
         _swimAnimationSpeed.Value = swimAnimSpeed;
         _bikeAnimationSpeed.Value = bikeAnimSpeed;
         _runAnimationSpeed.Value = runAnimSpeed;
+        _swimMoveSpeedMultiplier.Value = Mathf.Clamp(swimMoveSpeedMultiplier, 0.35f, 2.4f);
+        _bikeMoveSpeedMultiplier.Value = Mathf.Clamp(bikeMoveSpeedMultiplier, 0.35f, 2.4f);
+        _runMoveSpeedMultiplier.Value = Mathf.Clamp(runMoveSpeedMultiplier, 0.35f, 2.4f);
         _swimAnimationPhaseOffset.Value = Mathf.Repeat(swimPhaseOffset, 1f);
         _bikeAnimationPhaseOffset.Value = Mathf.Repeat(bikePhaseOffset, 1f);
         _runAnimationPhaseOffset.Value = Mathf.Repeat(runPhaseOffset, 1f);

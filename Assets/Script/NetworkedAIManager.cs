@@ -60,6 +60,11 @@ public class NetworkedAIManager : NetworkBehaviour
     public Vector2 paceShiftDurationRange = new Vector2(0.8f, 2.4f);
     public Vector2 paceShiftMultiplierRange = new Vector2(0.72f, 1.28f);
 
+    [Header("Segment Move Speed Randomness")]
+    public Vector2 swimMoveSpeedRange = new Vector2(0.5f, 1.85f);
+    public Vector2 bikeMoveSpeedRange = new Vector2(0.55f, 1.9f);
+    public Vector2 runMoveSpeedRange = new Vector2(0.5f, 1.8f);
+
     [Header("Race Start Spread")]
     public Vector2 raceStartDelayRange = new Vector2(0f, 1.25f);
 
@@ -83,6 +88,9 @@ public class NetworkedAIManager : NetworkBehaviour
         public float swimAnimSpeed;
         public float bikeAnimSpeed;
         public float runAnimSpeed;
+        public float swimMoveSpeedMultiplier;
+        public float bikeMoveSpeedMultiplier;
+        public float runMoveSpeedMultiplier;
         public float swimAnimationPhaseOffset;
         public float bikeAnimationPhaseOffset;
         public float runAnimationPhaseOffset;
@@ -280,6 +288,9 @@ public class NetworkedAIManager : NetworkBehaviour
             profile.swimAnimSpeed,
             profile.bikeAnimSpeed,
             profile.runAnimSpeed,
+            profile.swimMoveSpeedMultiplier,
+            profile.bikeMoveSpeedMultiplier,
+            profile.runMoveSpeedMultiplier,
             profile.swimAnimationPhaseOffset,
             profile.bikeAnimationPhaseOffset,
             profile.runAnimationPhaseOffset,
@@ -348,6 +359,9 @@ public class NetworkedAIManager : NetworkBehaviour
             swimAnimSpeed = Mathf.Clamp(swimTierBase + Random.Range(-0.08f, 0.08f), 0.5f, 1.55f),
             bikeAnimSpeed = Mathf.Clamp(RandomRange(bikeAnimationSpeedRange) * animationTier, 0.65f, 1.45f),
             runAnimSpeed = Mathf.Clamp(RandomRange(runAnimationSpeedRange) * animationTier, 0.65f, 1.45f),
+            swimMoveSpeedMultiplier = RandomRange(swimMoveSpeedRange),
+            bikeMoveSpeedMultiplier = RandomRange(bikeMoveSpeedRange),
+            runMoveSpeedMultiplier = RandomRange(runMoveSpeedRange),
             swimAnimationPhaseOffset = Random.Range(0f, 1f),
             bikeAnimationPhaseOffset = Random.Range(0f, 1f),
             runAnimationPhaseOffset = Random.Range(0f, 1f),
