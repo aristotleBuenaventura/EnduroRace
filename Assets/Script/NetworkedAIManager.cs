@@ -51,6 +51,16 @@ public class NetworkedAIManager : NetworkBehaviour
     [Tooltip("Attach dito yung 20 bike GameObjects. Matatago ang assigned bike kapag naabot ng AI ang transition slot.")]
     public List<GameObject> bikeSlots = new List<GameObject>();
 
+    [Header("Bike Slot Recovery (Anti-Stuck)")]
+    [Tooltip("Extra radius around collider bounds para mas forgiving ang pickup detection.")]
+    public float bikeSlotTriggerPadding = 0.75f;
+    [Tooltip("Kapag lumampas dito (seconds) habang papunta sa bike slot, auto pickup na.")]
+    public float bikeSlotAutoPickupTimeout = 6f;
+    [Tooltip("Kapag walang meaningful movement nang ganitong katagal, auto pickup na.")]
+    public float bikeSlotStuckTimeout = 2.5f;
+    [Tooltip("Minimum movement (meters) para ma-consider na may progress sa bike slot.")]
+    public float bikeSlotMinProgressDistance = 0.15f;
+
     [Header("AI Names")]
     public string[] aiNames = { "Alex", "Jordan", "Taylor", "Morgan", "Casey" };
 
@@ -104,6 +114,7 @@ public class NetworkedAIManager : NetworkBehaviour
     private HashSet<NetworkedAIOpponent> aiFinishTimesReported = new HashSet<NetworkedAIOpponent>();
     private Dictionary<NetworkedAIOpponent, BikeTransitionAssignment> aiBikeSlots = new Dictionary<NetworkedAIOpponent, BikeTransitionAssignment>();
     private HashSet<NetworkedAIOpponent> aiHeadingToBikeSlot = new HashSet<NetworkedAIOpponent>();
+    private Dictionary<NetworkedAIOpponent, BikeApproachProgress> aiBikeApproachProgress = new Dictionary<NetworkedAIOpponent, BikeApproachProgress>();
     private bool raceRunning = false;
 
     // Track each AI's current segment so we know when to transition
@@ -138,6 +149,13 @@ public class NetworkedAIManager : NetworkBehaviour
         public float paceShiftMinMultiplier;
         public float paceShiftMaxMultiplier;
         public float startDelay;
+    }
+
+    private class BikeApproachProgress
+    {
+        public Vector3 lastPosition;
+        public float stuckTimer;
+        public float totalApproachTime;
     }
 
     public override void OnStartServer()
@@ -276,6 +294,7 @@ public class NetworkedAIManager : NetworkBehaviour
         // Update tracked segment BEFORE calling transition so Update() doesn't re-trigger
         aiSegments[opponent] = newSegment;
         aiHeadingToBikeSlot.Remove(opponent);
+        aiBikeApproachProgress.Remove(opponent);
 
         ;
 
@@ -434,6 +453,7 @@ public class NetworkedAIManager : NetworkBehaviour
         aiElapsedRaceTimes[ai] = 0f;
         aiFinishTimesReported.Remove(ai);
         aiHeadingToBikeSlot.Remove(ai);
+        aiBikeApproachProgress.Remove(ai);
 
         Transform[] chosenSwimPath = profile.swimPath ?? GetRandomSwimPath();
         if (chosenSwimPath != null && chosenSwimPath.Length > 0)
@@ -693,6 +713,12 @@ public class NetworkedAIManager : NetworkBehaviour
             return false;
 
         aiHeadingToBikeSlot.Add(opponent);
+        aiBikeApproachProgress[opponent] = new BikeApproachProgress
+        {
+            lastPosition = opponent.transform.position,
+            stuckTimer = 0f,
+            totalApproachTime = 0f
+        };
         opponent.SetWaypointPath(slot.bikeApproachPath);
         return true;
     }
@@ -705,11 +731,74 @@ public class NetworkedAIManager : NetworkBehaviour
         if (slot.swimToBikeTrigger == null)
             return;
 
-        if (!slot.swimToBikeTrigger.bounds.Contains(opponent.transform.position))
+        bool reachedTrigger = IsInsideOrNearTrigger(slot.swimToBikeTrigger, opponent.transform.position);
+        bool shouldForcePickup = false;
+        string forceReason = string.Empty;
+
+        if (!reachedTrigger)
+            shouldForcePickup = ShouldForceBikePickup(opponent, out forceReason);
+
+        if (!reachedTrigger && !shouldForcePickup)
             return;
 
         HideBikeSlotForAssignment(slot);
+        if (shouldForcePickup)
+        {
+            Debug.LogWarning($"[NetworkedAIManager] Forced bike pickup for {opponent.opponentName}. Reason: {forceReason}");
+        }
         TransitionOpponent(opponent, NetworkedAIOpponent.AISegment.Bike);
+    }
+
+    private bool IsInsideOrNearTrigger(Collider trigger, Vector3 position)
+    {
+        if (trigger == null)
+            return false;
+        if (trigger.bounds.Contains(position))
+            return true;
+
+        Vector3 closestPoint = trigger.ClosestPoint(position);
+        float distance = Vector3.Distance(position, closestPoint);
+        return distance <= Mathf.Max(0f, bikeSlotTriggerPadding);
+    }
+
+    [Server]
+    private bool ShouldForceBikePickup(NetworkedAIOpponent opponent, out string reason)
+    {
+        reason = string.Empty;
+        if (opponent == null)
+            return false;
+
+        if (!aiBikeApproachProgress.TryGetValue(opponent, out BikeApproachProgress progress) || progress == null)
+            return false;
+
+        Vector3 currentPosition = opponent.transform.position;
+        float delta = Vector3.Distance(currentPosition, progress.lastPosition);
+        progress.totalApproachTime += Time.deltaTime;
+
+        if (delta >= Mathf.Max(0.01f, bikeSlotMinProgressDistance))
+        {
+            progress.stuckTimer = 0f;
+        }
+        else
+        {
+            progress.stuckTimer += Time.deltaTime;
+        }
+
+        progress.lastPosition = currentPosition;
+
+        if (progress.stuckTimer >= Mathf.Max(0.1f, bikeSlotStuckTimeout))
+        {
+            reason = $"stuck for {progress.stuckTimer:F2}s";
+            return true;
+        }
+
+        if (progress.totalApproachTime >= Mathf.Max(0.1f, bikeSlotAutoPickupTimeout))
+        {
+            reason = $"timeout {progress.totalApproachTime:F2}s";
+            return true;
+        }
+
+        return false;
     }
 
     private bool TryGetBikeSlotTransitionPosition(NetworkedAIOpponent opponent, out Vector3 position)
@@ -852,6 +941,7 @@ public class NetworkedAIManager : NetworkBehaviour
         aiProfiles.Clear();
         aiBikeSlots.Clear();
         aiHeadingToBikeSlot.Clear();
+        aiBikeApproachProgress.Clear();
         aiSegments.Clear();
         aiElapsedRaceTimes.Clear();
         aiFinishTimesReported.Clear();
