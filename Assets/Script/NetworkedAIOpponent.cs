@@ -35,6 +35,9 @@ public class NetworkedAIOpponent : NetworkBehaviour
     private readonly SyncVar<float> _swimAnimationSpeed = new SyncVar<float>(1f);
     private readonly SyncVar<float> _bikeAnimationSpeed = new SyncVar<float>(1f);
     private readonly SyncVar<float> _runAnimationSpeed = new SyncVar<float>(1f);
+    private readonly SyncVar<float> _animationCadenceFrequency = new SyncVar<float>(0.9f);
+    private readonly SyncVar<float> _animationCadenceAmplitude = new SyncVar<float>(0.08f);
+    private readonly SyncVar<float> _animationCadencePhase = new SyncVar<float>(0f);
 
     // Public accessor so all existing code (NetworkedAIManager, etc.) compiles unchanged
     public AISegment currentSegment
@@ -488,15 +491,26 @@ public class NetworkedAIOpponent : NetworkBehaviour
 
     private void ApplyAnimatorSpeeds()
     {
+        float cadenceWave =
+            1f + Mathf.Sin((Time.time + _animationCadencePhase.Value) * _animationCadenceFrequency.Value)
+            * _animationCadenceAmplitude.Value;
+        float clampedCadence = Mathf.Clamp(cadenceWave, 0.7f, 1.3f);
+
         if (runnerAnimator != null)
         {
-            runnerAnimator.speed = currentSegment == AISegment.Swim
+            float baseSpeed = currentSegment == AISegment.Swim
                 ? _swimAnimationSpeed.Value
                 : _runAnimationSpeed.Value;
+            runnerAnimator.speed = Mathf.Clamp(baseSpeed * clampedCadence, 0.65f, 1.45f);
         }
 
         if (cyclistAnimator != null)
-            cyclistAnimator.speed = _bikeAnimationSpeed.Value;
+        {
+            float bikeCadence = 1f
+                + Mathf.Cos((Time.time + _animationCadencePhase.Value) * _animationCadenceFrequency.Value * 0.85f)
+                * _animationCadenceAmplitude.Value;
+            cyclistAnimator.speed = Mathf.Clamp(_bikeAnimationSpeed.Value * bikeCadence, 0.65f, 1.45f);
+        }
     }
 
     [Server]
@@ -507,6 +521,9 @@ public class NetworkedAIOpponent : NetworkBehaviour
         float swimAnimSpeed,
         float bikeAnimSpeed,
         float runAnimSpeed,
+        float cadenceFrequency,
+        float cadenceAmplitude,
+        float cadencePhase,
         float startDelay)
     {
         pathLateralOffset = lateralOffset;
@@ -516,6 +533,9 @@ public class NetworkedAIOpponent : NetworkBehaviour
         _swimAnimationSpeed.Value = swimAnimSpeed;
         _bikeAnimationSpeed.Value = bikeAnimSpeed;
         _runAnimationSpeed.Value = runAnimSpeed;
+        _animationCadenceFrequency.Value = Mathf.Max(0.05f, cadenceFrequency);
+        _animationCadenceAmplitude.Value = Mathf.Clamp(cadenceAmplitude, 0f, 0.25f);
+        _animationCadencePhase.Value = cadencePhase;
 
         raceStartDelay = Mathf.Max(0f, startDelay);
     }

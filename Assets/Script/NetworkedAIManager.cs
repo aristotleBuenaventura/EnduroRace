@@ -49,9 +49,11 @@ public class NetworkedAIManager : NetworkBehaviour
     public float maxWaypointReachDistance = 2.4f;
 
     [Header("Animation Variation")]
-    public Vector2 swimAnimationSpeedRange = new Vector2(0.88f, 1.15f);
-    public Vector2 bikeAnimationSpeedRange = new Vector2(0.9f, 1.12f);
-    public Vector2 runAnimationSpeedRange = new Vector2(0.9f, 1.18f);
+    public Vector2 swimAnimationSpeedRange = new Vector2(0.78f, 1.22f);
+    public Vector2 bikeAnimationSpeedRange = new Vector2(0.8f, 1.2f);
+    public Vector2 runAnimationSpeedRange = new Vector2(0.8f, 1.24f);
+    public Vector2 animationCadenceFrequencyRange = new Vector2(0.55f, 1.25f);
+    public Vector2 animationCadenceAmplitudeRange = new Vector2(0.04f, 0.14f);
 
     [Header("Race Start Spread")]
     public Vector2 raceStartDelayRange = new Vector2(0f, 1.25f);
@@ -76,6 +78,9 @@ public class NetworkedAIManager : NetworkBehaviour
         public float swimAnimSpeed;
         public float bikeAnimSpeed;
         public float runAnimSpeed;
+        public float animationCadenceFrequency;
+        public float animationCadenceAmplitude;
+        public float animationCadencePhase;
         public float startDelay;
     }
 
@@ -261,6 +266,9 @@ public class NetworkedAIManager : NetworkBehaviour
             profile.swimAnimSpeed,
             profile.bikeAnimSpeed,
             profile.runAnimSpeed,
+            profile.animationCadenceFrequency,
+            profile.animationCadenceAmplitude,
+            profile.animationCadencePhase,
             profile.startDelay
         );
 
@@ -295,6 +303,7 @@ public class NetworkedAIManager : NetworkBehaviour
         float normalizedLane = totalOpponents <= 1
             ? 0.5f
             : (float)slotIndex / (totalOpponents - 1f);
+        float animationTier = GetAnimationTierMultiplier(slotIndex);
 
         float laneCenter = Mathf.Lerp(minLaneOffset, maxLaneOffset, normalizedLane);
         float laneOffset = laneCenter + Random.Range(-Mathf.Abs(laneJitter), Mathf.Abs(laneJitter));
@@ -308,11 +317,22 @@ public class NetworkedAIManager : NetworkBehaviour
             lateralOffset = Mathf.Clamp(laneOffset, minLaneOffset, maxLaneOffset),
             turnSpeed = Random.Range(minRotationSpeed, maxRotationSpeed),
             waypointReachDistance = Random.Range(minWaypointReachDistance, maxWaypointReachDistance),
-            swimAnimSpeed = RandomRange(swimAnimationSpeedRange),
-            bikeAnimSpeed = RandomRange(bikeAnimationSpeedRange),
-            runAnimSpeed = RandomRange(runAnimationSpeedRange),
+            swimAnimSpeed = Mathf.Clamp(RandomRange(swimAnimationSpeedRange) * animationTier, 0.65f, 1.45f),
+            bikeAnimSpeed = Mathf.Clamp(RandomRange(bikeAnimationSpeedRange) * animationTier, 0.65f, 1.45f),
+            runAnimSpeed = Mathf.Clamp(RandomRange(runAnimationSpeedRange) * animationTier, 0.65f, 1.45f),
+            animationCadenceFrequency = RandomRange(animationCadenceFrequencyRange),
+            animationCadenceAmplitude = RandomRange(animationCadenceAmplitudeRange),
+            animationCadencePhase = Random.Range(0f, Mathf.PI * 2f),
             startDelay = RandomRange(raceStartDelayRange),
         };
+    }
+
+    private float GetAnimationTierMultiplier(int slotIndex)
+    {
+        int tierIndex = Mathf.Abs(slotIndex) % 3;
+        if (tierIndex == 0) return 0.85f; // visibly slower
+        if (tierIndex == 1) return 1f;    // normal
+        return 1.15f;                     // visibly faster
     }
 
     private float RandomRange(Vector2 range)
