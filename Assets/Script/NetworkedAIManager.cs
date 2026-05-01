@@ -7,9 +7,16 @@ using FishNet.Connection;
 public class NetworkedAIManager : NetworkBehaviour
 {
     [System.Serializable]
+    public class BikeApproachPathSlot
+    {
+        [Tooltip("Separate bike approach path papunta muna sa bikes.")]
+        public Transform[] path;
+    }
+
+    [System.Serializable]
     public class BikeTransitionSlot
     {
-        [Tooltip("Path papunta sa assigned bike slot bago mag Bike segment.")]
+        [Tooltip("Legacy fallback path (optional). Prefer Bike Approach Paths list.")]
         public Transform[] bikeApproachPath;
         [Tooltip("Collider na tatamaan ng AI para mag-transition to Bike.")]
         public Collider swimToBikeTrigger;
@@ -40,9 +47,13 @@ public class NetworkedAIManager : NetworkBehaviour
     public Transform swimToBikeTransition;
     public Transform bikeToRunTransition;
 
-    [Header("Per-AI Bike Transition Slots (Attach 20)")]
-    [Tooltip("Assign dito yung 20 bike path + 20 swimtobike collider pairs. Unique assignment per AI.")]
+    [Header("Swim To Bike Trigger Slots (Attach 20)")]
+    [Tooltip("Attach dito yung swimtobike colliders (20). Imamatch ito by index sa Bike Approach Paths.")]
     public List<BikeTransitionSlot> bikeTransitionSlots = new List<BikeTransitionSlot>();
+
+    [Header("Bike Approach Paths (Separate, Attach 20)")]
+    [Tooltip("Hiwalay na bike paths papunta muna sa bikes bago mag transition sa bike segment.")]
+    public List<BikeApproachPathSlot> bikeApproachPaths = new List<BikeApproachPathSlot>();
 
     [Header("AI Names")]
     public string[] aiNames = { "Alex", "Jordan", "Taylor", "Morgan", "Casey" };
@@ -625,6 +636,36 @@ public class NetworkedAIManager : NetworkBehaviour
     private List<BikeTransitionSlot> GetValidBikeTransitionSlots()
     {
         List<BikeTransitionSlot> validSlots = new List<BikeTransitionSlot>();
+
+        int pairedCount = Mathf.Min(bikeApproachPaths.Count, bikeTransitionSlots.Count);
+        if (pairedCount > 0)
+        {
+            for (int i = 0; i < pairedCount; i++)
+            {
+                BikeApproachPathSlot approachSlot = bikeApproachPaths[i];
+                BikeTransitionSlot triggerSlot = bikeTransitionSlots[i];
+                if (approachSlot == null || approachSlot.path == null || approachSlot.path.Length == 0)
+                    continue;
+                if (triggerSlot == null || triggerSlot.swimToBikeTrigger == null)
+                    continue;
+
+                validSlots.Add(new BikeTransitionSlot
+                {
+                    bikeApproachPath = approachSlot.path,
+                    swimToBikeTrigger = triggerSlot.swimToBikeTrigger
+                });
+            }
+
+            if (bikeApproachPaths.Count != bikeTransitionSlots.Count)
+            {
+                Debug.LogWarning($"[NetworkedAIManager] Bike Approach Paths ({bikeApproachPaths.Count}) and Swim To Bike Trigger Slots ({bikeTransitionSlots.Count}) count mismatch. Using matched index pairs only.");
+            }
+        }
+
+        if (validSlots.Count > 0)
+            return validSlots;
+
+        // Legacy fallback: gamitin ang old paired setup kung walang valid separate configuration.
         foreach (BikeTransitionSlot slot in bikeTransitionSlots)
         {
             if (slot == null)
