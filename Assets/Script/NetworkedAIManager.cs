@@ -423,6 +423,14 @@ public class NetworkedAIManager : NetworkBehaviour
         usedSpawnPoints[ai] = spawnPoint;
         aiProfiles[ai] = profile;
         aiBikeSlots[ai] = assignedBikeSlot;
+        if (assignedBikeSlot != null)
+        {
+            Debug.Log($"[NetworkedAIManager] {ai.opponentName} assigned bike slot index {assignedBikeSlot.bikeSlotIndex} (display #{assignedBikeSlot.bikeSlotIndex + 1}).");
+        }
+        else
+        {
+            Debug.LogWarning($"[NetworkedAIManager] {ai.opponentName} has no assigned bike slot. Using default swim-to-bike behavior.");
+        }
         aiElapsedRaceTimes[ai] = 0f;
         aiFinishTimesReported.Remove(ai);
         aiHeadingToBikeSlot.Remove(ai);
