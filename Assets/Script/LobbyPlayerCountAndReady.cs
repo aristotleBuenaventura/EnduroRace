@@ -1,7 +1,6 @@
 using System.Collections;
 using UnityEngine;
 using Firebase.Firestore;
-using Firebase.Extensions;
 using TMPro;
 
 public class LobbyPlayerCountAndReady : MonoBehaviour
@@ -31,33 +30,13 @@ public class LobbyPlayerCountAndReady : MonoBehaviour
         yield return new WaitUntil(() => lobby.IsLobbyReady);
 
         lobbyId = lobby.GetLobbyId();
-        yield return StartCoroutine(ResolveLobbyMaxPlayers());
+        ResolveLobbyMaxPlayers(lobby.GetPlayerTier());
         ListenForPlayers();
     }
 
-    private IEnumerator ResolveLobbyMaxPlayers()
+    private void ResolveLobbyMaxPlayers(string tier)
     {
-        // 1) Start with tier-based defaults
-        string tier = LobbyDataTransfer.Instance?.GetLocalPlayerData()?.tier ?? "Beginner";
         maxPlayers = GetTierMaxPlayers(tier);
-
-        // 2) If lobby document has maxPlayers, use that authoritative value
-        if (string.IsNullOrEmpty(lobbyId))
-            yield break;
-
-        bool done = false;
-        db.Collection("lobbies")
-          .Document(lobbyId)
-          .GetSnapshotAsync()
-          .ContinueWithOnMainThread(task =>
-          {
-              if (!task.IsFaulted && task.Result.Exists && task.Result.ContainsField("maxPlayers"))
-                  maxPlayers = (int)task.Result.GetValue<long>("maxPlayers");
-
-              done = true;
-          });
-
-        yield return new WaitUntil(() => done);
     }
 
     private int GetTierMaxPlayers(string tier)

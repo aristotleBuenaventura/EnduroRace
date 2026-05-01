@@ -1,6 +1,7 @@
 using FishNet.Object;
 using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class MultiplayerAISpawner : NetworkBehaviour
 {
@@ -46,13 +47,16 @@ public class MultiplayerAISpawner : NetworkBehaviour
         }
 
         NetworkPlayer[] players = FindObjectsByType<NetworkPlayer>(FindObjectsSortMode.None);
-        int playerCount = players.Length;
+        int connectedPlayerCount = players.Length;
+        int expectedPlayerCount = GetExpectedHumanPlayersFromLobbyData();
+        int effectivePlayerCount = Mathf.Max(connectedPlayerCount, expectedPlayerCount);
+
         string raceTier = ResolveRaceTier();
         int targetTotalRacers = useTierBasedTotalRacers
             ? GetTierTotalRacers(raceTier)
             : maxTotalRacers;
 
-        int desiredAI = targetTotalRacers - playerCount;
+        int desiredAI = targetTotalRacers - effectivePlayerCount;
         int aiToSpawn = Mathf.Max(minAI, desiredAI);
         int maxAICap = useTierBasedTotalRacers
             ? Mathf.Max(0, targetTotalRacers)
@@ -60,7 +64,8 @@ public class MultiplayerAISpawner : NetworkBehaviour
         aiToSpawn = Mathf.Clamp(aiToSpawn, minAI, maxAICap);
 
         Debug.Log(
-            $"[MultiplayerAISpawner] Tier={raceTier}, Players={playerCount}, " +
+            $"[MultiplayerAISpawner] Tier={raceTier}, ConnectedPlayers={connectedPlayerCount}, " +
+            $"ExpectedPlayers={expectedPlayerCount}, EffectivePlayers={effectivePlayerCount}, " +
             $"TargetTotal={targetTotalRacers}, AIToSpawn={aiToSpawn}"
         );
 
@@ -130,7 +135,32 @@ public class MultiplayerAISpawner : NetworkBehaviour
                 return allPlayers[0].tier;
         }
 
+        string sceneName = SceneManager.GetActiveScene().name;
+        if (sceneName.Contains("Pro"))
+            return "Pro";
+        if (sceneName.Contains("Intermediate"))
+            return "Intermediate";
+
         return "Beginner";
+    }
+
+    private int GetExpectedHumanPlayersFromLobbyData()
+    {
+        if (LobbyDataTransfer.Instance == null)
+            return 0;
+
+        var allPlayers = LobbyDataTransfer.Instance.GetAllPlayers();
+        if (allPlayers == null || allPlayers.Count == 0)
+            return 0;
+
+        int humans = 0;
+        for (int i = 0; i < allPlayers.Count; i++)
+        {
+            if (!allPlayers[i].isBot)
+                humans++;
+        }
+
+        return humans;
     }
 
     private int GetTierTotalRacers(string tier)

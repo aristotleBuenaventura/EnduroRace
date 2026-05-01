@@ -22,7 +22,9 @@ public class LobbyManager : MonoBehaviour
 
     private ListenerRegistration readyListener;
 
-    private const int MAX_PLAYERS = 20;
+    private const int BEGINNER_MAX_PLAYERS = 20;
+    private const int INTERMEDIATE_MAX_PLAYERS = 15;
+    private const int PRO_MAX_PLAYERS = 10;
     private const int MIN_PLAYERS = 1;
 
     private void Awake()
@@ -71,12 +73,13 @@ public class LobbyManager : MonoBehaviour
 
     private void JoinOrCreateLobby(string tier)
     {
+        int tierMaxPlayers = GetTierMaxPlayers(tier);
         ;
         
         db.Collection("lobbies")
             .WhereEqualTo("tier", tier)
             .WhereEqualTo("state", "waiting")
-            .WhereLessThan("currentPlayers", MAX_PLAYERS)
+            .WhereLessThan("currentPlayers", tierMaxPlayers)
             .GetSnapshotAsync() // ✅ Get ALL matching lobbies first
             .ContinueWithOnMainThread(task =>
             {
@@ -112,11 +115,12 @@ public class LobbyManager : MonoBehaviour
     private void CreateLobby(string tier)
     {
         lobbyId = Guid.NewGuid().ToString();
+        int tierMaxPlayers = GetTierMaxPlayers(tier);
         ;
 
         var data = new Dictionary<string, object>
         {
-            { "maxPlayers", MAX_PLAYERS },
+            { "maxPlayers", tierMaxPlayers },
             { "currentPlayers", 0 },
             { "tier", tier },
             { "createdAt", Timestamp.GetCurrentTimestamp() },
@@ -484,4 +488,19 @@ public class LobbyManager : MonoBehaviour
 
     public string GetLobbyId() => lobbyId;
     public string GetPlayerId() => playerId;
+    public string GetPlayerTier() => string.IsNullOrEmpty(playerTier) ? "Beginner" : playerTier;
+
+    private int GetTierMaxPlayers(string tier)
+    {
+        switch (tier)
+        {
+            case "Intermediate":
+                return INTERMEDIATE_MAX_PLAYERS;
+            case "Pro":
+                return PRO_MAX_PLAYERS;
+            case "Beginner":
+            default:
+                return BEGINNER_MAX_PLAYERS;
+        }
+    }
 }
