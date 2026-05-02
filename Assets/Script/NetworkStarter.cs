@@ -53,6 +53,38 @@ public class NetworkStarter : MonoBehaviour
         = new Dictionary<NetworkConnection, string>();
 
     private bool useRelay = false;
+    
+    private bool TryResolveNetworkManager()
+    {
+        if (networkManager != null)
+            return true;
+
+        // Most race scenes place NetworkStarter on the same GameObject as NetworkManager.
+        networkManager = GetComponent<NetworkManager>();
+        if (networkManager != null)
+            return true;
+
+        // Fallback: find any NetworkManager in the currently loaded scene.
+        networkManager = Object.FindFirstObjectByType<NetworkManager>();
+        if (networkManager != null)
+            return true;
+
+        // Last resort for FishNet-managed singleton lookup.
+        networkManager = InstanceFinder.NetworkManager;
+        return networkManager != null;
+    }
+    
+    private bool ShouldStartAsHost()
+    {
+        if (LobbyDataTransfer.Instance != null)
+            return LobbyDataTransfer.Instance.isLocalPlayerHost;
+
+        #if UNITY_EDITOR || UNITY_STANDALONE
+            return true;
+        #else
+            return false;
+        #endif
+    }
 
     private void Awake()
     {
@@ -69,10 +101,7 @@ public class NetworkStarter : MonoBehaviour
                 ;
         #endif
 
-        if (networkManager == null)
-            networkManager = InstanceFinder.NetworkManager;
-
-        if (networkManager == null)
+        if (!TryResolveNetworkManager())
         {
             ;
             return;
@@ -132,14 +161,23 @@ public class NetworkStarter : MonoBehaviour
         if (useSpawnPoints)
             StartCoroutine(DebugSpawnPoints());
 
-        #if UNITY_EDITOR || UNITY_STANDALONE
+        bool shouldStartHost = ShouldStartAsHost();
+        if (shouldStartHost)
+        {
             ;
             StartHost();
-        #elif UNITY_ANDROID || UNITY_IOS
-            useMobileJoystick = true;
-            ;
-            StartCoroutine(StartMobileClientCoroutine());
-        #endif
+        }
+        else
+        {
+            #if UNITY_ANDROID || UNITY_IOS
+                useMobileJoystick = true;
+                ;
+                StartCoroutine(StartMobileClientCoroutine());
+            #else
+                ;
+                StartClient();
+            #endif
+        }
     }
 
     private void OnDestroy()
