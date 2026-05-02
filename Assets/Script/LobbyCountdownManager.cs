@@ -252,6 +252,8 @@ public class LobbyCountdownManager : MonoBehaviour
             transferObj.AddComponent<LobbyDataTransfer>();
         }
 
+        bool amHost = FindFirstObjectByType<LobbyManager>()?.IsHost ?? false;
+
         LobbyDataTransfer.Instance.SetLobbyData(lobbyId, localPlayerId, playerDataList);
         LobbyDataTransfer.Instance.isLocalPlayerHost = amHost;
         LobbyDataTransfer.Instance.relayHost         = relayHost;
@@ -261,7 +263,6 @@ public class LobbyCountdownManager : MonoBehaviour
         LobbyDataTransfer.Instance.relayUserToken    = relayUserToken;
 
         // Clients wait extra time for host to start server through relay
-        bool amHost = FindFirstObjectByType<LobbyManager>()?.IsHost ?? false;
         if (!amHost)
         {
             ;
