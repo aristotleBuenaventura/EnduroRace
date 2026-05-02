@@ -9,12 +9,29 @@ public class RaceSceneInitializer : MonoBehaviour
     
     [Header("References")]
     public RaceManager raceManager;
+    
+    private void ResolveNetworkManager()
+    {
+        if (networkManager != null)
+            return;
+
+        // If this component is placed on the same object as NetworkManager.
+        networkManager = GetComponent<NetworkManager>();
+        if (networkManager != null)
+            return;
+
+        // Scene-level fallback before FishNet singleton lookup.
+        networkManager = Object.FindFirstObjectByType<NetworkManager>();
+        if (networkManager != null)
+            return;
+
+        networkManager = InstanceFinder.NetworkManager;
+    }
 
     private void Start()
     {
-        // Get NetworkManager if not assigned
-        if (networkManager == null)
-            networkManager = InstanceFinder.NetworkManager;
+        // Get NetworkManager if not assigned.
+        ResolveNetworkManager();
 
         // Get RaceManager if not assigned
         if (raceManager == null)

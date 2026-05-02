@@ -53,6 +53,26 @@ public class NetworkStarter : MonoBehaviour
         = new Dictionary<NetworkConnection, string>();
 
     private bool useRelay = false;
+    
+    private bool TryResolveNetworkManager()
+    {
+        if (networkManager != null)
+            return true;
+
+        // Most race scenes place NetworkStarter on the same GameObject as NetworkManager.
+        networkManager = GetComponent<NetworkManager>();
+        if (networkManager != null)
+            return true;
+
+        // Fallback: find any NetworkManager in the currently loaded scene.
+        networkManager = Object.FindFirstObjectByType<NetworkManager>();
+        if (networkManager != null)
+            return true;
+
+        // Last resort for FishNet-managed singleton lookup.
+        networkManager = InstanceFinder.NetworkManager;
+        return networkManager != null;
+    }
 
     private void Awake()
     {
@@ -69,10 +89,7 @@ public class NetworkStarter : MonoBehaviour
                 ;
         #endif
 
-        if (networkManager == null)
-            networkManager = InstanceFinder.NetworkManager;
-
-        if (networkManager == null)
+        if (!TryResolveNetworkManager())
         {
             ;
             return;
