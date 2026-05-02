@@ -52,12 +52,12 @@ public class NetworkedAIManager : NetworkBehaviour
     public List<GameObject> bikeSlots = new List<GameObject>();
 
     [Header("Bike Slot Recovery (Anti-Stuck)")]
-    [Tooltip("Extra radius around collider bounds para mas forgiving ang pickup detection.")]
-    public float bikeSlotTriggerPadding = 0.75f;
+    [Tooltip("Unused for normal pickup. Keep at 0 para strict collider-only bike pickup.")]
+    public float bikeSlotTriggerPadding = 0f;
     [Tooltip("Kapag lumampas dito (seconds) habang papunta sa bike slot, auto pickup na.")]
-    public float bikeSlotAutoPickupTimeout = 6f;
+    public float bikeSlotAutoPickupTimeout = 10f;
     [Tooltip("Kapag walang meaningful movement nang ganitong katagal, auto pickup na.")]
-    public float bikeSlotStuckTimeout = 2.5f;
+    public float bikeSlotStuckTimeout = 4f;
     [Tooltip("Minimum movement (meters) para ma-consider na may progress sa bike slot.")]
     public float bikeSlotMinProgressDistance = 0.15f;
 
@@ -731,7 +731,7 @@ public class NetworkedAIManager : NetworkBehaviour
         if (slot.swimToBikeTrigger == null)
             return;
 
-        bool reachedTrigger = IsInsideOrNearTrigger(slot.swimToBikeTrigger, opponent.transform.position);
+        bool reachedTrigger = slot.swimToBikeTrigger.bounds.Contains(opponent.transform.position);
         bool shouldForcePickup = false;
         string forceReason = string.Empty;
 
@@ -747,18 +747,6 @@ public class NetworkedAIManager : NetworkBehaviour
             Debug.LogWarning($"[NetworkedAIManager] Forced bike pickup for {opponent.opponentName}. Reason: {forceReason}");
         }
         TransitionOpponent(opponent, NetworkedAIOpponent.AISegment.Bike);
-    }
-
-    private bool IsInsideOrNearTrigger(Collider trigger, Vector3 position)
-    {
-        if (trigger == null)
-            return false;
-        if (trigger.bounds.Contains(position))
-            return true;
-
-        Vector3 closestPoint = trigger.ClosestPoint(position);
-        float distance = Vector3.Distance(position, closestPoint);
-        return distance <= Mathf.Max(0f, bikeSlotTriggerPadding);
     }
 
     [Server]
