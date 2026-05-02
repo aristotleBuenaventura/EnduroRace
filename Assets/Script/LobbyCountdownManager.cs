@@ -253,6 +253,7 @@ public class LobbyCountdownManager : MonoBehaviour
         }
 
         LobbyDataTransfer.Instance.SetLobbyData(lobbyId, localPlayerId, playerDataList);
+        LobbyDataTransfer.Instance.isLocalPlayerHost = amHost;
         LobbyDataTransfer.Instance.relayHost         = relayHost;
         LobbyDataTransfer.Instance.relayServerPort   = relayServerPort;
         LobbyDataTransfer.Instance.relayClientPort   = relayClientPort;

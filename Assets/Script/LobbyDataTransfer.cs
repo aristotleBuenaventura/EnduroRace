@@ -23,6 +23,7 @@ public class LobbyDataTransfer : MonoBehaviour
     public int clientId; // set this when the player joins the lobby/room
     public string lobbyId;
     public string localPlayerId;
+    public bool isLocalPlayerHost;
     public List<PlayerData> allPlayers = new List<PlayerData>();
 
     // Relay data
@@ -156,6 +157,7 @@ public class LobbyDataTransfer : MonoBehaviour
     {
         lobbyId = null;
         localPlayerId = null;
+        isLocalPlayerHost = false;
         allPlayers.Clear();
         relayHost = "";
         relayServerPort = 7770;

@@ -73,6 +73,18 @@ public class NetworkStarter : MonoBehaviour
         networkManager = InstanceFinder.NetworkManager;
         return networkManager != null;
     }
+    
+    private bool ShouldStartAsHost()
+    {
+        if (LobbyDataTransfer.Instance != null)
+            return LobbyDataTransfer.Instance.isLocalPlayerHost;
+
+        #if UNITY_EDITOR || UNITY_STANDALONE
+            return true;
+        #else
+            return false;
+        #endif
+    }
 
     private void Awake()
     {
@@ -149,14 +161,23 @@ public class NetworkStarter : MonoBehaviour
         if (useSpawnPoints)
             StartCoroutine(DebugSpawnPoints());
 
-        #if UNITY_EDITOR || UNITY_STANDALONE
+        bool shouldStartHost = ShouldStartAsHost();
+        if (shouldStartHost)
+        {
             ;
             StartHost();
-        #elif UNITY_ANDROID || UNITY_IOS
-            useMobileJoystick = true;
-            ;
-            StartCoroutine(StartMobileClientCoroutine());
-        #endif
+        }
+        else
+        {
+            #if UNITY_ANDROID || UNITY_IOS
+                useMobileJoystick = true;
+                ;
+                StartCoroutine(StartMobileClientCoroutine());
+            #else
+                ;
+                StartClient();
+            #endif
+        }
     }
 
     private void OnDestroy()
