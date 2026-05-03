@@ -12,6 +12,7 @@ public class AIColors : MonoBehaviour
     [Header("Material Settings")]
     [SerializeField] private bool includeChildrenRenderers = true;
     [SerializeField] private Material[] aiMaterials = new Material[PaletteCount];
+    [SerializeField] private string replaceMaterialNameContains = "AICOLOR";
 
     private NetworkedAIOpponent aiOpponent;
     private int appliedColorIndex = -1;
@@ -114,19 +115,30 @@ public class AIColors : MonoBehaviour
             }
 
             Material[] replaced = new Material[existing.Length];
-            for (int j = 0; j < replaced.Length; j++)
-                replaced[j] = material;
+            bool hasReplacement = false;
+            string keyword = replaceMaterialNameContains ?? string.Empty;
 
-            currentRenderer.sharedMaterials = replaced;
+            for (int j = 0; j < existing.Length; j++)
+            {
+                Material current = existing[j];
+                bool matchesKeyword =
+                    !string.IsNullOrEmpty(keyword)
+                    && current != null
+                    && current.name.IndexOf(keyword, System.StringComparison.OrdinalIgnoreCase) >= 0;
 
-            // Ensure visible tint application per target even when shaders differ.
-            MaterialPropertyBlock mpb = new MaterialPropertyBlock();
-            currentRenderer.GetPropertyBlock(mpb);
-            if (material.HasProperty("_BaseColor"))
-                mpb.SetColor("_BaseColor", material.GetColor("_BaseColor"));
-            else if (material.HasProperty("_Color"))
-                mpb.SetColor("_Color", material.GetColor("_Color"));
-            currentRenderer.SetPropertyBlock(mpb);
+                if (matchesKeyword)
+                {
+                    replaced[j] = material;
+                    hasReplacement = true;
+                }
+                else
+                {
+                    replaced[j] = current;
+                }
+            }
+
+            if (hasReplacement)
+                currentRenderer.sharedMaterials = replaced;
         }
     }
 }
