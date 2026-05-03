@@ -3830,6 +3830,7 @@ GameObject:
   - component: {fileID: 1057810657666515431}
   - component: {fileID: -5763900372972709108}
   - component: {fileID: 3940935401682671080}
+  - component: {fileID: 7292347745482279995}
   m_Layer: 0
   m_Name: MultiplayerAI_Opponent
   m_TagString: Untagged
@@ -4047,6 +4048,44 @@ MonoBehaviour:
   frontBackground: {fileID: 1253842625180219135}
   backText: {fileID: 6453010208404427285}
   backBackground: {fileID: 1965580306089628290}
+--- !u!114 &7292347745482279995
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5597915496966373457}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1bf24521567e4422e96bd26c2406cf2e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AIColors
+  colorTarget1: {fileID: 4226477071124448484}
+  colorTarget2: {fileID: 8601769416007782240}
+  colorTarget3: {fileID: 7716401407891094553}
+  includeChildrenRenderers: 1
+  aiMaterials:
+  - {fileID: 2100000, guid: b0e238be3c0abf846ad7ce6cd124e5bf, type: 2}
+  - {fileID: 2100000, guid: df9b43787539dc2468aaaf7e6cb5b087, type: 2}
+  - {fileID: 2100000, guid: 9538d3a947a829e4184c0059567385e2, type: 2}
+  - {fileID: 2100000, guid: 538e0533e5c9c994aaf3cc1dfe98a118, type: 2}
+  - {fileID: 2100000, guid: 0dd38d01024478a4e9193caec7906eec, type: 2}
+  - {fileID: 2100000, guid: a423ab3ddc3cdbf42980c106a55042b9, type: 2}
+  - {fileID: 2100000, guid: 2dc843067904aa84ba19c6b5fb064c9b, type: 2}
+  - {fileID: 2100000, guid: 558498aa85c1e7449bdb34cb91bb2bce, type: 2}
+  - {fileID: 2100000, guid: 32bf2541f403c134eb8bd193c4fe3d5c, type: 2}
+  - {fileID: 2100000, guid: 4887906bbd0f86f478c5a8aca39921ef, type: 2}
+  - {fileID: 2100000, guid: 28fc1869e14abf441aa66d4ee26433f7, type: 2}
+  - {fileID: 2100000, guid: bc0c5ebe3cc094f40a59e5a6c3a607ab, type: 2}
+  - {fileID: 2100000, guid: 32c1be2216a1e154cb3b0dbd57db7c88, type: 2}
+  - {fileID: 2100000, guid: 7b117147e7f709449bfbd3af23ecb034, type: 2}
+  - {fileID: 2100000, guid: 0a369ea6919eadb48af3d7a64230c9cf, type: 2}
+  - {fileID: 2100000, guid: 073a385aebf610f4db1b972e271876d6, type: 2}
+  - {fileID: 2100000, guid: 29a5ff6c93303c94c860dcce1ec0e26d, type: 2}
+  - {fileID: 2100000, guid: 5f8ed7be71fdb0646be31dd34bb3d38c, type: 2}
+  - {fileID: 2100000, guid: 9fcc5a12a963ce14d860bfab88604702, type: 2}
+  - {fileID: 2100000, guid: b5dc31a4b55f4224e822e4abd8d2754c, type: 2}
+  replaceMaterialNameContains: AICOLOR
 --- !u!1 &5627995547821954297
 GameObject:
   m_ObjectHideFlags: 0
@@ -6589,7 +6628,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &2853218182838182675
 Transform:
   m_ObjectHideFlags: 0
