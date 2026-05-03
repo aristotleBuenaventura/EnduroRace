@@ -72,6 +72,7 @@ public class AIColors : MonoBehaviour
 
         appliedColorIndex = paletteIndex;
         ApplyMaterialToTargets(selectedMaterial);
+        Debug.Log($"[AIColors] Applied palette index {paletteIndex} to {gameObject.name}.", this);
     }
 
     private void ApplyMaterialToTargets(Material material)

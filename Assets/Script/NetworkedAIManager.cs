@@ -405,7 +405,6 @@ public class NetworkedAIManager : NetworkBehaviour
 
         ai.opponentName = aiNames[index % aiNames.Length];
         aiGO.name = "AI_" + ai.opponentName;
-        ai.SetColorPaletteIndex(index % AIColors.PaletteCount);
         ai.baseSpeed = Random.Range(minSpeed, maxSpeed);
 
         AIProfile profile = CreateProfile(index, totalOpponents, assignedSwimPath, assignedBikePath, assignedRunPath, forceSuperSlow);
@@ -439,6 +438,7 @@ public class NetworkedAIManager : NetworkBehaviour
         if (ai.cyclistModel != null) ai.cyclistModel.SetActive(false);
 
         ServerManager.Spawn(aiGO);
+        ai.SetColorPaletteIndex(index % AIColors.PaletteCount);
 
         usedSpawnPoints[ai] = spawnPoint;
         aiProfiles[ai] = profile;
