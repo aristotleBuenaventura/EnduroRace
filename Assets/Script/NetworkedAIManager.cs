@@ -405,6 +405,7 @@ public class NetworkedAIManager : NetworkBehaviour
 
         ai.opponentName = aiNames[index % aiNames.Length];
         aiGO.name = "AI_" + ai.opponentName;
+        ai.SetColorPaletteIndex(index % AIColors.PaletteCount);
         ai.baseSpeed = Random.Range(minSpeed, maxSpeed);
 
         AIProfile profile = CreateProfile(index, totalOpponents, assignedSwimPath, assignedBikePath, assignedRunPath, forceSuperSlow);

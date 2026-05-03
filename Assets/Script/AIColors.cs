@@ -1,8 +1,9 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public class AIColors : MonoBehaviour
 {
+    public const int PaletteCount = 20;
+
     [Header("Color Targets (3 GameObjects)")]
     [SerializeField] private GameObject colorTarget1;
     [SerializeField] private GameObject colorTarget2;
@@ -35,73 +36,51 @@ public class AIColors : MonoBehaviour
         new Color32(66, 61, 43, 255),   // faded olive
     };
 
-    private static readonly HashSet<int> UsedColorIndices = new HashSet<int>();
-    private static readonly Dictionary<string, int> AssignedIndicesByKey = new Dictionary<string, int>();
+    private NetworkedAIOpponent aiOpponent;
+    private int appliedColorIndex = -1;
 
-    private int assignedColorIndex = -1;
-    private string assignmentKey;
+    private void Awake()
+    {
+        aiOpponent = GetComponent<NetworkedAIOpponent>();
+        if (aiOpponent == null)
+            aiOpponent = GetComponentInParent<NetworkedAIOpponent>();
+    }
 
     private void OnEnable()
     {
-        AssignAndApplyColor();
+        TryApplySyncedColor();
     }
 
-    private void OnDisable()
+    private void Update()
     {
-        ReleaseAssignedColor();
+        TryApplySyncedColor();
     }
 
-    private void AssignAndApplyColor()
+    private void TryApplySyncedColor()
     {
-        assignmentKey = GetAssignmentKey();
-
-        if (string.IsNullOrEmpty(assignmentKey))
-            assignmentKey = $"AI_{GetInstanceID()}";
-
-        if (!AssignedIndicesByKey.TryGetValue(assignmentKey, out assignedColorIndex))
+        if (aiOpponent == null)
         {
-            assignedColorIndex = GetNextAvailableColorIndex();
-            AssignedIndicesByKey[assignmentKey] = assignedColorIndex;
+            aiOpponent = GetComponent<NetworkedAIOpponent>();
+            if (aiOpponent == null)
+                aiOpponent = GetComponentInParent<NetworkedAIOpponent>();
         }
 
-        UsedColorIndices.Add(assignedColorIndex);
-        ApplyColorToTargets(ColorPalette[assignedColorIndex]);
-    }
-
-    private void ReleaseAssignedColor()
-    {
-        if (string.IsNullOrEmpty(assignmentKey))
+        if (aiOpponent == null)
             return;
 
-        if (AssignedIndicesByKey.TryGetValue(assignmentKey, out int idx) && idx == assignedColorIndex)
-        {
-            AssignedIndicesByKey.Remove(assignmentKey);
-            UsedColorIndices.Remove(assignedColorIndex);
-        }
-    }
+        int syncedIndex = aiOpponent.ColorPaletteIndex;
+        if (syncedIndex < 0)
+            return;
 
-    private string GetAssignmentKey()
-    {
-        NetworkedAIOpponent ai = GetComponent<NetworkedAIOpponent>();
-        if (ai == null)
-            ai = GetComponentInParent<NetworkedAIOpponent>();
+        int paletteIndex = syncedIndex % ColorPalette.Length;
+        if (paletteIndex < 0)
+            paletteIndex += ColorPalette.Length;
 
-        if (ai != null && !string.IsNullOrWhiteSpace(ai.opponentName))
-            return ai.opponentName.Trim();
+        if (appliedColorIndex == paletteIndex)
+            return;
 
-        return gameObject.name;
-    }
-
-    private static int GetNextAvailableColorIndex()
-    {
-        for (int i = 0; i < ColorPalette.Length; i++)
-        {
-            if (!UsedColorIndices.Contains(i))
-                return i;
-        }
-
-        // Fallback: kung lampas 20 active AI, repeat from start.
-        return 0;
+        appliedColorIndex = paletteIndex;
+        ApplyColorToTargets(ColorPalette[paletteIndex]);
     }
 
     private void ApplyColorToTargets(Color colorValue)

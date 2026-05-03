@@ -45,6 +45,7 @@ public class NetworkedAIOpponent : NetworkBehaviour
     private readonly SyncVar<float> _swimMoveSpeedMultiplier = new SyncVar<float>(1f);
     private readonly SyncVar<float> _bikeMoveSpeedMultiplier = new SyncVar<float>(1f);
     private readonly SyncVar<float> _runMoveSpeedMultiplier = new SyncVar<float>(1f);
+    private readonly SyncVar<int> _colorPaletteIndex = new SyncVar<int>(-1);
 
     // Public accessor so all existing code (NetworkedAIManager, etc.) compiles unchanged
     public AISegment currentSegment
@@ -52,6 +53,8 @@ public class NetworkedAIOpponent : NetworkBehaviour
         get => _currentSegment.Value;
         private set => _currentSegment.Value = value;
     }
+
+    public int ColorPaletteIndex => _colorPaletteIndex.Value;
 
     [Header("Animation")]
     public Animator runnerAnimator;
@@ -608,6 +611,12 @@ public class NetworkedAIOpponent : NetworkBehaviour
         currentPaceMultiplier = 1f;
 
         raceStartDelay = Mathf.Max(0f, startDelay);
+    }
+
+    [Server]
+    public void SetColorPaletteIndex(int paletteIndex)
+    {
+        _colorPaletteIndex.Value = paletteIndex;
     }
 
     private void TryApplySegmentPhaseOffset(AISegment segment)
