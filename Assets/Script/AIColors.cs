@@ -77,19 +77,28 @@ public class AIColors : MonoBehaviour
 
     private void ApplyMaterialToTargets(Material material)
     {
-        ApplyMaterialToTarget(colorTarget1, material);
-        ApplyMaterialToTarget(colorTarget2, material);
-        ApplyMaterialToTarget(colorTarget3, material);
+        ApplyMaterialToTarget(colorTarget1, material, "target1");
+        ApplyMaterialToTarget(colorTarget2, material, "target2");
+        ApplyMaterialToTarget(colorTarget3, material, "target3");
     }
 
-    private void ApplyMaterialToTarget(GameObject target, Material material)
+    private void ApplyMaterialToTarget(GameObject target, Material material, string targetLabel)
     {
         if (target == null)
+        {
+            Debug.LogWarning($"[AIColors] {targetLabel} is not assigned on {gameObject.name}.", this);
             return;
+        }
 
         Renderer[] renderers = includeChildrenRenderers
             ? target.GetComponentsInChildren<Renderer>(true)
             : target.GetComponents<Renderer>();
+
+        if (renderers == null || renderers.Length == 0)
+        {
+            Debug.LogWarning($"[AIColors] No renderers found on {targetLabel} ({target.name}) for {gameObject.name}.", this);
+            return;
+        }
 
         for (int i = 0; i < renderers.Length; i++)
         {
@@ -109,6 +118,15 @@ public class AIColors : MonoBehaviour
                 replaced[j] = material;
 
             currentRenderer.sharedMaterials = replaced;
+
+            // Ensure visible tint application per target even when shaders differ.
+            MaterialPropertyBlock mpb = new MaterialPropertyBlock();
+            currentRenderer.GetPropertyBlock(mpb);
+            if (material.HasProperty("_BaseColor"))
+                mpb.SetColor("_BaseColor", material.GetColor("_BaseColor"));
+            else if (material.HasProperty("_Color"))
+                mpb.SetColor("_Color", material.GetColor("_Color"));
+            currentRenderer.SetPropertyBlock(mpb);
         }
     }
 }
