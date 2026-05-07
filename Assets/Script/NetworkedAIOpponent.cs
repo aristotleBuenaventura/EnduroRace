@@ -47,6 +47,8 @@ public class NetworkedAIOpponent : NetworkBehaviour
     private readonly SyncVar<float> _runMoveSpeedMultiplier = new SyncVar<float>(1f);
     private readonly SyncVar<int> _colorPaletteIndex = new SyncVar<int>(-1);
     private int _rpcColorPaletteIndex = -1;
+    /// <summary>0 = isSwimming, 1 = isSwimming2, 2 = isSwimming3. Random per AI on server.</summary>
+    private readonly SyncVar<byte> _swimStyleVariant = new SyncVar<byte>(0);
 
     // Public accessor so all existing code (NetworkedAIManager, etc.) compiles unchanged
     public AISegment currentSegment
@@ -375,10 +377,9 @@ public class NetworkedAIOpponent : NetworkBehaviour
         if ((isFullyInWater || isInWater) && currentSegment == AISegment.Swim)
         {
             TryApplySegmentPhaseOffset(AISegment.Swim);
+            ApplySwimStrokeBools(isMoving);
             if (runnerAnimator != null)
             {
-                runnerAnimator.SetBool("isSwimming", isMoving);
-                runnerAnimator.SetBool("isTreading", !isMoving);
                 runnerAnimator.SetBool("isJogging", false);
                 runnerAnimator.SetBool("isRunning", false);
             }
@@ -388,7 +389,7 @@ public class NetworkedAIOpponent : NetworkBehaviour
             TryApplySegmentPhaseOffset(AISegment.Run);
             if (runnerAnimator != null)
             {
-                runnerAnimator.SetBool("isSwimming", false);
+                ClearSwimStrokeBools();
                 runnerAnimator.SetBool("isTreading", false);
                 runnerAnimator.SetBool("isJogging", isMoving && !isSprinting);
                 runnerAnimator.SetBool("isRunning", isMoving && isSprinting);
@@ -426,10 +427,9 @@ public class NetworkedAIOpponent : NetworkBehaviour
         if ((isFullyInWater || isInWater) && currentSegment == AISegment.Swim)
         {
             TryApplySegmentPhaseOffset(AISegment.Swim);
+            ApplySwimStrokeBools(moving);
             if (runnerAnimator != null)
             {
-                runnerAnimator.SetBool("isSwimming", moving);
-                runnerAnimator.SetBool("isTreading", !moving);
                 runnerAnimator.SetBool("isJogging", false);
                 runnerAnimator.SetBool("isRunning", false);
             }
@@ -439,7 +439,7 @@ public class NetworkedAIOpponent : NetworkBehaviour
             TryApplySegmentPhaseOffset(AISegment.Run);
             if (runnerAnimator != null)
             {
-                runnerAnimator.SetBool("isSwimming", false);
+                ClearSwimStrokeBools();
                 runnerAnimator.SetBool("isTreading", false);
                 runnerAnimator.SetBool("isJogging", moving);
                 runnerAnimator.SetBool("isRunning", false);
@@ -530,6 +530,28 @@ public class NetworkedAIOpponent : NetworkBehaviour
         currentWaypointIndex = 0;
     }
 
+    private void ApplySwimStrokeBools(bool moving)
+    {
+        if (runnerAnimator == null)
+            return;
+
+        byte v = _swimStyleVariant.Value;
+        runnerAnimator.SetBool("isSwimming", moving && v == 0);
+        runnerAnimator.SetBool("isSwimming2", moving && v == 1);
+        runnerAnimator.SetBool("isSwimming3", moving && v == 2);
+        runnerAnimator.SetBool("isTreading", !moving);
+    }
+
+    private void ClearSwimStrokeBools()
+    {
+        if (runnerAnimator == null)
+            return;
+
+        runnerAnimator.SetBool("isSwimming", false);
+        runnerAnimator.SetBool("isSwimming2", false);
+        runnerAnimator.SetBool("isSwimming3", false);
+    }
+
     private void ApplyAnimatorSpeeds()
     {
         float cadenceWave =
@@ -597,6 +619,7 @@ public class NetworkedAIOpponent : NetworkBehaviour
         _animationCadenceAmplitude.Value = Mathf.Clamp(cadenceAmplitude, 0f, 0.25f);
         _animationCadencePhase.Value = cadencePhase;
         _networkPaceMultiplier.Value = 1f;
+        _swimStyleVariant.Value = (byte)Random.Range(0, 3);
         hasAppliedSwimPhaseOffset = false;
         hasAppliedBikePhaseOffset = false;
         hasAppliedRunPhaseOffset = false;
