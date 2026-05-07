@@ -75,7 +75,7 @@ public class PreRaceOverview : MonoBehaviour
                 SetMapInfo(
                     sunnyShoresArt,
                     "Sunny Shores",
-                    "Beat the target time of 6:00 to advance",
+                    "Place top 15 to advance to Intermediate",
                     0, 0
                 );
                 break;
@@ -84,7 +84,7 @@ public class PreRaceOverview : MonoBehaviour
                 SetMapInfo(
                     jungleRapidsArt,
                     "Jungle Rapids",
-                    "Finish within 15% of 1st place time to advance to Pro",
+                    "Place top 10 to advance to Pro",
                     0, 0
                 );
                 break;
@@ -93,7 +93,7 @@ public class PreRaceOverview : MonoBehaviour
                 SetMapInfo(
                     stormbreakerCoveArt,
                     "Stormbreaker Cove",
-                    "Finish 1st to complete Pro Tier",
+                    "Place top 1 to complete Pro Tier",
                     1, 1
                 );
                 break;
