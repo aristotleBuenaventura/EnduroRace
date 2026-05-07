@@ -18,8 +18,8 @@ public class PlayerController : NetworkBehaviour
     [SerializeField] private float rotationSpeed = 10f;
 
     [Header("Water Settings")]
-    [SerializeField] private float swimSpeed = 2f;
-    [SerializeField] private float swimSprintMultiplier = 1.5f;
+    [SerializeField] private float swimSpeed = 2.8f;
+    [SerializeField] private float swimSprintMultiplier = 1.7f;
     [SerializeField] private float floatStrength = 2f;
     [SerializeField] private float waterLevelOffset = 0.38f;
     [SerializeField] private float bodyDepthOffset = 0.3f;
