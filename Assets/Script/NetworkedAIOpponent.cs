@@ -47,6 +47,9 @@ public class NetworkedAIOpponent : NetworkBehaviour
     private readonly SyncVar<float> _runMoveSpeedMultiplier = new SyncVar<float>(1f);
     private readonly SyncVar<int> _colorPaletteIndex = new SyncVar<int>(-1);
     private int _rpcColorPaletteIndex = -1;
+    /// <summary>Observers receive swim style via Rpc so variant is correct before SyncVar settles.</summary>
+    private int _rpcSwimStyleIndex = -1;
+    private bool _wasAiSwimStrokeMoving;
     /// <summary>0 = isSwimming, 1 = isSwimming2, 2 = isSwimming3. Random per AI on server.</summary>
     private readonly SyncVar<byte> _swimStyleVariant = new SyncVar<byte>(0);
 
@@ -142,6 +145,12 @@ public class NetworkedAIOpponent : NetworkBehaviour
 
         if (runnerModel != null && cyclistModel != null)
             SetSegment(AISegment.Swim);
+    }
+
+    public override void OnStartServer()
+    {
+        base.OnStartServer();
+        RpcSwimStyle(_swimStyleVariant.Value);
     }
 
     // FIX: FishNet v4 SyncVar<T>.OnChange delegate signature:
@@ -535,7 +544,7 @@ public class NetworkedAIOpponent : NetworkBehaviour
         if (runnerAnimator == null)
             return;
 
-        byte v = _swimStyleVariant.Value;
+        byte v = ResolveSwimStrokeVariant();
         // isSwimming must stay true for all strokes so Idle/Tread→Swim transitions keep working;
         // isSwimming2/3 drive Swim→Swim2/Swim3 in Main Animator.controller.
         bool stroking = moving;
@@ -543,10 +552,18 @@ public class NetworkedAIOpponent : NetworkBehaviour
         runnerAnimator.SetBool("isSwimming2", stroking && v == 1);
         runnerAnimator.SetBool("isSwimming3", stroking && v == 2);
         runnerAnimator.SetBool("isTreading", !moving);
+
+        // Nudge state machine: transitions sometimes never reach Swim2/Swim3 on clients.
+        if (stroking && !_wasAiSwimStrokeMoving && v != 0 && !runnerAnimator.IsInTransition(0))
+            runnerAnimator.CrossFade(v == 1 ? "Swim2" : "Swim3", 0.12f, 0, 0f);
+
+        _wasAiSwimStrokeMoving = stroking;
+        runnerAnimator.Update(0f);
     }
 
     private void ClearSwimStrokeBools()
     {
+        _wasAiSwimStrokeMoving = false;
         if (runnerAnimator == null)
             return;
 
@@ -651,6 +668,21 @@ public class NetworkedAIOpponent : NetworkBehaviour
     private void RpcSetColorPaletteIndex(int paletteIndex)
     {
         _rpcColorPaletteIndex = paletteIndex;
+    }
+
+    [ObserversRpc]
+    private void RpcSwimStyle(byte style)
+    {
+        _rpcSwimStyleIndex = Mathf.Clamp(style, 0, 2);
+    }
+
+    private byte ResolveSwimStrokeVariant()
+    {
+        if (IsServerInitialized)
+            return _swimStyleVariant.Value;
+        if (_rpcSwimStyleIndex >= 0)
+            return (byte)_rpcSwimStyleIndex;
+        return _swimStyleVariant.Value;
     }
 
     private void TryApplySegmentPhaseOffset(AISegment segment)

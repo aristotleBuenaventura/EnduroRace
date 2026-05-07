@@ -109,6 +109,7 @@ public class PlayerController : NetworkBehaviour
     public float currentStamina;
     private float targetYRotation;
     private bool localIsInWater = false;
+    private bool cachedAnimatorApplyRootMotion;
 
     void Awake()
     {
@@ -120,6 +121,9 @@ public class PlayerController : NetworkBehaviour
         footstepSource = GetComponent<AudioSource>();
         netPlayer      = GetComponentInParent<NetworkPlayer>();
         currentStamina = maxStamina;
+
+        if (animator != null)
+            cachedAnimatorApplyRootMotion = animator.applyRootMotion;
 
         rootTransform = netPlayer != null ? netPlayer.transform : transform.parent;
 
@@ -691,6 +695,11 @@ public class PlayerController : NetworkBehaviour
             localIsInWater = true;
             netPlayer.ServerSetInWater(true, waterSurfaceY);
 
+            // Root motion + CharacterController both driving transform causes sinking /
+            // popping during swim; CC owns vertical snap while in water.
+            if (animator != null)
+                animator.applyRootMotion = false;
+
             if (rootTransform.position.y < waterSurfaceY - 0.5f)
             {
                 characterController.enabled = false;
@@ -714,6 +723,7 @@ public class PlayerController : NetworkBehaviour
             velocity.y = 0f;
             if (animator != null)
             {
+                animator.applyRootMotion = cachedAnimatorApplyRootMotion;
                 animator.SetBool("isSwimming", false);
                 animator.SetBool("isTreading", false);
             }
@@ -751,6 +761,7 @@ public class PlayerController : NetworkBehaviour
 
         if (animator != null)
         {
+            animator.applyRootMotion = cachedAnimatorApplyRootMotion;
             animator.SetBool("isSwimming", false);
             animator.SetBool("isTreading", false);
         }
