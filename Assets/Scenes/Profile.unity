@@ -10377,6 +10377,7 @@ MonoBehaviour:
   characterPreview: {fileID: 1909408419}
   customizePanel: {fileID: 232558611}
   customizeButton: {fileID: 1677328899}
+  swimStyleDropdown: {fileID: 184938355}
   editNameButton: {fileID: 900360387}
   changeAvatarButton: {fileID: 1002724524}
   changeModelButton: {fileID: 614409973}
