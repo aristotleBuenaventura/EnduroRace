@@ -3831,8 +3831,8 @@ MonoBehaviour:
   runSpeedMultiplier: 2
   gravity: -9.81
   rotationSpeed: 100
-  swimSpeed: 5
-  swimSprintMultiplier: 2
+  swimSpeed: 6
+  swimSprintMultiplier: 3
   floatStrength: 2
   waterLevelOffset: 0.38
   bodyDepthOffset: 0.3
