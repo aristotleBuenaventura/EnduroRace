@@ -536,9 +536,12 @@ public class NetworkedAIOpponent : NetworkBehaviour
             return;
 
         byte v = _swimStyleVariant.Value;
-        runnerAnimator.SetBool("isSwimming", moving && v == 0);
-        runnerAnimator.SetBool("isSwimming2", moving && v == 1);
-        runnerAnimator.SetBool("isSwimming3", moving && v == 2);
+        // isSwimming must stay true for all strokes so Idle/Tread→Swim transitions keep working;
+        // isSwimming2/3 drive Swim→Swim2/Swim3 in Main Animator.controller.
+        bool stroking = moving;
+        runnerAnimator.SetBool("isSwimming", stroking);
+        runnerAnimator.SetBool("isSwimming2", stroking && v == 1);
+        runnerAnimator.SetBool("isSwimming3", stroking && v == 2);
         runnerAnimator.SetBool("isTreading", !moving);
     }
 
