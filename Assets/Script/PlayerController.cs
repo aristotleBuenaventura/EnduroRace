@@ -380,10 +380,33 @@ public class PlayerController : NetworkBehaviour
     private void ApplyAnimationState(byte state)
     {
         if (animator == null) { ; return; }
+        byte swimStyle = netPlayer != null ? netPlayer.SwimStrokeStyleIndex.Value : (byte)0;
+        swimStyle %= 3;
+
         animator.SetBool("isJogging",  state == 1);
         animator.SetBool("isRunning",  state == 2);
-        animator.SetBool("isSwimming", state == 3);
-        animator.SetBool("isTreading", state == 4);
+
+        if (state == 3)
+        {
+            animator.SetBool("isSwimming", swimStyle == 0);
+            animator.SetBool("isSwimming2", swimStyle == 1);
+            animator.SetBool("isSwimming3", swimStyle == 2);
+            animator.SetBool("isTreading", false);
+        }
+        else if (state == 4)
+        {
+            animator.SetBool("isSwimming", false);
+            animator.SetBool("isSwimming2", false);
+            animator.SetBool("isSwimming3", false);
+            animator.SetBool("isTreading", true);
+        }
+        else
+        {
+            animator.SetBool("isSwimming", false);
+            animator.SetBool("isSwimming2", false);
+            animator.SetBool("isSwimming3", false);
+            animator.SetBool("isTreading", false);
+        }
     }
 
     public void OnMove(InputAction.CallbackContext context)

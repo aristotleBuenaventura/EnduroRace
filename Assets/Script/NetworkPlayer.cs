@@ -24,6 +24,12 @@ public class NetworkPlayer : NetworkBehaviour
         RunnerAnimState.Value = state;
     }
 
+    [ServerRpc(RequireOwnership = true)]
+    public void ServerSetSwimStrokeStyle(byte index)
+    {
+        SwimStrokeStyleIndex.Value = (byte)(index % 3);
+    }
+
     [ServerRpc]
     public void ServerSetCyclistAnimState(byte state)
     {
@@ -43,6 +49,8 @@ public class NetworkPlayer : NetworkBehaviour
     public readonly SyncVar<bool>   IsStunned        = new();
     public readonly SyncVar<byte>   RunnerAnimState  = new();
     public readonly SyncVar<byte>   CyclistAnimState = new();
+    /// <summary>0 = isSwimming, 1 = isSwimming2, 2 = isSwimming3. Random per player, replicated.</summary>
+    public readonly SyncVar<byte>   SwimStrokeStyleIndex = new SyncVar<byte>(0);
     public readonly SyncVar<string> PlayerName       = new SyncVar<string>("");
 
     // Bridges Firebase UID → NetworkPlayer so RacePlayerTracker can look up real names.
@@ -109,6 +117,7 @@ public class NetworkPlayer : NetworkBehaviour
         syncedVelocity.OnChange   += OnVelocityChanged;
         RunnerAnimState.OnChange  += OnRunnerAnimStateChanged;
         CyclistAnimState.OnChange += OnCyclistAnimStateChanged;
+        SwimStrokeStyleIndex.OnChange += OnSwimStrokeStyleIndexChanged;
         WaterSurfaceY.OnChange    += OnWaterSurfaceYChanged;
 
         // When FirebasePlayerId arrives (or updates), notify the tracker on all machines
@@ -136,6 +145,8 @@ public class NetworkPlayer : NetworkBehaviour
 
         if (IsOwner)
         {
+            ServerSetSwimStrokeStyle((byte)Random.Range(0, 3));
+
             // Send Firebase UID to server so RacePlayerTracker can resolve real names
             StartCoroutine(SendFirebaseIdToServer());
 
@@ -159,6 +170,7 @@ public class NetworkPlayer : NetworkBehaviour
         syncedVelocity.OnChange   -= OnVelocityChanged;
         RunnerAnimState.OnChange  -= OnRunnerAnimStateChanged;
         CyclistAnimState.OnChange -= OnCyclistAnimStateChanged;
+        SwimStrokeStyleIndex.OnChange -= OnSwimStrokeStyleIndexChanged;
         WaterSurfaceY.OnChange    -= OnWaterSurfaceYChanged;
         FirebasePlayerId.OnChange -= OnFirebasePlayerIdChanged;
     }
@@ -280,6 +292,15 @@ public class NetworkPlayer : NetworkBehaviour
     {
         if (!IsOwner && playerController != null)
             playerController.ApplyAnimationStateFromNetwork(next);
+    }
+
+    private void OnSwimStrokeStyleIndexChanged(byte prev, byte next, bool asServer)
+    {
+        if (playerController == null)
+            return;
+        byte s = RunnerAnimState.Value;
+        if (s == 3 || s == 4)
+            playerController.ApplyAnimationStateFromNetwork(s);
     }
 
     private void OnCyclistAnimStateChanged(byte prev, byte next, bool asServer)

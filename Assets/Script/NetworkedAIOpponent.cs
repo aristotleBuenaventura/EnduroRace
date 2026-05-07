@@ -49,7 +49,6 @@ public class NetworkedAIOpponent : NetworkBehaviour
     private int _rpcColorPaletteIndex = -1;
     /// <summary>Observers receive swim style via Rpc so variant is correct before SyncVar settles.</summary>
     private int _rpcSwimStyleIndex = -1;
-    private bool _wasAiSwimStrokeMoving;
     /// <summary>0 = isSwimming, 1 = isSwimming2, 2 = isSwimming3. Random per AI on server.</summary>
     private readonly SyncVar<byte> _swimStyleVariant = new SyncVar<byte>(0);
 
@@ -545,25 +544,24 @@ public class NetworkedAIOpponent : NetworkBehaviour
             return;
 
         byte v = ResolveSwimStrokeVariant();
-        // isSwimming must stay true for all strokes so Idle/Tread→Swim transitions keep working;
-        // isSwimming2/3 drive Swim→Swim2/Swim3 in Main Animator.controller.
-        bool stroking = moving;
-        runnerAnimator.SetBool("isSwimming", stroking);
-        runnerAnimator.SetBool("isSwimming2", stroking && v == 1);
-        runnerAnimator.SetBool("isSwimming3", stroking && v == 2);
+        // Exactly one stroke bool true while moving. If all used isSwimming, Idle's first
+        // transition (isSwimming → Swim) always wins and Swim2/Swim3 never run.
         runnerAnimator.SetBool("isTreading", !moving);
+        if (!moving)
+        {
+            runnerAnimator.SetBool("isSwimming", false);
+            runnerAnimator.SetBool("isSwimming2", false);
+            runnerAnimator.SetBool("isSwimming3", false);
+            return;
+        }
 
-        // Nudge state machine: transitions sometimes never reach Swim2/Swim3 on clients.
-        if (stroking && !_wasAiSwimStrokeMoving && v != 0 && !runnerAnimator.IsInTransition(0))
-            runnerAnimator.CrossFade(v == 1 ? "Swim2" : "Swim3", 0.12f, 0, 0f);
-
-        _wasAiSwimStrokeMoving = stroking;
-        runnerAnimator.Update(0f);
+        runnerAnimator.SetBool("isSwimming", v == 0);
+        runnerAnimator.SetBool("isSwimming2", v == 1);
+        runnerAnimator.SetBool("isSwimming3", v == 2);
     }
 
     private void ClearSwimStrokeBools()
     {
-        _wasAiSwimStrokeMoving = false;
         if (runnerAnimator == null)
             return;
 
