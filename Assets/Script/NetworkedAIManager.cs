@@ -334,6 +334,7 @@ public class NetworkedAIManager : NetworkBehaviour
         List<Transform[]> bikeAssignments = BuildPathAssignments(GetAvailablePaths(bikePath1, bikePath2), reserved.Count);
         List<Transform[]> runAssignments = BuildPathAssignments(GetAvailablePaths(runPath1, runPath2), reserved.Count);
         List<BikeTransitionAssignment> bikeSlotAssignments = BuildBikeSlotAssignments(reserved.Count);
+        List<byte> swimStrokeAssignments = BuildSwimStrokeAssignments(reserved.Count);
         int superSlowIndex = forceOneSuperSlowAI && reserved.Count > 0 ? Random.Range(0, reserved.Count) : -1;
 
         for (int i = 0; i < reserved.Count; i++)
@@ -345,6 +346,7 @@ public class NetworkedAIManager : NetworkBehaviour
                 bikeAssignments[i],
                 runAssignments[i],
                 bikeSlotAssignments[i],
+                swimStrokeAssignments[i],
                 i == superSlowIndex
             );
 
@@ -360,6 +362,7 @@ public class NetworkedAIManager : NetworkBehaviour
         Transform[] assignedBikePath,
         Transform[] assignedRunPath,
         BikeTransitionAssignment assignedBikeSlot,
+        byte swimStrokeStyle,
         bool forceSuperSlow)
     {
         GameObject selectedPrefab;
@@ -433,6 +436,9 @@ public class NetworkedAIManager : NetworkBehaviour
             profile.paceShiftMaxMultiplier,
             profile.startDelay
         );
+
+        // Stroke variant (isSwimming / isSwimming2 / isSwimming3) — applied in OnStartServer after Spawn.
+        ai.PresetSwimStrokeStyleForSpawn(swimStrokeStyle);
 
         if (ai.runnerModel != null) ai.runnerModel.SetActive(true);
         if (ai.cyclistModel != null) ai.cyclistModel.SetActive(false);
@@ -604,6 +610,22 @@ public class NetworkedAIManager : NetworkBehaviour
         }
 
         return paths;
+    }
+
+    /// <summary>Each AI gets 0/1/2 cycled then shuffled so a field of 3+ usually shows all three swim styles.</summary>
+    private List<byte> BuildSwimStrokeAssignments(int aiCount)
+    {
+        var list = new List<byte>(aiCount);
+        for (int i = 0; i < aiCount; i++)
+            list.Add((byte)(i % 3));
+
+        for (int i = list.Count - 1; i > 0; i--)
+        {
+            int j = Random.Range(0, i + 1);
+            (list[i], list[j]) = (list[j], list[i]);
+        }
+
+        return list;
     }
 
     private List<Transform[]> BuildPathAssignments(List<Transform[]> availablePaths, int aiCount)

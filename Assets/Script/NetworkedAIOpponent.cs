@@ -51,6 +51,8 @@ public class NetworkedAIOpponent : NetworkBehaviour
     private int _rpcSwimStyleIndex = -1;
     /// <summary>0 = isSwimming, 1 = isSwimming2, 2 = isSwimming3. Random per AI on server.</summary>
     private readonly SyncVar<byte> _swimStyleVariant = new SyncVar<byte>(0);
+    /// <summary>-1 = pick random in OnStartServer; 0–2 = use that stroke (set by NetworkedAIManager before Spawn).</summary>
+    private int _spawnSwimStrokePreset = -1;
 
     // Public accessor so all existing code (NetworkedAIManager, etc.) compiles unchanged
     public AISegment currentSegment
@@ -146,10 +148,22 @@ public class NetworkedAIOpponent : NetworkBehaviour
             SetSegment(AISegment.Swim);
     }
 
+    /// <summary>Call on server after Instantiate, before ServerManager.Spawn, so each AI can get a planned stroke (isSwimming / 2 / 3).</summary>
+    public void PresetSwimStrokeStyleForSpawn(int strokeIndex0To2)
+    {
+        _spawnSwimStrokePreset = Mathf.Clamp(strokeIndex0To2, 0, 2);
+    }
+
     public override void OnStartServer()
     {
         base.OnStartServer();
-        RpcSwimStyle(_swimStyleVariant.Value);
+        // Assign AFTER network init — pre-spawn SyncVar writes are not reliable on clients (FishNet).
+        byte style = _spawnSwimStrokePreset >= 0
+            ? (byte)_spawnSwimStrokePreset
+            : (byte)Random.Range(0, 3);
+        _spawnSwimStrokePreset = -1;
+        _swimStyleVariant.Value = style;
+        RpcSwimStyle(style);
     }
 
     // FIX: FishNet v4 SyncVar<T>.OnChange delegate signature:
@@ -384,8 +398,10 @@ public class NetworkedAIOpponent : NetworkBehaviour
 
         if ((isFullyInWater || isInWater) && currentSegment == AISegment.Swim)
         {
-            TryApplySegmentPhaseOffset(AISegment.Swim);
             ApplySwimStrokeBools(isMoving);
+            if (runnerAnimator != null)
+                runnerAnimator.Update(0f);
+            TryApplySegmentPhaseOffset(AISegment.Swim);
             if (runnerAnimator != null)
             {
                 runnerAnimator.SetBool("isJogging", false);
@@ -434,8 +450,10 @@ public class NetworkedAIOpponent : NetworkBehaviour
         // ↓ Now matches server logic exactly, using synced booleans
         if ((isFullyInWater || isInWater) && currentSegment == AISegment.Swim)
         {
-            TryApplySegmentPhaseOffset(AISegment.Swim);
             ApplySwimStrokeBools(moving);
+            if (runnerAnimator != null)
+                runnerAnimator.Update(0f);
+            TryApplySegmentPhaseOffset(AISegment.Swim);
             if (runnerAnimator != null)
             {
                 runnerAnimator.SetBool("isJogging", false);
@@ -637,7 +655,6 @@ public class NetworkedAIOpponent : NetworkBehaviour
         _animationCadenceAmplitude.Value = Mathf.Clamp(cadenceAmplitude, 0f, 0.25f);
         _animationCadencePhase.Value = cadencePhase;
         _networkPaceMultiplier.Value = 1f;
-        _swimStyleVariant.Value = (byte)Random.Range(0, 3);
         hasAppliedSwimPhaseOffset = false;
         hasAppliedBikePhaseOffset = false;
         hasAppliedRunPhaseOffset = false;
@@ -676,8 +693,6 @@ public class NetworkedAIOpponent : NetworkBehaviour
 
     private byte ResolveSwimStrokeVariant()
     {
-        if (IsServerInitialized)
-            return _swimStyleVariant.Value;
         if (_rpcSwimStyleIndex >= 0)
             return (byte)_rpcSwimStyleIndex;
         return _swimStyleVariant.Value;
