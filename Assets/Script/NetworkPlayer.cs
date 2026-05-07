@@ -27,7 +27,7 @@ public class NetworkPlayer : NetworkBehaviour
     [ServerRpc(RequireOwnership = true)]
     public void ServerSetSwimStrokeStyle(byte index)
     {
-        SwimStrokeStyleIndex.Value = (byte)(index % 3);
+        SwimStrokeStyleIndex.Value = (byte)(index % 4);
     }
 
     [ServerRpc]
@@ -49,7 +49,7 @@ public class NetworkPlayer : NetworkBehaviour
     public readonly SyncVar<bool>   IsStunned        = new();
     public readonly SyncVar<byte>   RunnerAnimState  = new();
     public readonly SyncVar<byte>   CyclistAnimState = new();
-    /// <summary>0 = isSwimming, 1 = isSwimming2, 2 = isSwimming3. Set from profile selection.</summary>
+    /// <summary>0 = isSwimming, 1 = isSwimming2, 2 = isSwimming3, 3 = isSwimming4.</summary>
     public readonly SyncVar<byte>   SwimStrokeStyleIndex = new SyncVar<byte>(0);
     public readonly SyncVar<string> PlayerName       = new SyncVar<string>("");
 
@@ -145,7 +145,7 @@ public class NetworkPlayer : NetworkBehaviour
 
         if (IsOwner)
         {
-            byte localSwimStyle = (byte)Mathf.Clamp(PlayerPrefs.GetInt("SelectedSwimStrokeStyle", 0), 0, 2);
+            byte localSwimStyle = (byte)Mathf.Clamp(PlayerPrefs.GetInt("SelectedSwimStrokeStyle", 0), 0, 3);
             ServerSetSwimStrokeStyle(localSwimStyle);
 
             // Send Firebase UID to server so RacePlayerTracker can resolve real names
@@ -245,7 +245,7 @@ public class NetworkPlayer : NetworkBehaviour
         var playerId = FirebaseManager.Instance.PlayerId;
 
         string model = PlayerPrefs.GetString("SelectedModel", "Male");
-        byte swimStyle = (byte)Mathf.Clamp(PlayerPrefs.GetInt("SelectedSwimStrokeStyle", 0), 0, 2);
+        byte swimStyle = (byte)Mathf.Clamp(PlayerPrefs.GetInt("SelectedSwimStrokeStyle", 0), 0, 3);
         bool done    = false;
 
         ;
@@ -270,7 +270,7 @@ public class NetworkPlayer : NetworkBehaviour
 
                     if (task.Result.ContainsField("swimStrokeStyle"))
                     {
-                        int firebaseSwimStyle = Mathf.Clamp(task.Result.GetValue<int>("swimStrokeStyle"), 0, 2);
+                        int firebaseSwimStyle = Mathf.Clamp(task.Result.GetValue<int>("swimStrokeStyle"), 0, 3);
                         PlayerPrefs.SetInt("SelectedSwimStrokeStyle", firebaseSwimStyle);
                         ServerSetSwimStrokeStyle((byte)firebaseSwimStyle);
                     }

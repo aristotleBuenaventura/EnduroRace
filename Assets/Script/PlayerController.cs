@@ -381,7 +381,7 @@ public class PlayerController : NetworkBehaviour
     {
         if (animator == null) { ; return; }
         byte swimStyle = netPlayer != null ? netPlayer.SwimStrokeStyleIndex.Value : (byte)0;
-        swimStyle %= 3;
+        swimStyle %= 4;
 
         animator.SetBool("isJogging",  state == 1);
         animator.SetBool("isRunning",  state == 2);
@@ -391,6 +391,7 @@ public class PlayerController : NetworkBehaviour
             animator.SetBool("isSwimming", swimStyle == 0);
             animator.SetBool("isSwimming2", swimStyle == 1);
             animator.SetBool("isSwimming3", swimStyle == 2);
+            animator.SetBool("isSwimming4", swimStyle == 3);
             animator.SetBool("isTreading", false);
         }
         else if (state == 4)
@@ -398,6 +399,7 @@ public class PlayerController : NetworkBehaviour
             animator.SetBool("isSwimming", false);
             animator.SetBool("isSwimming2", false);
             animator.SetBool("isSwimming3", false);
+            animator.SetBool("isSwimming4", false);
             animator.SetBool("isTreading", true);
         }
         else
@@ -405,6 +407,7 @@ public class PlayerController : NetworkBehaviour
             animator.SetBool("isSwimming", false);
             animator.SetBool("isSwimming2", false);
             animator.SetBool("isSwimming3", false);
+            animator.SetBool("isSwimming4", false);
             animator.SetBool("isTreading", false);
         }
     }
@@ -748,6 +751,9 @@ public class PlayerController : NetworkBehaviour
             {
                 animator.applyRootMotion = cachedAnimatorApplyRootMotion;
                 animator.SetBool("isSwimming", false);
+                animator.SetBool("isSwimming2", false);
+                animator.SetBool("isSwimming3", false);
+                animator.SetBool("isSwimming4", false);
                 animator.SetBool("isTreading", false);
             }
         }
@@ -786,6 +792,9 @@ public class PlayerController : NetworkBehaviour
         {
             animator.applyRootMotion = cachedAnimatorApplyRootMotion;
             animator.SetBool("isSwimming", false);
+            animator.SetBool("isSwimming2", false);
+            animator.SetBool("isSwimming3", false);
+            animator.SetBool("isSwimming4", false);
             animator.SetBool("isTreading", false);
         }
 

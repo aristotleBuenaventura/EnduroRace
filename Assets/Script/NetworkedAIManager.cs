@@ -612,12 +612,12 @@ public class NetworkedAIManager : NetworkBehaviour
         return paths;
     }
 
-    /// <summary>Each AI gets 0/1/2 cycled then shuffled so a field of 3+ usually shows all three swim styles.</summary>
+    /// <summary>Each AI gets 0/1/2/3 cycled then shuffled so a field of 4+ usually shows all four swim styles.</summary>
     private List<byte> BuildSwimStrokeAssignments(int aiCount)
     {
         var list = new List<byte>(aiCount);
         for (int i = 0; i < aiCount; i++)
-            list.Add((byte)(i % 3));
+            list.Add((byte)(i % 4));
 
         for (int i = list.Count - 1; i > 0; i--)
         {

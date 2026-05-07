@@ -49,7 +49,7 @@ public class NetworkedAIOpponent : NetworkBehaviour
     private int _rpcColorPaletteIndex = -1;
     /// <summary>Observers receive swim style via Rpc so variant is correct before SyncVar settles.</summary>
     private int _rpcSwimStyleIndex = -1;
-    /// <summary>0 = isSwimming, 1 = isSwimming2, 2 = isSwimming3. Random per AI on server.</summary>
+    /// <summary>0 = isSwimming, 1 = isSwimming2, 2 = isSwimming3, 3 = isSwimming4. Random per AI on server.</summary>
     private readonly SyncVar<byte> _swimStyleVariant = new SyncVar<byte>(0);
     /// <summary>-1 = pick random in OnStartServer; 0–2 = use that stroke (set by NetworkedAIManager before Spawn).</summary>
     private int _spawnSwimStrokePreset = -1;
@@ -148,10 +148,10 @@ public class NetworkedAIOpponent : NetworkBehaviour
             SetSegment(AISegment.Swim);
     }
 
-    /// <summary>Call on server after Instantiate, before ServerManager.Spawn, so each AI can get a planned stroke (isSwimming / 2 / 3).</summary>
-    public void PresetSwimStrokeStyleForSpawn(int strokeIndex0To2)
+    /// <summary>Call on server after Instantiate, before ServerManager.Spawn, so each AI can get a planned stroke (isSwimming / 2 / 3 / 4).</summary>
+    public void PresetSwimStrokeStyleForSpawn(int strokeIndex0To3)
     {
-        _spawnSwimStrokePreset = Mathf.Clamp(strokeIndex0To2, 0, 2);
+        _spawnSwimStrokePreset = Mathf.Clamp(strokeIndex0To3, 0, 3);
     }
 
     public override void OnStartServer()
@@ -160,7 +160,7 @@ public class NetworkedAIOpponent : NetworkBehaviour
         // Assign AFTER network init — pre-spawn SyncVar writes are not reliable on clients (FishNet).
         byte style = _spawnSwimStrokePreset >= 0
             ? (byte)_spawnSwimStrokePreset
-            : (byte)Random.Range(0, 3);
+            : (byte)Random.Range(0, 4);
         _spawnSwimStrokePreset = -1;
         _swimStyleVariant.Value = style;
         RpcSwimStyle(style);
@@ -570,12 +570,14 @@ public class NetworkedAIOpponent : NetworkBehaviour
             runnerAnimator.SetBool("isSwimming", false);
             runnerAnimator.SetBool("isSwimming2", false);
             runnerAnimator.SetBool("isSwimming3", false);
+            runnerAnimator.SetBool("isSwimming4", false);
             return;
         }
 
         runnerAnimator.SetBool("isSwimming", v == 0);
         runnerAnimator.SetBool("isSwimming2", v == 1);
         runnerAnimator.SetBool("isSwimming3", v == 2);
+        runnerAnimator.SetBool("isSwimming4", v == 3);
     }
 
     private void ClearSwimStrokeBools()
@@ -586,6 +588,7 @@ public class NetworkedAIOpponent : NetworkBehaviour
         runnerAnimator.SetBool("isSwimming", false);
         runnerAnimator.SetBool("isSwimming2", false);
         runnerAnimator.SetBool("isSwimming3", false);
+        runnerAnimator.SetBool("isSwimming4", false);
     }
 
     private void ApplyAnimatorSpeeds()
@@ -688,7 +691,7 @@ public class NetworkedAIOpponent : NetworkBehaviour
     [ObserversRpc]
     private void RpcSwimStyle(byte style)
     {
-        _rpcSwimStyleIndex = Mathf.Clamp(style, 0, 2);
+        _rpcSwimStyleIndex = Mathf.Clamp(style, 0, 3);
     }
 
     private byte ResolveSwimStrokeVariant()

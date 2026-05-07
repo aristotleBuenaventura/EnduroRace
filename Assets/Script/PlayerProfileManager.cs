@@ -331,8 +331,8 @@ public class PlayerProfileManager : MonoBehaviour
                     SetAvatar(snap.GetValue<string>("avatar"));
                     SetTierBadge(snap.GetValue<string>("tier"));
                     int savedSwimStyle = snap.ContainsField("swimStrokeStyle")
-                        ? Mathf.Clamp(snap.GetValue<int>("swimStrokeStyle"), 0, 2)
-                        : Mathf.Clamp(PlayerPrefs.GetInt(SWIM_STYLE_PREF_KEY, 0), 0, 2);
+                        ? Mathf.Clamp(snap.GetValue<int>("swimStrokeStyle"), 0, 3)
+                        : Mathf.Clamp(PlayerPrefs.GetInt(SWIM_STYLE_PREF_KEY, 0), 0, 3);
                     ApplySwimStyleSelection(savedSwimStyle);
 
                     bool hasSeenTutorialLocal     = PlayerPrefs.GetInt(HAS_SEEN_TUTORIAL_KEY, 0) == 1;
@@ -513,10 +513,10 @@ public class PlayerProfileManager : MonoBehaviour
         SelectModel(characterPreview.GetCurrentSelection());
     }
 
-    /// <summary>Dropdown index mapping: 0=isSwimming, 1=isSwimming2, 2=isSwimming3.</summary>
+    /// <summary>Dropdown index mapping: 0=isSwimming, 1=isSwimming2, 2=isSwimming3, 3=isSwimming4.</summary>
     public void OnSwimStyleDropdownChanged(int selectedIndex)
     {
-        int clamped = Mathf.Clamp(selectedIndex, 0, 2);
+        int clamped = Mathf.Clamp(selectedIndex, 0, 3);
         ApplySwimStyleSelection(clamped);
 
         if (db != null && !string.IsNullOrEmpty(playerId))
@@ -525,7 +525,7 @@ public class PlayerProfileManager : MonoBehaviour
 
     private void ApplySwimStyleSelection(int styleIndex)
     {
-        int clamped = Mathf.Clamp(styleIndex, 0, 2);
+        int clamped = Mathf.Clamp(styleIndex, 0, 3);
         PlayerPrefs.SetInt(SWIM_STYLE_PREF_KEY, clamped);
         PlayerPrefs.Save();
 
