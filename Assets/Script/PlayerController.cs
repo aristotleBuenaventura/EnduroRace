@@ -387,16 +387,17 @@ public class PlayerController : NetworkBehaviour
         if (state == 3)
         {
             // Players always use isSwimming (not isSwimming2 / isSwimming3).
-            animator.SetBool("isSwimming", true);
+            // Clear treading before swim bool so Swim→Tread vs Swim→Idle transitions stay unambiguous.
+            animator.SetBool("isTreading", false);
             animator.SetBool("isSwimming2", false);
             animator.SetBool("isSwimming3", false);
-            animator.SetBool("isTreading", false);
+            animator.SetBool("isSwimming", true);
         }
         else if (state == 4)
         {
-            animator.SetBool("isSwimming", false);
             animator.SetBool("isSwimming2", false);
             animator.SetBool("isSwimming3", false);
+            animator.SetBool("isSwimming", false);
             animator.SetBool("isTreading", true);
         }
         else
