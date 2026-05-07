@@ -39,6 +39,8 @@ public class PlayerProfileManager : MonoBehaviour
     [Header("Customize UI")]
     public CustomizePanel customizePanel;
     public Button customizeButton;
+    [Header("Swim Style UI")]
+    public TMP_Dropdown swimStyleDropdown;
 
     [Header("Profile Buttons")]
     public Button editNameButton;
@@ -61,6 +63,7 @@ public class PlayerProfileManager : MonoBehaviour
     private const string TUTORIAL_ACTIVE_KEY   = "TutorialActive";
     private const string MAIN_MENU_STEP_KEY    = "MainMenuTutorialStep";
     private const string HAS_SEEN_TUTORIAL_KEY = "HasSeenTutorial";
+    private const string SWIM_STYLE_PREF_KEY   = "SelectedSwimStrokeStyle";
     private const int    PROFILE_STEP_INDEX    = 1;
 
     private void Start()
@@ -113,6 +116,12 @@ public class PlayerProfileManager : MonoBehaviour
 
         customizeButton?.onClick.RemoveAllListeners();
         customizeButton?.onClick.AddListener(OpenCustomizePanel);
+
+        if (swimStyleDropdown != null)
+        {
+            swimStyleDropdown.onValueChanged.RemoveListener(OnSwimStyleDropdownChanged);
+            swimStyleDropdown.onValueChanged.AddListener(OnSwimStyleDropdownChanged);
+        }
     }
 
     private void SetSpotlightRaycast(RectTransform spotlight, bool enabled)
@@ -321,6 +330,10 @@ public class PlayerProfileManager : MonoBehaviour
                     winsText.text  = snap.GetValue<int>("wins").ToString();
                     SetAvatar(snap.GetValue<string>("avatar"));
                     SetTierBadge(snap.GetValue<string>("tier"));
+                    int savedSwimStyle = snap.ContainsField("swimStrokeStyle")
+                        ? Mathf.Clamp(snap.GetValue<int>("swimStrokeStyle"), 0, 2)
+                        : Mathf.Clamp(PlayerPrefs.GetInt(SWIM_STYLE_PREF_KEY, 0), 0, 2);
+                    ApplySwimStyleSelection(savedSwimStyle);
 
                     bool hasSeenTutorialLocal     = PlayerPrefs.GetInt(HAS_SEEN_TUTORIAL_KEY, 0) == 1;
                     bool hasSeenTutorialFirestore  = snap.ContainsField("hasSeenTutorial")
@@ -367,6 +380,7 @@ public class PlayerProfileManager : MonoBehaviour
             { "wins",            0               },
             { "avatar",          "DefaultAvatar" },
             { "selectedModel",   "Male"          },
+            { "swimStrokeStyle", 0               },
             { "hasSeenTutorial", false           },
         };
 
@@ -497,6 +511,26 @@ public class PlayerProfileManager : MonoBehaviour
     {
         if (characterPreview == null) return;
         SelectModel(characterPreview.GetCurrentSelection());
+    }
+
+    /// <summary>Dropdown index mapping: 0=isSwimming, 1=isSwimming2, 2=isSwimming3.</summary>
+    public void OnSwimStyleDropdownChanged(int selectedIndex)
+    {
+        int clamped = Mathf.Clamp(selectedIndex, 0, 2);
+        ApplySwimStyleSelection(clamped);
+
+        if (db != null && !string.IsNullOrEmpty(playerId))
+            db.Collection("players").Document(playerId).UpdateAsync("swimStrokeStyle", clamped);
+    }
+
+    private void ApplySwimStyleSelection(int styleIndex)
+    {
+        int clamped = Mathf.Clamp(styleIndex, 0, 2);
+        PlayerPrefs.SetInt(SWIM_STYLE_PREF_KEY, clamped);
+        PlayerPrefs.Save();
+
+        if (swimStyleDropdown != null)
+            swimStyleDropdown.SetValueWithoutNotify(clamped);
     }
 
     // ── CUSTOMIZE ─────────────────────────────────────────

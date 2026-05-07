@@ -49,7 +49,7 @@ public class NetworkPlayer : NetworkBehaviour
     public readonly SyncVar<bool>   IsStunned        = new();
     public readonly SyncVar<byte>   RunnerAnimState  = new();
     public readonly SyncVar<byte>   CyclistAnimState = new();
-    /// <summary>0 = isSwimming, 1 = isSwimming2, 2 = isSwimming3. Random per player, replicated.</summary>
+    /// <summary>0 = isSwimming, 1 = isSwimming2, 2 = isSwimming3. Set from profile selection.</summary>
     public readonly SyncVar<byte>   SwimStrokeStyleIndex = new SyncVar<byte>(0);
     public readonly SyncVar<string> PlayerName       = new SyncVar<string>("");
 
@@ -145,7 +145,8 @@ public class NetworkPlayer : NetworkBehaviour
 
         if (IsOwner)
         {
-            ServerSetSwimStrokeStyle((byte)Random.Range(0, 3));
+            byte localSwimStyle = (byte)Mathf.Clamp(PlayerPrefs.GetInt("SelectedSwimStrokeStyle", 0), 0, 2);
+            ServerSetSwimStrokeStyle(localSwimStyle);
 
             // Send Firebase UID to server so RacePlayerTracker can resolve real names
             StartCoroutine(SendFirebaseIdToServer());
@@ -244,27 +245,37 @@ public class NetworkPlayer : NetworkBehaviour
         var playerId = FirebaseManager.Instance.PlayerId;
 
         string model = PlayerPrefs.GetString("SelectedModel", "Male");
+        byte swimStyle = (byte)Mathf.Clamp(PlayerPrefs.GetInt("SelectedSwimStrokeStyle", 0), 0, 2);
         bool done    = false;
 
         ;
         ServerSendModel(model);
+        ServerSetSwimStrokeStyle(swimStyle);
 
         db.Collection("players").Document(playerId).GetSnapshotAsync()
             .ContinueWithOnMainThread(task =>
             {
-                if (!task.IsFaulted && !task.IsCanceled &&
-                    task.Result.Exists &&
-                    task.Result.ContainsField("selectedModel"))
+                if (!task.IsFaulted && !task.IsCanceled && task.Result.Exists)
                 {
-                    string firebaseModel = task.Result.GetValue<string>("selectedModel");
-                    PlayerPrefs.SetString("SelectedModel", firebaseModel);
-                    PlayerPrefs.Save();
-
-                    if (firebaseModel != model)
+                    if (task.Result.ContainsField("selectedModel"))
                     {
-                        ;
-                        ServerSendModel(firebaseModel);
+                        string firebaseModel = task.Result.GetValue<string>("selectedModel");
+                        PlayerPrefs.SetString("SelectedModel", firebaseModel);
+                        if (firebaseModel != model)
+                        {
+                            ;
+                            ServerSendModel(firebaseModel);
+                        }
                     }
+
+                    if (task.Result.ContainsField("swimStrokeStyle"))
+                    {
+                        int firebaseSwimStyle = Mathf.Clamp(task.Result.GetValue<int>("swimStrokeStyle"), 0, 2);
+                        PlayerPrefs.SetInt("SelectedSwimStrokeStyle", firebaseSwimStyle);
+                        ServerSetSwimStrokeStyle((byte)firebaseSwimStyle);
+                    }
+
+                    PlayerPrefs.Save();
                 }
                 done = true;
             });
