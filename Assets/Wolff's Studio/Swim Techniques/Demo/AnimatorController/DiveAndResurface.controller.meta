@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: d2a09bcfba23777409bd9d9fc33056da
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 9100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 327081
+  packageName: Swim Techniques Animations
+  packageVersion: 1.0
+  assetPath: Assets/Wolff's Studio/Swim Techniques/Demo/AnimatorController/DiveAndResurface.controller
+  uploadId: 781262

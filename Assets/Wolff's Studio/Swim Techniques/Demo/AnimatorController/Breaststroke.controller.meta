@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 6ccc044b9b9f4d243a7eb00b6ba4b6eb
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 9100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 327081
+  packageName: Swim Techniques Animations
+  packageVersion: 1.0
+  assetPath: Assets/Wolff's Studio/Swim Techniques/Demo/AnimatorController/Breaststroke.controller
+  uploadId: 781262

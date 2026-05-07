@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: eb89c2879dd05b74b89efc5145a5e6cc
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 9100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 327081
+  packageName: Swim Techniques Animations
+  packageVersion: 1.0
+  assetPath: Assets/Wolff's Studio/Swim Techniques/Demo/AnimatorController/Floatie.controller
+  uploadId: 781262

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 2da0da7630b5ba04086572bb086fff8f
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 9100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 327081
+  packageName: Swim Techniques Animations
+  packageVersion: 1.0
+  assetPath: Assets/Wolff's Studio/Swim Techniques/Demo/AnimatorController/Backstroke.controller
+  uploadId: 781262
