@@ -380,17 +380,16 @@ public class PlayerController : NetworkBehaviour
     private void ApplyAnimationState(byte state)
     {
         if (animator == null) { ; return; }
-        byte swimStyle = netPlayer != null ? netPlayer.SwimStrokeStyleIndex.Value : (byte)0;
-        swimStyle %= 3;
 
         animator.SetBool("isJogging",  state == 1);
         animator.SetBool("isRunning",  state == 2);
 
         if (state == 3)
         {
-            animator.SetBool("isSwimming", swimStyle == 0);
-            animator.SetBool("isSwimming2", swimStyle == 1);
-            animator.SetBool("isSwimming3", swimStyle == 2);
+            // Players always use isSwimming (not isSwimming2 / isSwimming3).
+            animator.SetBool("isSwimming", true);
+            animator.SetBool("isSwimming2", false);
+            animator.SetBool("isSwimming3", false);
             animator.SetBool("isTreading", false);
         }
         else if (state == 4)
@@ -748,6 +747,8 @@ public class PlayerController : NetworkBehaviour
             {
                 animator.applyRootMotion = cachedAnimatorApplyRootMotion;
                 animator.SetBool("isSwimming", false);
+                animator.SetBool("isSwimming2", false);
+                animator.SetBool("isSwimming3", false);
                 animator.SetBool("isTreading", false);
             }
         }
@@ -786,6 +787,8 @@ public class PlayerController : NetworkBehaviour
         {
             animator.applyRootMotion = cachedAnimatorApplyRootMotion;
             animator.SetBool("isSwimming", false);
+            animator.SetBool("isSwimming2", false);
+            animator.SetBool("isSwimming3", false);
             animator.SetBool("isTreading", false);
         }
 

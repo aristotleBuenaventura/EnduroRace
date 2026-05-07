@@ -27,7 +27,8 @@ public class NetworkPlayer : NetworkBehaviour
     [ServerRpc(RequireOwnership = true)]
     public void ServerSetSwimStrokeStyle(byte index)
     {
-        SwimStrokeStyleIndex.Value = (byte)(index % 3);
+        _ = index;
+        SwimStrokeStyleIndex.Value = 0;
     }
 
     [ServerRpc]
@@ -49,7 +50,7 @@ public class NetworkPlayer : NetworkBehaviour
     public readonly SyncVar<bool>   IsStunned        = new();
     public readonly SyncVar<byte>   RunnerAnimState  = new();
     public readonly SyncVar<byte>   CyclistAnimState = new();
-    /// <summary>0 = isSwimming, 1 = isSwimming2, 2 = isSwimming3. Random per player, replicated.</summary>
+    /// <summary>Players always use 0 (isSwimming only). Kept as SyncVar for replication consistency.</summary>
     public readonly SyncVar<byte>   SwimStrokeStyleIndex = new SyncVar<byte>(0);
     public readonly SyncVar<string> PlayerName       = new SyncVar<string>("");
 
@@ -101,6 +102,7 @@ public class NetworkPlayer : NetworkBehaviour
         PlayerName.Value       = "";
         FirebasePlayerId.Value = "";
         NetworkRTT.Value       = 0.1f;
+        SwimStrokeStyleIndex.Value = 0;
     }
 
     // ── Client ──────────────────────────────────────────────────────────────────
@@ -145,8 +147,6 @@ public class NetworkPlayer : NetworkBehaviour
 
         if (IsOwner)
         {
-            ServerSetSwimStrokeStyle((byte)Random.Range(0, 3));
-
             // Send Firebase UID to server so RacePlayerTracker can resolve real names
             StartCoroutine(SendFirebaseIdToServer());
 
